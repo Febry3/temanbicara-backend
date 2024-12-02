@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -93,14 +94,21 @@ class AuthController extends Controller
                 ], 200);
             };
 
-            if (!Auth::attempt($requestedData)) {
-                response()->json([
+            $user = User::where('email', $requestedData['email'])->first();
+            if (!$user) {
+                return response()->json([
                     'status' => false,
-                    'message' => 'Username atau password tidak sesuai',
+                    'message' => 'Email tidak sesuai',
                 ], 401);
             }
 
-            $user = User::where('email', $requestedData['email'])->first();
+
+            if (!Hash::check($requestedData['password'], $user->password)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Password tidak sesuai',
+                ], 401);
+            }
 
             return response()->json(
                 [
@@ -134,5 +142,60 @@ class AuthController extends Controller
         );
     }
 
-    public static function changePassword(Request $request) {}
+    public static function changePassword(Request $request)
+    {
+        try {
+            $requestedData = $request->only([
+                'old_password',
+                'new_password',
+            ]);
+
+            $validateData = Validator::make(
+                $requestedData,
+                [
+                    'old_password' => 'required',
+                    'new_password' => 'required'
+                ]
+            );
+
+            if ($validateData->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Password Baru/Password Lama tidak boleh kosong',
+                    'error' => $validateData->errors(),
+                ], 200);
+            };
+
+            if ($requestedData['old_password'] === $requestedData['new_password']) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Password baru dan lama tidak boleh sama',
+                ], 200);
+            }
+
+            if (!Hash::check($requestedData['old_password'], $request->user()->password)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Password lama tidak sesuai',
+                ], 200);
+            }
+
+            User::where('id', $request->user()->id)->update([
+                'password' => Hash::make($requestedData['new_password'])
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Password berhasil diperbaharui',
+            ], 200);
+        } catch (\Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
 }

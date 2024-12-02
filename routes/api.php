@@ -11,6 +11,13 @@ Route::post('v1/register', function (Request $request) {
 Route::post('v1/login', function (Request $request) {
     return AuthController::login($request);
 });
-Route::get('v1/logout', function (Request $request) {
-    return AuthController::logout($request);
-})->middleware('auth:sanctum');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('v1/logout', function (Request $request) {
+        return AuthController::logout($request);
+    });
+
+    Route::patch('v1/changepassword', function (Request $request) {
+        return AuthController::changePassword($request);
+    });
+});

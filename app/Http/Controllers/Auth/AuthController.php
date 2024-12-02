@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -21,7 +22,7 @@ class AuthController extends Controller
                 'password'
             ]);
 
-            $validateData = Validator::make([
+            $validateData = Validator::make(
                 $requestedData,
                 [
                     'first_name' => 'required',
@@ -30,7 +31,7 @@ class AuthController extends Controller
                     'phone_number' => 'required|unique:users,phone_number',
                     'password' => 'required',
                 ]
-            ]);
+            );
 
             if ($validateData->fails()) {
                 return response()->json([
@@ -52,7 +53,7 @@ class AuthController extends Controller
                 [
                     'status' => true,
                     'message' => 'Akun berhasil dibuat',
-                    'token' => $user->createToken('RevanGay')->plainTextToken,
+                    'token' => $user->createToken('RevanGay', ['patient'])->plainTextToken,
                     'data' => $user,
                 ],
                 200
@@ -68,7 +69,70 @@ class AuthController extends Controller
         }
     }
 
-    public static function login(Request $request) {}
+    public static function login(Request $request)
+    {
+        try {
+            $requestedData = $request->only([
+                'email',
+                'password'
+            ]);
 
-    public static function logout(Request $request) {}
+            $validateData = Validator::make(
+                $requestedData,
+                [
+                    'email' => 'required',
+                    'password' => 'required',
+                ]
+            );
+
+            if ($validateData->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email dan password tidak boleh kosong',
+                    'error' => $validateData->errors(),
+                ], 200);
+            };
+
+            if (!Auth::attempt($requestedData)) {
+                response()->json([
+                    'status' => false,
+                    'message' => 'Username atau password tidak sesuai',
+                ], 401);
+            }
+
+            $user = User::where('email', $requestedData['email'])->first();
+
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Login berhasil',
+                    'token' => $user->createToken('RevanGay', [$user->role])->plainTextToken,
+                    'data' => $user,
+                ],
+                200
+            );
+        } catch (\Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
+
+    public static function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+        return response()->json(
+            [
+                'status' => true,
+                'message' => 'Logged Out',
+            ],
+            200
+        );
+    }
+
+    public static function changePassword(Request $request) {}
 }

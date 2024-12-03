@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,8 +14,6 @@ class AuthController extends Controller
     {
         try {
             $requestedData = $request->only([
-                'first_name',
-                'last_name',
                 'email',
                 'phone_number',
                 'password'
@@ -26,8 +22,6 @@ class AuthController extends Controller
             $validateData = Validator::make(
                 $requestedData,
                 [
-                    'first_name' => 'required',
-                    'last_name' => 'required',
                     'email' => 'required|unique:users,email|email',
                     'phone_number' => 'required|unique:users,phone_number',
                     'password' => 'required',
@@ -43,8 +37,6 @@ class AuthController extends Controller
             };
 
             $user = User::create([
-                'first_name' => $requestedData['first_name'],
-                'last_name' => $requestedData['last_name'],
                 'email' => $requestedData['email'],
                 'phone_number' => $requestedData['phone_number'],
                 'password' => $requestedData['password'],

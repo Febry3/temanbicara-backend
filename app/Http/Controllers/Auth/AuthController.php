@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+use Throwable;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -46,12 +47,12 @@ class AuthController extends Controller
                 [
                     'status' => true,
                     'message' => 'Akun berhasil dibuat',
-                    'token' => $user->createToken('RevanGay', ['patient'])->plainTextToken,
+                    'token' => $user->createToken('revangay', ['patient'])->plainTextToken,
                     'data' => $user,
                 ],
                 200
             );
-        } catch (\Throwable $err) {
+        } catch (Throwable $err) {
             return response()->json(
                 [
                     'status' => false,
@@ -111,7 +112,7 @@ class AuthController extends Controller
                 ],
                 200
             );
-        } catch (\Throwable $err) {
+        } catch (Throwable $err) {
             return response()->json(
                 [
                     'status' => false,
@@ -189,7 +190,7 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'Password berhasil diperbaharui',
             ], 200);
-        } catch (\Throwable $err) {
+        } catch (Throwable $err) {
             return response()->json(
                 [
                     'status' => false,
@@ -242,7 +243,7 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'Password berhasil diperbaharui',
             ], 200);
-        } catch (\Throwable $err) {
+        } catch (Throwable $err) {
             return response()->json(
                 [
                     'status' => false,

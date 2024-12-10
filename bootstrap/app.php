@@ -14,13 +14,16 @@ return Application::configure(basePath: dirname(__DIR__))
         using: function () {
             Route::middleware('api')
                 ->prefix('api/v1')
-                ->group(base_path('routes/Auth.php'));
+                ->group(base_path('routes/Api/Auth.php'));
             Route::middleware('api')
                 ->prefix('api/v1')
-                ->group(base_path('routes/Assessment.php'));
+                ->group(base_path('routes/Api/Assessment.php'));
             Route::middleware('api')
                 ->prefix('api/v1')
-                ->group(base_path('routes/Tracking.php'));
+                ->group(base_path('routes/Api/Tracking.php'));
+            Route::middleware('api')
+                ->prefix('api/v1')
+                ->group(base_path('routes/Api/Journal.php'));
         }
     )
     ->withMiddleware(function (Middleware $middleware) {

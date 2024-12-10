@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CustomedSanctum;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -27,7 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->append(CustomedSanctum::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

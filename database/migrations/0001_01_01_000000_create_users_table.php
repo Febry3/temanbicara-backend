@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone_number')->unique();
             $table->string('password');
-            $table->string('role')->default('patient');
-            $table->string('name')->nullable()->default(null);
-            $table->string('nickname')->nullable()->default(NULL);
-            $table->string('gender')->nullable()->default(NULL);
-            $table->date('birthdate')->nullable()->default(NULL);
+            $table->enum('role', ['General', 'Counselor', 'Admin'])->default('General');
+            $table->string('name')->nullable();
+            $table->string('nickname')->nullable();
+            $table->enum('gender', ['Laki-laki', 'Perempuan'])->nullable();
+            $table->date('birthdate')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

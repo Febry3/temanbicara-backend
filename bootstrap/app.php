@@ -28,7 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(CustomedSanctum::class);
+        // $middleware->append(CustomedSanctum::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

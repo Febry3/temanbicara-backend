@@ -92,7 +92,7 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => 'Email tidak sesuai',
-                ], 401);
+                ], 200);
             }
 
 

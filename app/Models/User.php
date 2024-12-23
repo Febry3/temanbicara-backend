@@ -51,4 +51,8 @@ class User extends Authenticatable
             'birthdate' => 'datetime',
         ];
     }
+    public function artikels()
+    {
+        return $this->hasMany(Artikel::class, 'id_user');
+    }
 }

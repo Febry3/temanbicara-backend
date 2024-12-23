@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Artikel;
 
 use App\Http\Controllers\Controller;
 use App\Models\artikel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -52,7 +53,7 @@ class ArtikelController extends Controller
                 ], 200);
             };
             //ganti sesuai id user lu
-            $idUser = 6;
+            $idUser = 12;
             $artikels=artikel::create([
                 'title'=> $reqData['title'],
                 'content'=> $reqData['content'],
@@ -80,4 +81,23 @@ class ArtikelController extends Controller
             );
         }
     }
+
+    public function getArtikelById($id)
+{
+    try {
+        $artikel = Artikel::with('user:id,name')->findOrFail($id);
+        $artikel->created_at = Carbon::parse($artikel->created_at)->format('Y-m-d');
+        return response()->json([
+            'status' => true,
+            'message' => 'Artikel berhasil ditemukan',
+            'data' => $artikel,
+        ], 200);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Artikel tidak ditemukan',
+        ], 404);
+    }
+}
+
 }

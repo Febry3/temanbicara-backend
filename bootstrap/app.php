@@ -1,10 +1,12 @@
 <?php
 
-use App\Http\Middleware\CustomedSanctum;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Middleware\CustomedSanctum;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -25,10 +27,16 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->prefix('api/v1')
                 ->group(base_path('routes/Api/Journal.php'));
+            Route::middleware('api')
+                ->prefix('api/v1')
+                ->group(base_path('routes/Api/Admin.php'));
         }
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // $middleware->append(CustomedSanctum::class);
+        $middleware->alias([
+            'abilities' => CheckAbilities::class,
+            'ability' => CheckForAnyAbility::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -30,6 +30,9 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->prefix('api/v1')
                 ->group(base_path('routes/Api/Admin.php'));
+            Route::middleware('api')
+                ->prefix('api/v1')
+                ->group(base_path('routes/Api/Artikel.php'));
         }
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -39,5 +42,5 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+       //
     })->create();

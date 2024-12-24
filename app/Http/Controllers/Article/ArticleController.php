@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Artikel;
 
+use Carbon\Carbon;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 
-class ArtikelController extends Controller
+class ArticleController extends Controller
 {
     public static function getAllArticle()
     {
@@ -81,6 +82,24 @@ class ArtikelController extends Controller
                 ],
                 500
             );
+        }
+    }
+
+    public static function getArticleById($id)
+    {
+        try {
+            $artikel = Article::with('user:id,name')->findOrFail($id);
+            $artikel->created_at = Carbon::parse($artikel->created_at)->format('Y-m-d');
+            return response()->json([
+                'status' => true,
+                'message' => 'Artikel berhasil ditemukan',
+                'data' => $artikel,
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Artikel tidak ditemukan',
+            ], 404);
         }
     }
 }

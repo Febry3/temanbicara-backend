@@ -2,8 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Middleware\CustomedSanctum;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,17 +17,29 @@ return Application::configure(basePath: dirname(__DIR__))
         using: function () {
             Route::middleware('api')
                 ->prefix('api/v1')
-                ->group(base_path('routes/Auth.php'));
+                ->group(base_path('routes/Api/Auth.php'));
             Route::middleware('api')
                 ->prefix('api/v1')
-                ->group(base_path('routes/Assessment.php'));
+                ->group(base_path('routes/Api/Assessment.php'));
             Route::middleware('api')
                 ->prefix('api/v1')
-                ->group(base_path('routes/Tracking.php'));
+                ->group(base_path('routes/Api/Tracking.php'));
+            Route::middleware('api')
+                ->prefix('api/v1')
+                ->group(base_path('routes/Api/Journal.php'));
+            Route::middleware('api')
+                ->prefix('api/v1')
+                ->group(base_path('routes/Api/Admin.php'));
+            Route::middleware('api')
+                ->prefix('api/v1')
+                ->group(base_path('routes/Api/Article.php'));
         }
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'abilities' => CheckAbilities::class,
+            'ability' => CheckForAnyAbility::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

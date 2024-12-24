@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+use Throwable;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -46,12 +48,12 @@ class AuthController extends Controller
                 [
                     'status' => true,
                     'message' => 'Akun berhasil dibuat',
-                    'token' => $user->createToken('RevanGay', ['patient'])->plainTextToken,
+                    'token' => $user->createToken('RevanGay', [$user->role])->plainTextToken,
                     'data' => $user,
                 ],
                 200
             );
-        } catch (\Throwable $err) {
+        } catch (Throwable $err) {
             return response()->json(
                 [
                     'status' => false,
@@ -91,7 +93,7 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => 'Email tidak sesuai',
-                ], 401);
+                ], 200);
             }
 
 
@@ -111,7 +113,7 @@ class AuthController extends Controller
                 ],
                 200
             );
-        } catch (\Throwable $err) {
+        } catch (Throwable $err) {
             return response()->json(
                 [
                     'status' => false,
@@ -189,7 +191,7 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'Password berhasil diperbaharui',
             ], 200);
-        } catch (\Throwable $err) {
+        } catch (Throwable $err) {
             return response()->json(
                 [
                     'status' => false,
@@ -242,7 +244,51 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'Password berhasil diperbaharui',
             ], 200);
-        } catch (\Throwable $err) {
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
+
+    public static function verifySanctumToken(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            if (!$user) {
+                return response()->json(
+                    [
+                        'status' => false,
+                        'message' => 'Token salah'
+                    ],
+                    401
+                );
+            }
+
+            if ($user->role != 'Admin') {
+                return response()->json(
+                    [
+                        'status' => false,
+                        'message' => 'User bukan admin'
+                    ],
+                    401
+                );
+            }
+
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Token benar',
+                    'user' => $user,
+                ],
+                200
+            );
+        } catch (Throwable $err) {
             return response()->json(
                 [
                     'status' => false,

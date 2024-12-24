@@ -25,7 +25,8 @@ class User extends Authenticatable
         'name',
         'nickname',
         'gender',
-        'birthdate'
+        'birthdate',
+        'role'
     ];
 
     /**
@@ -50,5 +51,9 @@ class User extends Authenticatable
             'password' => 'hashed',
             'birthdate' => 'datetime',
         ];
+    }
+    public function artikels()
+    {
+        return $this->hasMany(Article::class, 'id_user');
     }
 }

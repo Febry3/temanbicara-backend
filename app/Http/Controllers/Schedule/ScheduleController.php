@@ -89,5 +89,37 @@ class ScheduleController extends Controller
         }
     }
 
+    public static function createSchedule(Request $request)
+    {
+        try {
+            $userId = $request->input('user_id');
+            $user = User::where('role', 'Admin')->find($userId); 
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found or does not have Admin role',
+                ], 404);
+            }
+            $validated = $request->validate([
+                'available_date' => 'required|date',
+                'start_time' => 'required|string',
+                'end_time' => 'required|string',
+                'is_available' => 'required|boolean',
+                'user_id' => 'required|exists:users,id',
+            ]);
+            $schedule = Schedules::create($validated);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Schedule created successfully',
+                'data' => $schedule,
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
  

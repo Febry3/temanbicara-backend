@@ -11,3 +11,7 @@ Route::get('get-schedule', function (Request $request) {
 Route::get('get-schedule/{id}', function (Request $request, $id) {
     return ScheduleController::getScheduleByID($request, $id);
 });
+
+Route::post('do-schedule', function (Request $request) {
+    return ScheduleController::createSchedule($request);
+});

@@ -14,7 +14,6 @@ Route::get('article', function () {
 Route::get('article/{id}', function ($id) {
     return ArticleController::getArticleById($id);
 });
-
 //ini buat kalo harus login baru bisa buat artikel
 // Route::middleware('auth:sanctum')->group(function () {
 //     Route::post('do-artikel', function (Request $request) {

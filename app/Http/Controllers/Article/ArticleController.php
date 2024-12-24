@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Artikel;
+namespace App\Http\Controllers\Article;
 
 use Carbon\Carbon;
 use App\Models\Article;

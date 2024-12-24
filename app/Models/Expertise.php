@@ -11,4 +11,8 @@ class Expertise extends Model
         'type',
         'user_id',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

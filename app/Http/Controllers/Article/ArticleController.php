@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers\Artikel;
 
-use App\Http\Controllers\Controller;
-use App\Models\artikel;
+use Carbon\Carbon;
+use App\Models\Article;
 use Illuminate\Http\Request;
-use Validator;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
-class ArtikelController extends Controller
+
+class ArticleController extends Controller
 {
-    public static function getArtikel(Request $request){
+    public static function getAllArticle()
+    {
         try {
-            $artikels = Artikel::with('user:id,name,role')->get();
+            $articles = Article::with('user:id,name,role')->get();
             return response()->json(
                 [
                     'status' => true,
-                    'message' => 'Artikel berhasil dibuat',
-                    'data' => $artikels,
+                    'message' => 'Artikel berhasil diambil',
+                    'data' => $articles,
                 ],
                 200
             );
@@ -30,7 +33,8 @@ class ArtikelController extends Controller
             );
         }
     }
-    public static function doArtikel(Request $request){
+    public static function createArticle(Request $request)
+    {
         try {
             $reqData = $request->only(
                 [
@@ -40,9 +44,9 @@ class ArtikelController extends Controller
                 ]
             );
             $validate = Validator::make($reqData, [
-                "title"=> "required",
+                "title" => "required",
                 "content" => "required",
-                "image"=> "required"
+                "image" => "required"
             ]);
             if ($validate->fails()) {
                 return response()->json([
@@ -52,12 +56,12 @@ class ArtikelController extends Controller
                 ], 200);
             };
             //ganti sesuai id user lu
-            $idUser = 6;
-            $artikels=artikel::create([
-                'title'=> $reqData['title'],
-                'content'=> $reqData['content'],
-                'image'=> $reqData['image'],
-                'user_id'=> $idUser,
+            // $idUser = 6;
+            $artikels = Article::create([
+                'title' => $reqData['title'],
+                'content' => $reqData['content'],
+                'image' => $reqData['image'],
+                'user_id' => $request->user()->id,
                 //ini buat ngambil id artikel yg login yg diatas masih dummy ganti sesuai id user lu
                 //'user_id' => $request->user()->id,
             ]);
@@ -78,6 +82,24 @@ class ArtikelController extends Controller
                 ],
                 500
             );
+        }
+    }
+
+    public static function getArticleById($id)
+    {
+        try {
+            $artikel = Article::with('user:id,name')->findOrFail($id);
+            $artikel->created_at = Carbon::parse($artikel->created_at)->format('Y-m-d');
+            return response()->json([
+                'status' => true,
+                'message' => 'Artikel berhasil ditemukan',
+                'data' => $artikel,
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Artikel tidak ditemukan',
+            ], 404);
         }
     }
 }

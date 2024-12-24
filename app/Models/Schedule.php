@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Schedules extends Model
+class Schedule extends Model
 {
     protected $primaryKey = 'schedule_id';
 

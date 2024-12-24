@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Schedule;
 
 use Illuminate\Http\Request;
 use Throwable;
-use App\Models\Schedules;
+use App\Models\Schedule;
 use App\Models\User;
 use App\Models\Expertise;
 use App\Http\Controllers\Controller;
@@ -14,34 +14,28 @@ class ScheduleController extends Controller
     public static function getSchedule(Request $request)
     {
         try {
-            $userId = $request->input('user_id');
-            $users = User::where('role', 'Counselor')->get();
-            $expertises = Expertise::all();
-            $schedules = Schedules::all()
+            $users = User::where('role', 'Admin')->get();
+            $schedules = Schedule::all()
                 ->groupBy('user_id')
-                ->map(function ($userSchedules, $userId) use ($users, $expertises) {
+                ->map(function ($userSchedules, $userId) use ($users) {
                     $user = $users->firstWhere('id', $userId);
-                    $userExpertise = $expertises->firstWhere('user_id', $userId);
                     return [
                         'user_name' => $user ? $user->name : 'Unknown',
-                        'expertise' => $userExpertise->type,
                         'schedules' => $userSchedules->groupBy(function ($schedule) {
                             return $schedule->available_date->format('Y-m-d');
-                        })->map(function ($dateSchedules, $date) {
-                            return [
-                                'date' => $date,
-                                'schedules' => $dateSchedules->map(function ($schedule) {
+                        })
+                            ->map(function ($dateSchedules) {
+                                return $dateSchedules->map(function ($schedule) {
                                     return [
                                         'schedule_id' => $schedule->schedule_id,
                                         'start_time' => $schedule->start_time,
                                         'end_time' => $schedule->end_time,
-                                        'status' => $schedule->status,
+                                        'is_available' => $schedule->is_available,
                                     ];
-                                })->values(),
-                            ];
-                        })->values(),
+                                });
+                            })
                     ];
-                })->values();
+                });
 
             return response()->json([
                 'status' => true,
@@ -60,16 +54,15 @@ class ScheduleController extends Controller
     public static function getScheduleByID(Request $request, $id)
     {
         try {
-            $user = User::where('role', 'Counselor')->find($id);
+            $user = User::where('role', 'Admin')->find($id);
             if (!$user) {
                 return response()->json([
                     'status' => false,
                     'message' => 'User not found or does not have Counselor role',
                 ], 404);
             }
-            $userExpertise = Expertise::where('user_id', $id)->first();
-            $schedules = Schedules::where('user_id', $id)
-                ->get()
+
+            $schedules = Schedule::where('user_id', $id)->get()
                 ->groupBy(function ($schedule) {
                     return $schedule->available_date->format('Y-m-d');
                 })
@@ -108,7 +101,7 @@ class ScheduleController extends Controller
     {
         try {
             $userId = $request->input('user_id');
-            $user = User::where('role', 'Counselor')->find($userId); 
+            $user = User::where('role', 'Admin')->find($userId);
             if (!$user) {
                 return response()->json([
                     'status' => false,
@@ -122,7 +115,7 @@ class ScheduleController extends Controller
                 'status' => 'required|in:Available,Booked,Done',
                 'user_id' => 'required|exists:users,id',
             ]);
-            $schedule = Schedules::create($validated);
+            $schedule = Schedule::create($validated);
 
             return response()->json([
                 'status' => true,
@@ -137,4 +130,3 @@ class ScheduleController extends Controller
         }
     }
 }
- 

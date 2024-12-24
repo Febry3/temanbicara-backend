@@ -25,7 +25,8 @@ class User extends Authenticatable
         'name',
         'nickname',
         'gender',
-        'birthdate'
+        'birthdate',
+        'role'
     ];
 
     /**
@@ -53,6 +54,6 @@ class User extends Authenticatable
     }
     public function artikels()
     {
-        return $this->hasMany(Artikel::class, 'id_user');
+        return $this->hasMany(Article::class, 'id_user');
     }
 }

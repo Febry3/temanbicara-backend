@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Expertise;
 
 use App\Http\Controllers\Controller;
+use App\Models\Article;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Expertise;
 use Validator;
@@ -55,10 +57,19 @@ class ExpertiseController extends Controller
                 ], 200);
             };
             //ganti sesuai id user lu
+<<<<<<< HEAD:app/Http/Controllers/Expertise/ExpertiseController.php
             $idUser = 4;
             $Expertise=Expertise::create([
                 'type' => $reqData['type'],
                 'user_id' => $idUser,
+=======
+            $idUser = 12;
+            $artikels=artikel::create([
+                'title'=> $reqData['title'],
+                'content'=> $reqData['content'],
+                'image'=> $reqData['image'],
+                'user_id'=> $idUser,
+>>>>>>> a1f2d1ba5478db47d3fde54951a73284f1a35c88:app/Http/Controllers/Artikel/ArtikelController.php
                 //ini buat ngambil id artikel yg login yg diatas masih dummy ganti sesuai id user lu
                 //'user_id' => $request->user()->id,
             ]);
@@ -81,4 +92,23 @@ class ExpertiseController extends Controller
             );
         }
     }
+
+    public function getArtikelById($id)
+{
+    try {
+        $artikel = Artikel::with('user:id,name')->findOrFail($id);
+        $artikel->created_at = Carbon::parse($artikel->created_at)->format('Y-m-d');
+        return response()->json([
+            'status' => true,
+            'message' => 'Artikel berhasil ditemukan',
+            'data' => $artikel,
+        ], 200);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Artikel tidak ditemukan',
+        ], 404);
+    }
+}
+
 }

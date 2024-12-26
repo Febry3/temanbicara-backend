@@ -17,6 +17,7 @@ class JournalController extends Controller
             'body',
             'stress_level',
             'mood_level',
+            'user_id',
         ]);
 
         $validateData = Validator::make(
@@ -26,6 +27,7 @@ class JournalController extends Controller
                 'body' => 'required|string',
                 'stress_level' => 'required|integer',
                 'mood_level' => 'required|string',
+                'user_id' => 'required',
             ]
         );
 
@@ -35,7 +37,8 @@ class JournalController extends Controller
                 'message' => 'Ada bagian yang tidak diisi',
                 'error' => $validateData->errors(),
             ], 200);
-        };
+        }
+        ;
         return $requestedData;
     }
 
@@ -49,7 +52,7 @@ class JournalController extends Controller
                 'body' => $validatedData['body'],
                 'stress_level' => $validatedData['stress_level'],
                 'mood_level' => $validatedData['mood_level'],
-                'user_id' => $request->user()->id,
+                'user_id' => $validatedData['user_id'],
             ]);
 
             return response()->json(
@@ -75,7 +78,10 @@ class JournalController extends Controller
         try {
             $validatedData = self::validateJournalRequest($request);
 
-            $journal = Journal::find($id)->where('user_id', $request->user()->id);
+            // $journal = Journal::find($id)->where('user_id', $request->user()->id);
+            $journal = Journal::where('journal_id', $id)
+                ->where('user_id', $request->user()->id)
+                ->first();
 
             if (!$journal) {
                 return response()->json(
@@ -92,7 +98,8 @@ class JournalController extends Controller
                 'body' => $validatedData['body'],
                 'stress_level' => $validatedData['stress_level'],
                 'mood_level' => $validatedData['mood_level'],
-                'user_id' => $request->user()->id,
+                'user_id' => $validatedData['user_id'],
+
             ]);
 
             return response()->json(
@@ -115,15 +122,18 @@ class JournalController extends Controller
     public static function deleteJournal(Request $request, $id)
     {
         try {
-            $journal = Journal::find($id)->where('user_id', $request->user()->id);
+
+            $journal = Journal::where('journal_id', $id)
+                ->where('user_id', $request->user()->id)
+                ->first();
 
             if (!$journal) {
                 return response()->json(
                     [
                         'status' => false,
-                        'message' => 'Jurnal tidak ditemukan',
+                        'message' => 'Jurnal tidak ditemukan atau Anda tidak memiliki akses.',
                     ],
-                    200
+                    404
                 );
             }
 
@@ -132,20 +142,21 @@ class JournalController extends Controller
             return response()->json(
                 [
                     'status' => true,
-                    'message' => 'Data berhasil dihapus',
+                    'message' => 'Data berhasil dihapus.',
                 ],
                 200
             );
-        } catch (Throwable $err) {
+        } catch (\Throwable $err) {
             return response()->json(
                 [
                     'status' => false,
-                    'message' => $err->getMessage()
+                    'message' => 'Terjadi kesalahan: ' . $err->getMessage(),
                 ],
                 500
             );
         }
     }
+
     public static function getJournal(Request $request, $id)
     {
         try {
@@ -182,8 +193,14 @@ class JournalController extends Controller
     public static function getAllJournal(Request $request)
     {
 
+
         try {
-            $journal = Journal::where('user_id', $request->user()->id)->get();
+            $userId = $request->query('userId');
+            // $data = $request->json()->all();
+            // $userId = 3;
+
+            $journal = Journal::with('user')->where('user_id', $userId)->get();
+
 
             if (!$journal) {
                 return response()->json(
@@ -199,6 +216,7 @@ class JournalController extends Controller
                 [
                     'status' => true,
                     'message' => 'Data berhasil diambil',
+                    'id' => $userId,
                     'data' => $journal
                 ],
                 200

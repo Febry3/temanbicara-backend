@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-Route::middleware(['auth:sanctum', 'CustomedSanctum'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('journal', function (Request $request) {
         return JournalController::getAllJournal($request);
     });
@@ -22,3 +22,5 @@ Route::middleware(['auth:sanctum', 'CustomedSanctum'])->group(function () {
         return JournalController::deleteJournal($request, $id);
     });
 });
+
+

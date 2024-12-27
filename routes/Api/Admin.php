@@ -15,4 +15,10 @@ Route::middleware(['auth:sanctum', 'ability:Admin'])->group(function () {
     Route::get('admin/counselor', function (Request $request) {
         return AdminController::getAllCounselor($request);
     });
+    Route::post('admin/verify-password', function (Request $request) {
+        return AdminController::verifyPassword($request);
+    });
+    Route::post('admin/admin', function (Request $request) {
+        return AdminController::createAdmin($request);
+    });
 });

@@ -57,12 +57,10 @@ class ExpertiseController extends Controller
                 ], 200);
             };
             //ganti sesuai id user lu
-            $idUser = 12;
-            $Expertise=artikel::create([
-                'title'=> $reqData['title'],
-                'content'=> $reqData['content'],
-                'image'=> $reqData['image'],
-                'user_id'=> $idUser,
+            $idUser = 4;
+            $Expertise=Expertise::create([
+                'type' => $reqData['type'],
+                'user_id' => $idUser,
                 //ini buat ngambil id artikel yg login yg diatas masih dummy ganti sesuai id user lu
                 //'user_id' => $request->user()->id,
             ]);

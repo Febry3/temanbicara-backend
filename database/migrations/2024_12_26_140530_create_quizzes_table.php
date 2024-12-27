@@ -1,3 +1,5 @@
+
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -11,12 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('artikels', function (Blueprint $table) {
-            $table->id('artikel_id');
-            $table->string('title');
-            $table->string('content');
-            $table->string('image');
-            $table->enum('status', ['Pending', 'Published', 'Rejected'])->default('Pending');
+        Schema::create('quizzes', function (Blueprint $table) {
+            $table->id('quiz_id');
+            $table->string('question');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('artikels');
+        Schema::dropIfExists('quizzes');
     }
 };

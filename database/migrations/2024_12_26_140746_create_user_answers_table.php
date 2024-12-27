@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('artikels', function (Blueprint $table) {
-            $table->id('artikel_id');
-            $table->string('title');
-            $table->string('content');
-            $table->string('image');
-            $table->enum('status', ['Pending', 'Published', 'Rejected'])->default('Pending');
+        Schema::create('user_answers', function (Blueprint $table) {
+            $table->id('user_answer_is');
+            $table->integer('user_point');
             $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('quiz_id')->unsigned();
+            $table->bigInteger('answer_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('quiz_id')->references('quiz_id')->on('quizzes');
+            $table->foreign('answer_id')->references('answer_id')->on('answers');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('artikels');
+        Schema::dropIfExists('user_answers');
     }
 };

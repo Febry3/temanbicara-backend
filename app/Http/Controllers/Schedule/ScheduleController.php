@@ -30,7 +30,7 @@ class ScheduleController extends Controller
                         })->map(function ($dateSchedules, $date) {
                             return [
                                 'date' => $date,
-                                'scheduleByDate' => $dateSchedules->map(function ($schedule) {
+                                'schedulesByDate' => $dateSchedules->map(function ($schedule) {
                                     return [
                                         'schedule_id' => $schedule->schedule_id,
                                         'start_time' => $schedule->start_time,
@@ -76,7 +76,7 @@ class ScheduleController extends Controller
                 ->map(function ($dateSchedules, $date) {
                     return [
                         'date' => $date,
-                        'scheduleByDate' => $dateSchedules->map(function ($schedule) {
+                        'schedulesByDate' => $dateSchedules->map(function ($schedule) {
                             return [
                                 'schedule_id' => $schedule->schedule_id,
                                 'start_time' => $schedule->start_time,

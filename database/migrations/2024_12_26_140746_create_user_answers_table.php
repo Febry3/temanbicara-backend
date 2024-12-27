@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('trackings', function (Blueprint $table) {
-            $table->id('tracking_id');
-            $table->string('sleep_quality');
-            $table->integer('mood_level');
-            $table->integer('stress_level');
+        Schema::create('user_answers', function (Blueprint $table) {
+            $table->id('user_answer_is');
+            $table->integer('user_point');
             $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('quiz_id')->unsigned();
+            $table->bigInteger('answer_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('quiz_id')->references('quiz_id')->on('quizzes');
+            $table->foreign('answer_id')->references('answer_id')->on('answers');
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trackings');
+        Schema::dropIfExists('user_answers');
     }
 };

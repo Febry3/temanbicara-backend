@@ -1,3 +1,5 @@
+
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -11,11 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('trackings', function (Blueprint $table) {
-            $table->id('tracking_id');
-            $table->string('sleep_quality');
-            $table->integer('mood_level');
-            $table->integer('stress_level');
+        Schema::create('quizzes', function (Blueprint $table) {
+            $table->id('quiz_id');
+            $table->string('question');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trackings');
+        Schema::dropIfExists('quizzes');
     }
 };

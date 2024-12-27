@@ -41,7 +41,7 @@ class AdminController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => 'Email tidak sesuai',
-                ], 200);
+                ], 401);
             }
 
             if ($user->role != 'Admin') {
@@ -107,8 +107,7 @@ class AdminController extends Controller
             if ($validateData->fails()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Email dan password tidak boleh kosong',
-                    'error' => $validateData->errors(),
+                    'message' => $validateData->errors(),
                 ], 200);
             };
 

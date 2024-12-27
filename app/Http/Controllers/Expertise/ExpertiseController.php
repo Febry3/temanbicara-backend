@@ -56,12 +56,15 @@ class ExpertiseController extends Controller
                     'error' => $validate->errors(),
                 ], 200);
             };
+            //ganti sesuai id user lu
             $idUser = 4;
             $Expertise=Expertise::create([
                 'type' => $reqData['type'],
                 'user_id' => $idUser,
+                //ini buat ngambil id artikel yg login yg diatas masih dummy ganti sesuai id user lu
+                //'user_id' => $request->user()->id,
             ]);
-            
+
             return response()->json(
                 [
                     'status' => true,

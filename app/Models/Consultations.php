@@ -10,19 +10,20 @@ class Consultations extends Model
     protected $primaryKey = 'consultations_id';
 
     protected $fillable = [
-        'is_accepted',
-        'contact_url',
-        'meet_url',
-        'note',
+        'status',
         'description',
+        'problem',
+        'summary',
         'schedule_id',
         'user_id',
     ];
 
-    protected function casts(): array
+    public function user()
     {
-        return [
-            'is_accepted' => 'boolean',
-        ];
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function schedule() {
+        return $this->belongsTo(Schedule::class, 'schedule_id', 'id');
     }
 }

@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('description');
             $table->string('problem');
             $table->string('summary');
-            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('patient_id')->unsigned();
+            $table->foreign('patient_id')->references('id')->on('users');
             $table->bigInteger('schedule_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('schedule_id')->references('schedule_id')->on('schedules');
             $table->timestamps();
         });

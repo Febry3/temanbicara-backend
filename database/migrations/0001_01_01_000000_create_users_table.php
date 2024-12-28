@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('role', ['General', 'Counselor', 'Admin'])->default('General');
             $table->string('name')->nullable();
             $table->string('nickname')->nullable();
-            $table->enum('gender', ['Laki-laki', 'Perempuan'])->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
             $table->date('birthdate')->nullable();
             $table->rememberToken();
             $table->timestamps();

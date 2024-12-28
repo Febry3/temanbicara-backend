@@ -8,4 +8,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('do-tracking', function (Request $request) {
         return TrackingController::doTracking($request);
     });
+    Route::get('tracking', function (Request $request) {
+        return TrackingController::getAllTracking($request);
+    });
 });

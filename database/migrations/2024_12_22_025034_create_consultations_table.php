@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('consultations', function (Blueprint $table) {
             $table->id('consultation_id');
-            $table->boolean('is_accepted');
-            $table->string('contact_url');
-            $table->string('meet_url');
-            $table->string('note');
+            $table->enum('status', ['Incoming', 'Done'])->default('Incoming');
             $table->string('description');
+            $table->string('problem');
+            $table->string('summary');
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('schedule_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');

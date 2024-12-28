@@ -195,7 +195,7 @@ class JournalController extends Controller
 
 
         try {
-            $userId = $request->query('userId');
+            $userId = $request->query('user_id');
             // $data = $request->json()->all();
             // $userId = 3;
 

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Consultations extends Model
 {
 
-    protected $primaryKey = 'consultations_id';
+    protected $primaryKey = 'consultation_id';
 
     protected $fillable = [
         'status',

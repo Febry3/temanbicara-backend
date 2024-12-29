@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Consultation;
 use Illuminate\Http\Request;
 use \Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use App\Models\Consultations;
 use App\Models\User;
 use App\Models\Schedule;
@@ -13,52 +14,43 @@ use App\Models\Schedule;
 class ConsultationController extends Controller
 {
     public static function getConsultation(Request $request)
-{
-    try {
-        $userId = $request->input('user_id');
+    {
+        try {
+            $consultations = DB::table('consultations')
+                ->join('users as general_users', 'consultations.user_id', '=', 'general_users.id')
+                ->leftJoin('schedules', 'consultations.schedule_id', '=', 'schedules.schedule_id')
+                ->leftJoin('users as counselors', 'schedules.user_id', '=', 'counselors.id')
+                ->select(
+                    'consultations.consultation_id',
+                    'consultations.status',
+                    'consultations.description',
+                    'consultations.problem',
+                    'consultations.summary',
+                    'consultations.user_id',
+                    'general_users.name as general_user_name',
+                    'general_users.birthdate',
+                    'consultations.schedule_id',
+                    'schedules.available_date as date',
+                    'schedules.start_time',
+                    'schedules.end_time',
+                    'counselors.name as counselor_name'
+                )
+                ->get();
 
-        $generalUsers = User::where('role', 'General')->get();
-        $counselorUsers = User::where('role', 'Counselor')->get();
-        $schedules = Schedule::all();
-
-        $consultations = Consultations::all()
-            ->map(function ($consultation) use ($generalUsers, $counselorUsers, $schedules) {
-                $generalUser = $generalUsers->firstWhere('id', $consultation->user_id);
-                $schedule = $schedules->firstWhere('schedule_id', $consultation->schedule_id);
-                $counselor = $counselorUsers->firstWhere('id', $schedule->user_id ?? null);
-
-                return [
-                    'general_user_name' => $generalUser->name ?? 'Unknown',
-                    'birthdate' => $generalUser->birthdate ?? null,
-                    'consultations' => [
-                        'consultation_id' => $consultation->consultation_id,
-                        'status' => $consultation->status,
-                        'description' => $consultation->description,
-                        'problem' => $consultation->problem,
-                        'summary' => $consultation->summary,
-                        'schedule' => $schedule ? [
-                            'schedule_id' => $schedule->schedule_id,
-                            'date' => $schedule->available_date->format('Y-m-d'),
-                            'start_time' => $schedule->start_time,
-                            'end_time' => $schedule->end_time,
-                        ] : null,
-                        'counselor_name' => $counselor ? $counselor->name : 'Unknown',
-                    ],
-                ];
-            })->values();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Data Consultations grouped by user_id',
-            'data' => $consultations,
-        ]);
-    } catch (\Throwable $e) {
-        return response()->json([
-            'status' => false,
-            'message' => $e->getMessage(),
-        ], 500);
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Consultations grouped by user_id',
+                'data' => $consultations,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
+
+
 
 
     public static function updateConsultation(Request $request, $id)

@@ -15,12 +15,12 @@ class Consultations extends Model
         'problem',
         'summary',
         'schedule_id',
-        'user_id',
+        'patient_id',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'patient_id', 'id');
     }
 
     public function schedule() {

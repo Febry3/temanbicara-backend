@@ -50,9 +50,6 @@ class ConsultationController extends Controller
         }
     }
 
-
-
-
     public static function updateConsultation(Request $request, $id)
     {
         try {
@@ -84,4 +81,32 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
+
+
+    public static function createConsultation(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'description' => 'nullable',
+                'problem' => 'nullable',
+                'summary' => 'nullable',
+                'schedule_id' => 'required|exists:schedules,schedule_id',
+                'patient_id' => 'required|exists:users,id',
+            ]);
+
+            $consultation = Consultations::create($validated);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Consultation created successfully.',
+                'data' => $consultation,
+            ], 201);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }

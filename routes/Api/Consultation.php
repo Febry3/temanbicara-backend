@@ -11,3 +11,7 @@ Route::get('consultation', function (Request $request) {
 Route::put('consultation/{id}', function (Request $request, $id) {
     return ConsultationController::updateConsultation($request, $id);
 });
+
+Route::post('consultation', function (Request $request) {
+    return ConsultationController::createConsultation($request);
+});

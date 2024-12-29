@@ -13,7 +13,7 @@ class Schedule extends Model
         'start_time',
         'end_time',
         'is_available',
-        'user_id',
+        'counselor_id',
     ];
 
     protected function casts(): array

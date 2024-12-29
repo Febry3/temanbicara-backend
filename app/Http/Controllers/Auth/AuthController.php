@@ -15,6 +15,7 @@ class AuthController extends Controller
     public static function register(Request $request)
     {
         try {
+            // dd($request);
             $requestedData = $request->only([
                 'email',
                 'phone_number',

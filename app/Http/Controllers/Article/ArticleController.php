@@ -14,7 +14,7 @@ class ArticleController extends Controller
     public static function getAllArticle()
     {
         try {
-            $articles = Article::with('user:id,name,role')->get();
+            $articles = Article::with('user:id,name,role')->where('status','Published')->get();
             return response()->json(
                 [
                     'status' => true,
@@ -84,6 +84,42 @@ class ArticleController extends Controller
             );
         }
     }
+    public static function getAllArticleByCounselor(Request $request)
+    {
+
+        try {
+            $article =Article::where('user_id', $request->user()->id)->get();
+
+            if (!$article) {
+                return response()->json(
+                    [
+                        'status' => false,
+                        'message' => 'article tidak ditemukan',
+                    ],
+                    200
+                );
+            }
+
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Data berhasil diambil',
+                    'data' => $article
+                ],
+                200
+            );
+        } catch (\Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
+
+
 
     public static function getArticleById($id)
     {

@@ -4,6 +4,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Consultation\ConsultationController;
 
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('consultation-user', function (Request $request) {
+        return ConsultationController::getConsultationByUserId($request);
+    });
+});
 Route::get('consultation', function (Request $request) {
     return ConsultationController::getConsultation($request);
 });
@@ -15,3 +21,4 @@ Route::put('consultation/{id}', function (Request $request, $id) {
 Route::post('consultation', function (Request $request) {
     return ConsultationController::createConsultation($request);
 });
+

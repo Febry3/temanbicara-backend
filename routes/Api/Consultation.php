@@ -9,6 +9,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('consultation-user', function (Request $request) {
         return ConsultationController::getConsultationByUserId($request);
     });
+    Route::get('consultation-counselor', function (Request $request) {
+        return ConsultationController::getConsultationByCounselorId($request);
+    });
 });
 Route::get('consultation', function (Request $request) {
     return ConsultationController::getConsultation($request);

@@ -178,6 +178,8 @@ class ConsultationController extends Controller
                     'consultations.patient_id',
                     'general_users.name as general_user_name',
                     'general_users.birthdate',
+                    'general_users.gender',
+                    'general_users.nickname',
                     'consultations.schedule_id',
                     'schedules.available_date as date',
                     'schedules.start_time',

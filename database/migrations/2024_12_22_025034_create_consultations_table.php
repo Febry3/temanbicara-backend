@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('problem');
             $table->string('summary');
             $table->bigInteger('patient_id')->unsigned();
-            $table->foreign('patient_id')->references('id')->on('users');
+            $table->foreign('patient_id')->references('id')->on('users')->onDelete('cascade');
             $table->bigInteger('schedule_id')->unsigned();
-            $table->foreign('schedule_id')->references('schedule_id')->on('schedules');
+            $table->foreign('schedule_id')->references('schedule_id')->on('schedules')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('end_time');
             $table->enum('status', ['Available', 'Booked', 'Done'])->default('Available');
             $table->bigInteger('counselor_id')->unsigned();
-            $table->foreign('counselor_id')->references('id')->on('users');
+            $table->foreign('counselor_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

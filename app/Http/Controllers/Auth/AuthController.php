@@ -37,7 +37,8 @@ class AuthController extends Controller
                     'message' => 'Terjadi kesalahan pada validasi',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
+            ;
 
             $user = User::create([
                 'email' => $requestedData['email'],
@@ -87,7 +88,8 @@ class AuthController extends Controller
                     'message' => 'Email dan password tidak boleh kosong',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
+            ;
 
             $user = User::where('email', $requestedData['email'])->first();
             if (!$user) {
@@ -161,7 +163,8 @@ class AuthController extends Controller
                     'message' => 'Password Baru/Password Lama tidak boleh kosong',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
+            ;
 
             if ($requestedData['confirm_password'] !== $requestedData['new_password']) {
                 return response()->json([
@@ -227,7 +230,8 @@ class AuthController extends Controller
                     'message' => 'Email/nomor telepon/ password tidak boleh kosong',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
+            ;
 
             $user = User::where('email', $requestedData['email'], 'AND')->where('phone_number', $requestedData['phone_number'])->first();
 
@@ -299,4 +303,55 @@ class AuthController extends Controller
             );
         }
     }
+
+    public static function editProfile(Request $request)
+    {
+        try {
+            $requestedData = $request->only([
+                'name',
+                'email',
+                'birthdate',
+            ]);
+
+            $validateData = Validator::make(
+                $requestedData,
+                [
+                    'name' => 'required|string|max:255',
+                    'email' => 'required|email|max:255|unique:users,email,' . $request->user()->id,
+                    'birthdate' => 'required|date',
+                ]
+            );
+
+            if ($validateData->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal',
+                    'errors' => $validateData->errors()
+                ], 422);
+            }
+
+            User::where('id', $request->user()->id)->update([
+                'name' => $requestedData['name'],
+                'email' => $requestedData['email'],
+                'birthdate' => $requestedData['birthdate']
+            ]);
+
+            $user = User::find($request->user()->id);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Profil berhasil diperbarui',
+                'data' => $user,
+            ], 200);
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
+
 }

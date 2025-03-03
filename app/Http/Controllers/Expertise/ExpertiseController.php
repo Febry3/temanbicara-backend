@@ -57,7 +57,7 @@ class ExpertiseController extends Controller
                 ], 200);
             };
             //ganti sesuai id user lu
-            $idUser = 4;
+            $idUser = 1;
             $Expertise=Expertise::create([
                 'type' => $reqData['type'],
                 'user_id' => $idUser,

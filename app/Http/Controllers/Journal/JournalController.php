@@ -7,6 +7,10 @@ use App\Models\Journal;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
+
+
 
 class JournalController extends Controller
 {
@@ -15,41 +19,44 @@ class JournalController extends Controller
         $requestedData = $request->only([
             'title',
             'body',
+            'image',
             'stress_level',
             'mood_level',
             'user_id',
         ]);
 
-        $validateData = Validator::make(
-            $requestedData,
-            [
-                'title' => 'required|string',
-                'body' => 'required|string',
-                'stress_level' => 'required|integer',
-                'mood_level' => 'required|string',
-                'user_id' => 'required',
-            ]
-        );
+        $validateData = Validator::make($requestedData, [
+            'title' => 'required|string',
+            'body' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'stress_level' => 'required|integer',
+            'mood_level' => 'required|string',
+            'user_id' => 'required',
+        ]);
 
         if ($validateData->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Ada bagian yang tidak diisi',
-                'error' => $validateData->errors(),
-            ], 200);
+            throw new ValidationException($validateData);
         }
-        ;
-        return $requestedData;
+
+        return $validateData->validated();
     }
+
 
     public static function createJournal(Request $request)
     {
         try {
-            $validatedData = self::validateJournalRequest($request);
 
+            $imageUrl = null;
+            $validatedData = self::validateJournalRequest($request);
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('journal', 'public');
+
+                $imageUrl = asset('storage/' . $imagePath);
+            }
             $journal = Journal::create([
                 'title' => $validatedData['title'],
                 'body' => $validatedData['body'],
+                'image' => $imageUrl,
                 'stress_level' => $validatedData['stress_level'],
                 'mood_level' => $validatedData['mood_level'],
                 'user_id' => $validatedData['user_id'],
@@ -71,73 +78,87 @@ class JournalController extends Controller
                 ],
                 500
             );
+
         }
     }
     public static function updateJournal(Request $request, $id)
     {
         try {
-            $validatedData = self::validateJournalRequest($request);
+             $userId = $request->user()->id;
 
-            // $journal = Journal::find($id)->where('user_id', $request->user()->id);
+            $validatedData = self::validateJournalRequest($request);
+            if ($validatedData instanceof JsonResponse) {
+                return $validatedData;
+            }
+
             $journal = Journal::where('journal_id', $id)
-                ->where('user_id', $request->user()->id)
+                ->where('user_id', $userId)
                 ->first();
 
             if (!$journal) {
-                return response()->json(
-                    [
-                        'status' => false,
-                        'message' => 'Jurnal tidak ditemukan',
-                    ],
-                    200
-                );
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Jurnal tidak ditemukan',
+                ], 404);
             }
+            if ($request->hasFile('image')) {
+
+                if ($journal->image) {
+                    $oldImagePath = str_replace(asset('storage/'), '', $journal->image);
+                    Storage::disk('public')->delete($oldImagePath);
+                }
+                $imagePath = $request->file('image')->store('journal', 'public');
+                $journal->image = asset('storage/' . $imagePath);
+            }
+
 
             $journal->update([
                 'title' => $validatedData['title'],
                 'body' => $validatedData['body'],
+                'image' => $journal->image,
                 'stress_level' => $validatedData['stress_level'],
                 'mood_level' => $validatedData['mood_level'],
-                'user_id' => $validatedData['user_id'],
-
             ]);
 
-            return response()->json(
-                [
-                    'status' => true,
-                    'message' => 'Data berhasil diubah',
-                ],
-                200
-            );
+            return response()->json([
+                'status' => true,
+                'message' => 'Data berhasil diubah',
+                'data' => $journal
+            ], 200);
+
         } catch (Throwable $err) {
-            return response()->json(
-                [
-                    'status' => false,
-                    'message' => $err->getMessage()
-                ],
-                500
-            );
+            return response()->json([
+                'status' => false,
+                'message' => $err->getMessage()
+            ], 500);
         }
     }
+
     public static function deleteJournal(Request $request, $id)
     {
         try {
 
             $journal = Journal::where('journal_id', $id)
-                ->where('user_id', $request->user()->id)
+                ->where('user_id', 1)
                 ->first();
 
-            if (!$journal) {
-                return response()->json(
-                    [
-                        'status' => false,
-                        'message' => 'Jurnal tidak ditemukan atau Anda tidak memiliki akses.',
-                    ],
-                    404
-                );
-            }
 
-            $journal->delete();
+                if (!$journal) {
+                    return response()->json(
+                        [
+                            'status' => false,
+                            'message' => 'Jurnal tidak ditemukan atau Anda tidak memiliki akses.',
+                        ],
+                        404
+                    );
+                }
+
+                if ($journal) {
+                    $imagePath = str_replace(asset('storage/'), '', $journal->image);
+                    Storage::disk('public')->delete($imagePath);
+                    $journal->delete();
+                }
+
 
             return response()->json(
                 [
@@ -197,11 +218,8 @@ class JournalController extends Controller
         try {
             $userId = $request->user()->id;
             // $data = $request->json()->all();
-            // $userId = 3;
-
+            // $userId = 1;
             $journal = Journal::with('user')->where('user_id', $userId)->get();
-
-
             if (!$journal) {
                 return response()->json(
                     [

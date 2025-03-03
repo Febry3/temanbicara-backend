@@ -7,10 +7,34 @@ use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
 
 
 class ArticleController extends Controller
 {
+    private static function validateArticleRequest(Request $request)
+    {
+        $requestedData = $request->only([
+            'title',
+            'content',
+            'image',
+            'user_id',
+        ]);
+
+        $validateData = Validator::make($requestedData, [
+            'title' => 'required|string',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'user_id' => 'required',
+        ]);
+
+        if ($validateData->fails()) {
+            throw new ValidationException($validateData);
+        }
+
+        return $validateData->validated();
+    }
     public static function getAllArticle()
     {
         try {
@@ -36,34 +60,19 @@ class ArticleController extends Controller
     public static function createArticle(Request $request)
     {
         try {
-            $reqData = $request->only(
-                [
-                    "title",
-                    "content",
-                    "image"
-                ]
-            );
-            $validate = Validator::make($reqData, [
-                "title" => "required",
-                "content" => "required",
-                "image" => "required"
-            ]);
-            if ($validate->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Ada bagian yang tidak diisi',
-                    'error' => $validate->errors(),
-                ], 200);
-            };
-            //ganti sesuai id user lu
-            // $idUser = 6;
+            $imageUrl = null;
+            $validatedData = self::validateArticleRequest($request);
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('journal', 'public');
+
+                $imageUrl = asset('storage/' . $imagePath);
+            }
+
             $artikels = Article::create([
-                'title' => $reqData['title'],
-                'content' => $reqData['content'],
-                'image' => $reqData['image'],
-                'user_id' => $request->user()->id,
-                //ini buat ngambil id artikel yg login yg diatas masih dummy ganti sesuai id user lu
-                //'user_id' => $request->user()->id,
+                'title' => $validatedData['title'],
+                'content' => $validatedData['content'],
+                'image' => $imageUrl,
+                'user_id' => $validatedData['user_id'],
             ]);
 
             return response()->json(

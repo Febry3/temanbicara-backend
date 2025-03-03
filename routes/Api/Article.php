@@ -10,15 +10,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('articleById', function (Request $request) {
         return ArticleController::getAllArticleByCounselor($request);
     });
-
+    Route::get('get-artikel/{id}', [ArticleController::class, 'getArtikelById']);
     Route::get('article/{id}', function ($id) {
         return ArticleController::getArticleById($id);
     });
-        Route::get('get-artikel/{id}', [ArticleController::class, 'getArtikelById']);
-
+    Route::get('article', function () {
+        return ArticleController::getAllArticle();
+    });
 });
 
 
-    Route::get('article', function () {
-       return ArticleController::getAllArticle();
-    });

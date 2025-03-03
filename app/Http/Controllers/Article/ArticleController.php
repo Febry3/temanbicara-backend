@@ -63,7 +63,7 @@ class ArticleController extends Controller
             $imageUrl = null;
             $validatedData = self::validateArticleRequest($request);
             if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('journal', 'public');
+                $imagePath = $request->file('image')->store('article', 'public');
 
                 $imageUrl = asset('storage/' . $imagePath);
             }

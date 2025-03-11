@@ -23,6 +23,9 @@ jobs:
         with:
           php-version: '8.3'
 
+      - name: update composer
+        run: composer update
+
       - name: Check if composer.json exists
         id: check_files
         uses: andstor/file-existence-action@v1

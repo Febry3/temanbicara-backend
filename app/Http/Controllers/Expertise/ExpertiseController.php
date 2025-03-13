@@ -57,12 +57,10 @@ class ExpertiseController extends Controller
                 ], 200);
             };
             //ganti sesuai id user lu
-            $idUser = 1;
+            $idUser = $request->user()->id;
             $Expertise=Expertise::create([
                 'type' => $reqData['type'],
                 'user_id' => $idUser,
-                //ini buat ngambil id artikel yg login yg diatas masih dummy ganti sesuai id user lu
-                //'user_id' => $request->user()->id,
             ]);
 
             return response()->json(
@@ -83,23 +81,4 @@ class ExpertiseController extends Controller
             );
         }
     }
-
-    public function getArtikelById($id)
-{
-    try {
-        $artikel = Artikel::with('user:id,name')->findOrFail($id);
-        $artikel->created_at = Carbon::parse($artikel->created_at)->format('Y-m-d');
-        return response()->json([
-            'status' => true,
-            'message' => 'Artikel berhasil ditemukan',
-            'data' => $artikel,
-        ], 200);
-    } catch (\Throwable $e) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Artikel tidak ditemukan',
-        ], 404);
-    }
-}
-
 }

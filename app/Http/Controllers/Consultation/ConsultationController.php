@@ -112,7 +112,7 @@ class ConsultationController extends Controller
     public static function getConsultationByUserId(Request $request)
     {
         try {
-   
+
             $userId = $request->user()->id;
             $consultations = Consultations::with([
                 'user:id,name,birthdate',
@@ -155,15 +155,7 @@ class ConsultationController extends Controller
     public static function getConsultationByCounselorId(Request $request)
     {
         try {
-            // if (!$request->user()) {
-            //     return response()->json([
-            //         'status' => false,
-            //         'message' => 'Unauthorized',
-            //     ], 401);
-            // }
             $userId = $request->user()->id;
-
-
             $consultations = DB::table('consultations')
                 ->join('users as general_users', 'consultations.patient_id', '=', 'general_users.id')
                 ->leftJoin('schedules', 'consultations.schedule_id', '=', 'schedules.schedule_id')

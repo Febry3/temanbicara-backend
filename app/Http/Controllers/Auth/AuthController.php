@@ -44,6 +44,7 @@ class AuthController extends Controller
                 'email' => $requestedData['email'],
                 'phone_number' => $requestedData['phone_number'],
                 'password' => $requestedData['password'],
+
             ]);
 
             return response()->json(

@@ -14,34 +14,33 @@ class ScheduleController extends Controller
     public static function getSchedule(Request $request)
     {
         try {
-            $users = User::where('role', 'Counselor')->get();
-            $expertises = Expertise::all();
-            $schedules = Schedule::all()
-                ->groupBy('counselor_id')
-                ->map(function ($userSchedules, $userId) use ($users, $expertises) {
-                    $user = $users->firstWhere('id', $userId);
-                    $userExpertise = $expertises->firstWhere('user_id', $userId);
+            //menggunakan eager loaging mengurai jumlah execute query
+            $users = User::where('role', 'Counselor')->with([
+                'expertises',
+                'schedules'
+            ])->select('id', 'name')->get();
 
-                    return [
-                        'name' => $user ? $user->name : 'Unknown',
-                        'expertise' => $userExpertise ? $userExpertise->type : 'None',
-                        'schedules' => $userSchedules->groupBy(function ($schedule) {
-                            return $schedule->available_date->format('Y-m-d');
-                        })->map(function ($dateSchedules, $date) {
-                            return [
-                                'date' => $date,
-                                'schedulesByDate' => $dateSchedules->map(function ($schedule) {
-                                    return [
-                                        'schedule_id' => $schedule->schedule_id,
-                                        'start_time' => $schedule->start_time,
-                                        'end_time' => $schedule->end_time,
-                                        'status' => $schedule->status,
-                                    ];
-                                })->values(),
-                            ];
-                        })->values(),
-                    ];
-                })->values();
+            $schedules = $users->map(function ($user) {
+                return [
+                    'name' => $user ? $user->name : 'Unknown',
+                    'expertise' => optional($user->expertises)->type ?? 'None',
+                    'schedules' => $user->schedules->groupBy(function ($schedule) {
+                        return $schedule->available_date->format('Y-m-d');
+                    })->map(function ($dateSchedules, $date) {
+                        return [
+                            'date' => $date,
+                            'schedulesByDate' => $dateSchedules->map(function ($schedule) {
+                                return [
+                                    'schedule_id' => $schedule->schedule_id,
+                                    'start_time' => $schedule->start_time,
+                                    'end_time' => $schedule->end_time,
+                                    'status' => $schedule->status,
+                                ];
+                            })->values(),
+                        ];
+                    })->values(),
+                ];
+            })->values();
 
             return response()->json([
                 'status' => true,
@@ -55,89 +54,36 @@ class ScheduleController extends Controller
             ], 500);
         }
     }
-
-
-    public static function getScheduleByID(Request $request, $id)
-    {
-        try {
-            $user = User::where('role', 'Counselor')->find($id);
-            if (!$user) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'User not found or does not have Counselor role',
-                ], 404);
-            }
-
-            $userExpertise = Expertise::where('user_id', $id)->first();
-            $schedules = Schedule::where('counselor_id', $id)
-                ->get()
-                ->groupBy(function ($schedule) {
-                    return $schedule->available_date->format('Y-m-d');
-                })
-                ->map(function ($dateSchedules, $date) {
-                    return [
-                        'date' => $date,
-                        'schedulesByDate' => $dateSchedules->map(function ($schedule) {
-                            return [
-                                'schedule_id' => $schedule->schedule_id,
-                                'start_time' => $schedule->start_time,
-                                'end_time' => $schedule->end_time,
-                                'status' => $schedule->status,
-                            ];
-                        })->values(),
-                    ];
-                })->values();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Data Schedule for user',
-                'data' => [
-                    'name' => $user->name,
-                    'expertise' => $userExpertise ? $userExpertise->type : 'None',
-                    'schedules' => $schedules,
-                ],
-            ]);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
     public static function getAvailableSchedule(Request $request)
     {
         try {
-            $users = User::where('role', 'Counselor')->get();
-            $expertises = Expertise::all();
-
-            $availableSchedules = Schedule::where('status', 'Available')
-                ->get()
-                ->groupBy('counselor_id')
-                ->map(function ($userSchedules, $userId) use ($users, $expertises) {
-                    $user = $users->firstWhere('id', $userId);
-                    $userExpertise = $expertises->firstWhere('user_id', $userId);
-
-                    return [
-                        'name' => $user ? $user->name : 'Unknown',
-                        'expertise' => $userExpertise ? $userExpertise->type : 'None',
-                        'schedules' => $userSchedules->groupBy(function ($schedule) {
-                            return $schedule->available_date->format('Y-m-d');
-                        })->map(function ($dateSchedules, $date) {
-                            return [
-                                'date' => $date,
-                                'schedulesByDate' => $dateSchedules->map(function ($schedule) {
-                                    return [
-                                        'schedule_id' => $schedule->schedule_id,
-                                        'start_time' => $schedule->start_time,
-                                        'end_time' => $schedule->end_time,
-                                        'status' => $schedule->status,
-                                    ];
-                                })->values(),
-                            ];
-                        })->values(),
-                    ];
-                })->values();
+            $users = User::where('role', 'Counselor')->with([
+                'expertises',
+                'schedules' => function ($schedule) {
+                    $schedule->whereDate('available_date', '>=', now())->orderBy('available_date');
+                }
+            ])->select('id', 'name')->get();
+            $availableSchedules = $users->map(function ($user) {
+                return [
+                    'name' => $user ? $user->name : 'Unknown',
+                    'expertise' => optional($user->expertises)->type ?? 'None',
+                    'schedules' => $user->schedules->groupBy(function ($schedule) {
+                        return $schedule->available_date->format('Y-m-d');
+                    })->map(function ($dateSchedules, $date) {
+                        return [
+                            'date' => $date,
+                            'schedulesByDate' => $dateSchedules->map(function ($schedule) {
+                                return [
+                                    'schedule_id' => $schedule->schedule_id,
+                                    'start_time' => $schedule->start_time,
+                                    'end_time' => $schedule->end_time,
+                                    'status' => $schedule->status,
+                                ];
+                            })->values(),
+                        ];
+                    })->values(),
+                ];
+            })->values();
 
             return response()->json([
                 'status' => true,
@@ -151,46 +97,44 @@ class ScheduleController extends Controller
             ], 500);
         }
     }
-
-    public static function getAvailableScheduleByID(Request $request, $id)
+    public static function getScheduleByID(Request $request, $id)
     {
         try {
-            $user = User::where('role', 'Counselor')->find($id);
+
+            $user = User::where('role', 'Counselor')->where('id', $id)->with([
+                'expertises',
+                'schedules'
+            ])->select('id', 'name')->first();
+
             if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Counselor not found or does not have Counselor role',
+                    'message' => 'User not found or does not have Counselor role',
                 ], 404);
             }
-            $userExpertise = Expertise::where('user_id', $id)->first();
-            $availableSchedules = Schedule::where('counselor_id', $id)
-                ->where('status', 'Available')
-                ->get()
-                ->groupBy(function ($schedule) {
-                    return $schedule->available_date->format('Y-m-d');
-                })
-                ->map(function ($dateSchedules, $date) {
-                    return [
-                        'date' => $date,
-                        'schedulesByDate' => $dateSchedules->map(function ($schedule) {
-                            return [
+
+            $schedules = [
+                'name' => $user->name ?? 'Unknown',
+                'expertise' => $user->expertises->isNotEmpty()
+                    ? $user->expertises->pluck('type')->toArray()
+                    : ['None'],
+                'schedules' => $user->relationLoaded('schedules') && $user->schedules->isNotEmpty()
+                    ? $user->schedules->groupBy(fn($schedule) => $schedule->available_date->format('Y-m-d'))
+                        ->map(fn($dateSchedules, $date) => [
+                            'date' => $date,
+                            'schedulesByDate' => $dateSchedules->map(fn($schedule) => [
                                 'schedule_id' => $schedule->schedule_id,
                                 'start_time' => $schedule->start_time,
                                 'end_time' => $schedule->end_time,
                                 'status' => $schedule->status,
-                            ];
-                        })->values(),
-                    ];
-                })->values();
-
+                            ])->values(),
+                        ])->values()
+                    : [],
+            ];
             return response()->json([
                 'status' => true,
-                'message' => 'Available schedules for the counselor',
-                'data' => [
-                    'name' => $user->name,
-                    'expertise' => $userExpertise ? $userExpertise->type : 'None',
-                    'schedules' => $availableSchedules,
-                ],
+                'message' => 'Data Schedule for user',
+                'data' => $schedules
             ]);
         } catch (\Throwable $e) {
             return response()->json([
@@ -199,14 +143,59 @@ class ScheduleController extends Controller
             ], 500);
         }
     }
+    public static function getAvailableScheduleByID(Request $request, $id)
+    {
+        try {
 
+            $user = User::where('role', 'Counselor')->where('id', $id)->with([
+                'expertises',
+                'schedules' => function($schedule){
+                    $schedule->whereDate('available_date','>=',now())->orderBy('available_date');
+                }
+            ])->select('id', 'name')->first();
 
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found or does not have Counselor role',
+                ], 404);
+            }
 
+            $schedules = [
+                'name' => $user->name ?? 'Unknown',
+                'expertise' => $user->expertises->isNotEmpty()
+                    ? $user->expertises->pluck('type')->toArray()
+                    : ['None'],
+                'schedules' => $user->relationLoaded('schedules') && $user->schedules->isNotEmpty()
+                    ? $user->schedules->groupBy(fn($schedule) => $schedule->available_date->format('Y-m-d'))
+                        ->map(fn($dateSchedules, $date) => [
+                            'date' => $date,
+                            'schedulesByDate' => $dateSchedules->map(fn($schedule) => [
+                                'schedule_id' => $schedule->schedule_id,
+                                'start_time' => $schedule->start_time,
+                                'end_time' => $schedule->end_time,
+                                'status' => $schedule->status,
+                            ])->values(),
+                        ])->values()
+                    : [],
+            ];
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Schedule for user',
+                'data' => $schedules
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
     public static function createSchedule(Request $request)
     {
         try {
             $userId = $request->input('counselor_id');
-            $user = User::where('role', 'Counselor')->find($userId); 
+            $user = User::where('role', 'Counselor')->find($userId);
             if (!$user) {
                 return response()->json([
                     'status' => false,
@@ -234,10 +223,6 @@ class ScheduleController extends Controller
             ], 500);
         }
     }
-
-
-
-
     public static function updateScheduleStatus(Request $request, $id)
     {
         try {
@@ -270,4 +255,3 @@ class ScheduleController extends Controller
 
 
 }
- 

@@ -37,12 +37,14 @@ class AuthController extends Controller
                     'message' => 'Terjadi kesalahan pada validasi',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
+            ;
 
             $user = User::create([
                 'email' => $requestedData['email'],
                 'phone_number' => $requestedData['phone_number'],
                 'password' => $requestedData['password'],
+
             ]);
 
             return response()->json(
@@ -87,7 +89,8 @@ class AuthController extends Controller
                     'message' => 'Email dan password tidak boleh kosong',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
+            ;
 
             $user = User::where('email', $requestedData['email'])->first();
             if (!$user) {
@@ -161,7 +164,8 @@ class AuthController extends Controller
                     'message' => 'Password Baru/Password Lama tidak boleh kosong',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
+            ;
 
             if ($requestedData['confirm_password'] !== $requestedData['new_password']) {
                 return response()->json([
@@ -227,7 +231,8 @@ class AuthController extends Controller
                     'message' => 'Email/nomor telepon/ password tidak boleh kosong',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
+            ;
 
             $user = User::where('email', $requestedData['email'], 'AND')->where('phone_number', $requestedData['phone_number'])->first();
 

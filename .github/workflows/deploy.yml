@@ -34,7 +34,7 @@ jobs:
       - name: Synchronize Files To Server
         uses: easingthemes/ssh-deploy@v2.1.5
         with: 
-          PORT: ${{ secrets.VPS_PORT }}
+          REMOTE_PORT: ${{ secrets.VPS_PORT }}
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SOURCE: "."

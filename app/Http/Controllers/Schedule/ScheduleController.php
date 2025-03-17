@@ -60,13 +60,18 @@ class ScheduleController extends Controller
             $users = User::where('role', 'Counselor')->with([
                 'expertises',
                 'schedules' => function ($schedule) {
-                    $schedule->whereDate('available_date', '>=', now())->orderBy('available_date');
+                    $schedule->whereDate('available_date', '>=', now())->where('status', '=', 'Available')->orderBy('available_date');
                 }
             ])->select('id', 'name')->get();
+
+            // dd($users);
+
             $availableSchedules = $users->map(function ($user) {
                 return [
                     'name' => $user ? $user->name : 'Unknown',
-                    'expertise' => optional($user->expertises)->type ?? 'None',
+                    'expertise' => $user->expertises->isNotEmpty()
+                    ? $user->expertises->pluck('type')->toArray()
+                    : ['None'],
                     'schedules' => $user->schedules->groupBy(function ($schedule) {
                         return $schedule->available_date->format('Y-m-d');
                     })->map(function ($dateSchedules, $date) {
@@ -149,8 +154,8 @@ class ScheduleController extends Controller
 
             $user = User::where('role', 'Counselor')->where('id', $id)->with([
                 'expertises',
-                'schedules' => function($schedule){
-                    $schedule->whereDate('available_date','>=',now())->orderBy('available_date');
+                'schedules' => function ($schedule) {
+                    $schedule->whereDate('available_date', '>=', now())->orderBy('available_date');
                 }
             ])->select('id', 'name')->first();
 

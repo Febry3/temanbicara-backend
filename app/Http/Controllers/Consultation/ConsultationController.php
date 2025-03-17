@@ -113,7 +113,7 @@ class ConsultationController extends Controller
     {
         try {
 
-            $userId = $request->user()->id;
+            $userId = 3;
             $consultations = Consultations::with([
                 'user:id,name,birthdate',
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',

@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->id('schedule_id');
             $table->date('available_date');
-            $table->date('start_time');
-            $table->date('end_time');
+            $table->time('start_time');
+            $table->time('end_time');
             $table->enum('status', ['Available', 'Booked', 'Done'])->default('Available');
             $table->bigInteger('counselor_id')->unsigned();
             $table->foreign('counselor_id')->references('id')->on('users')->onDelete('cascade');

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('phone_number')->unique();
             $table->string('password');
             $table->enum('role', ['General', 'Counselor', 'Admin'])->default('General');
+            $table->string('image')->nullable();
             $table->string('name')->nullable();
             $table->string('nickname')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();

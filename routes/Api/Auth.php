@@ -30,4 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('verify-token', function (Request $request) {
         return AuthController::verifySanctumToken($request);
     });
+    Route::put('edit-profile', function (Request $request) {
+        return AuthController::editProfile($request);
+    });
 });

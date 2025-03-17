@@ -304,4 +304,65 @@ class AuthController extends Controller
             );
         }
     }
+    public static function editProfile(Request $request)
+    {
+
+        try {
+
+            $requestedData = $request->only([
+                'name',
+                'email',
+                'image',
+                'birthdate',
+            ]);
+
+            $validateData = Validator::make(
+                $requestedData,
+                [
+                    'name' => 'required|string|max:255',
+                    'email' => 'required|email|max:255|unique:users,email,' . $request->user()->id,
+                    'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                    'birthdate' => 'required|date',
+                ]
+            );
+
+            $imageUrl = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('journal', 'public');
+
+                $imageUrl = asset('storage/' . $imagePath);
+            }
+
+            if ($validateData->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal',
+                    'errors' => $validateData->errors()
+                ], 422);
+            }
+
+            User::where('id', $request->user()->id)->update([
+                'name' => $requestedData['name'],
+                'email' => $requestedData['email'],
+                'image' => $imageUrl,
+                'birthdate' => $requestedData['birthdate']
+            ]);
+
+            $user = User::find($request->user()->id);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Profil berhasil diperbarui',
+                'data' => $user,
+            ], 200);
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
 }

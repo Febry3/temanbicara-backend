@@ -304,6 +304,7 @@ class AuthController extends Controller
             );
         }
     }
+
     public static function editProfile(Request $request)
     {
 
@@ -365,4 +366,5 @@ class AuthController extends Controller
             );
         }
     }
+
 }

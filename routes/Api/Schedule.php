@@ -29,5 +29,7 @@ Route::put('schedule/{id}', function (Request $request, $id) {
 });
 
 Route::get('/test', function () {
-    return dd("abcde");
+    return response()->json([
+        'message' => "hafid gayyyy",
+    ], 200);
 });

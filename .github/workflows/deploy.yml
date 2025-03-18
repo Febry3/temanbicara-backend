@@ -1,4 +1,4 @@
-name: Deploy to VPS Sponsored by Indra
+name: Deploy to Development VPS
 on:
   push:
     branches:

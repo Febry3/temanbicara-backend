@@ -5,9 +5,10 @@ on:
       - main
 
 jobs:
+  
   deploy:
     runs-on: ubuntu-latest
-
+    environment: Development
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3

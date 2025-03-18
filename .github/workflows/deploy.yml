@@ -44,6 +44,7 @@ jobs:
       - name: Run Remote/Artisan Commands
         uses: appleboy/ssh-action@v1.2.2
         with:
+          port: ${{ secrets.VPS_PORT }}
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}

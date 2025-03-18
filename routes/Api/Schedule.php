@@ -27,3 +27,7 @@ Route::get('available-schedule/{id}', function (Request $request, $id) {
 Route::put('schedule/{id}', function (Request $request, $id) {
     return ScheduleController::updateScheduleStatus($request, $id);
 });
+
+Route::get('/test', function () {
+    return dd("abcde");
+});

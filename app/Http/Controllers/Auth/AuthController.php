@@ -6,16 +6,18 @@ use Throwable;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Error;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 class AuthController extends Controller
 {
     public static function register(Request $request)
     {
         try {
-            // dd($request);
             $requestedData = $request->only([
                 'email',
                 'phone_number',
@@ -37,8 +39,7 @@ class AuthController extends Controller
                     'message' => 'Terjadi kesalahan pada validasi',
                     'error' => $validateData->errors(),
                 ], 200);
-            }
-            ;
+            };
 
             $user = User::create([
                 'email' => $requestedData['email'],
@@ -89,8 +90,7 @@ class AuthController extends Controller
                     'message' => 'Email dan password tidak boleh kosong',
                     'error' => $validateData->errors(),
                 ], 200);
-            }
-            ;
+            };
 
             $user = User::where('email', $requestedData['email'])->first();
             if (!$user) {
@@ -164,8 +164,7 @@ class AuthController extends Controller
                     'message' => 'Password Baru/Password Lama tidak boleh kosong',
                     'error' => $validateData->errors(),
                 ], 200);
-            }
-            ;
+            };
 
             if ($requestedData['confirm_password'] !== $requestedData['new_password']) {
                 return response()->json([
@@ -231,8 +230,7 @@ class AuthController extends Controller
                     'message' => 'Email/nomor telepon/ password tidak boleh kosong',
                     'error' => $validateData->errors(),
                 ], 200);
-            }
-            ;
+            };
 
             $user = User::where('email', $requestedData['email'], 'AND')->where('phone_number', $requestedData['phone_number'])->first();
 
@@ -309,7 +307,6 @@ class AuthController extends Controller
     {
 
         try {
-
             $requestedData = $request->only([
                 'name',
                 'email',
@@ -367,4 +364,40 @@ class AuthController extends Controller
         }
     }
 
+    public static function editProfileImage(Request $request)
+    {
+        try {
+            $requestedData = $request->only([
+                'profile_image'
+            ]);
+
+            $validateData = Validator::make(
+                $requestedData,
+                [
+                    'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                ]
+            );
+
+            if ($validateData->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validateData->errors(),
+                ], 400);
+            }
+
+            $response = Http::withHeader('Authorization', 'Bearer ' . config('supabase.key'))->post(config('supabase.url') . '/profile/test.png', [
+                $requestedData
+            ]);
+
+            return dd($response);
+        } catch (Error $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
 }

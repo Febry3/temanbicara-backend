@@ -32,10 +32,9 @@ jobs:
         run: npm run build
 
       - name: Synchronize Files To Server
-        uses: easingthemes/ssh-deploy@v2.1.5
+        uses: easingthemes/ssh-deploy@v5.1.0
         with: 
           REMOTE_PORT: ${{ secrets.VPS_PORT }}
-        env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SOURCE: "."
           REMOTE_HOST: ${{ secrets.VPS_HOST }}
@@ -44,7 +43,7 @@ jobs:
           TARGET: "/var/www/html/temanbicara-backend"
 
       - name: Run Remote/Artisan Commands
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}

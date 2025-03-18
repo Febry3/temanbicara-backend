@@ -39,7 +39,6 @@ jobs:
           SOURCE: "."
           REMOTE_HOST: ${{ secrets.VPS_HOST }}
           REMOTE_USER: ${{ secrets.VPS_USER }}
-          PORT: ${{ secrets.VPS_PORT }}
           TARGET: "/var/www/html/temanbicara-backend"
 
       - name: Run Remote/Artisan Commands

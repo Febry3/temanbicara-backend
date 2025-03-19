@@ -16,24 +16,22 @@ Route::patch('forget-password', function (Request $request) {
     return AuthController::forgetPassword($request);
 });
 
-
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('logout', function (Request $request) {
         return AuthController::logout($request);
     });
 
-    Route::patch('change-password', function (Request $request) {
-        return AuthController::changePassword($request);
-    });
-
     Route::post('verify-token', function (Request $request) {
         return AuthController::verifySanctumToken($request);
     });
-    Route::put('edit-profile', function (Request $request) {
-        return AuthController::editProfile($request);
+    Route::put('profile', function (Request $request) {
+        return AuthController::editProfileData($request);
     });
-    Route::POST('edit/profile_image', function (Request $request) {
+
+    Route::patch('profile/password', function (Request $request) {
+        return AuthController::changePassword($request);
+    });
+    Route::post('profile/image', function (Request $request) {
         return AuthController::editProfileImage($request);
     });
 });

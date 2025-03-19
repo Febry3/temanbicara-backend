@@ -303,14 +303,12 @@ class AuthController extends Controller
         }
     }
 
-    public static function editProfile(Request $request)
+    public static function editProfileData(Request $request)
     {
-
         try {
             $requestedData = $request->only([
                 'name',
                 'email',
-                'image',
                 'birthdate',
             ]);
 
@@ -319,39 +317,27 @@ class AuthController extends Controller
                 [
                     'name' => 'required|string|max:255',
                     'email' => 'required|email|max:255|unique:users,email,' . $request->user()->id,
-                    'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                     'birthdate' => 'required|date',
                 ]
             );
 
-            $imageUrl = null;
-            if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('journal', 'public');
-
-                $imageUrl = asset('storage/' . $imagePath);
-            }
-
             if ($validateData->fails()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Validasi gagal',
+                    'message' => 'Validation error',
                     'errors' => $validateData->errors()
-                ], 422);
+                ], 400);
             }
 
-            User::where('id', $request->user()->id)->update([
+            User::where('id', Auth::user()->id)->update([
                 'name' => $requestedData['name'],
                 'email' => $requestedData['email'],
-                'image' => $imageUrl,
                 'birthdate' => $requestedData['birthdate']
             ]);
 
-            $user = User::find($request->user()->id);
-
             return response()->json([
                 'status' => true,
-                'message' => 'Profil berhasil diperbarui',
-                'data' => $user,
+                'message' => 'Profil updated',
             ], 200);
         } catch (Throwable $err) {
             return response()->json(
@@ -391,7 +377,7 @@ class AuthController extends Controller
             if (!$image) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'image cant be empty',
+                    'message' => 'Image cant be empty',
                 ], 400);
             }
 
@@ -433,9 +419,9 @@ class AuthController extends Controller
                 ], 400);
             }
 
-            $user = User::findOrFail(Auth::user()->id);
-            $user->profile_url = config('supabase.url') . '/' . $response->json()['Key'];
-            $user->save();
+            User::where('id', Auth::user()->id)->update([
+                'profile_url' => config('supabase.url') . '/' . $response->json()['Key']
+            ]);
 
             return response()->json([
                 'status' => true,

@@ -33,8 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('edit-profile', function (Request $request) {
         return AuthController::editProfile($request);
     });
-});
-
-Route::POST('edit/profile_image', function (Request $request) {
-    return AuthController::editProfileImage($request);
+    Route::POST('edit/profile_image', function (Request $request) {
+        return AuthController::editProfileImage($request);
+    });
 });

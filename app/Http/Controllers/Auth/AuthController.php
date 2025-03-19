@@ -367,7 +367,7 @@ class AuthController extends Controller
     public static function editProfileImage(Request $request)
     {
         try {
-            $requestedData = $request->only([
+            $requestedData = $request->only($request->all(), [
                 'profile_image'
             ]);
 
@@ -385,11 +385,62 @@ class AuthController extends Controller
                 ], 400);
             }
 
-            $response = Http::withHeader('Authorization', 'Bearer ' . config('supabase.key'))->post(config('supabase.url') . '/profile/test.png', [
-                $requestedData
+            $image = $request->file('profile_image');
+
+            //cek imagenya ada atau tidak
+            if (!$image) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'image cant be empty',
+                ], 400);
+            }
+
+            //cek tipe
+            if (!in_array($image->getMimeType(), ['image/jpeg', 'image/png', 'image/jpg'])) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Invalid image type. Only JPEG, JPG, and PNG are allowed',
+                ], 400);
+            }
+
+            //cek size < 2mb
+            if ($image->getSize() > 2048 * 1024) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Image size should be less than 2MB',
+                ], 400);
+            }
+
+
+            $imagePath = uniqid() . '.' . $image->getClientOriginalExtension();
+
+            $imageContent = fopen($image->getRealPath(), 'r');
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . config('supabase.key'),
+                'Content-Type' => $image->getMimeType(),
+                'Cache-Control' => 'public, max-age=31536000',
+            ])->send('POST', config('supabase.url') . '/profile/' . $imagePath, [
+                'body' => $imageContent
             ]);
 
-            return dd($response);
+            fclose($imageContent);
+
+            if (!$response->ok()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Error in uploading image',
+                ], 400);
+            }
+
+            $user = User::findOrFail(Auth::user()->id);
+            $user->profile_url = config('supabase.url') . '/' . $response->json()['Key'];
+            $user->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Profile image updated successfully',
+            ], 200);
         } catch (Error $err) {
             return response()->json(
                 [

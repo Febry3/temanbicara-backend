@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('phone_number')->unique();
             $table->string('password');
             $table->enum('role', ['General', 'Counselor', 'Admin'])->default('General');
-            $table->string('profile_url')->default();
-            $table->string('name')->nullable(config('supabase.url' . '/profile/default.png'));
+            $table->string('profile_url')->default(config('supabase.url') . '/profile/default.png');
+            $table->string('name')->nullable();
             $table->string('nickname')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->date('birthdate')->nullable();

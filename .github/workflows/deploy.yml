@@ -2,10 +2,9 @@ name: Deploy to Development VPS
 on:
   push:
     branches:
-      - main
+      - Development
 
 jobs:
-  
   deploy:
     runs-on: ubuntu-latest
     environment: Development
@@ -34,7 +33,7 @@ jobs:
 
       - name: Synchronize Files To Server
         uses: easingthemes/ssh-deploy@v5.1.0
-        with: 
+        with:
           REMOTE_PORT: ${{ secrets.VPS_PORT }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SOURCE: "."

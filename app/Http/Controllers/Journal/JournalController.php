@@ -31,7 +31,7 @@ class JournalController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'stress_level' => 'required|integer',
             'mood_level' => 'required|string',
-            'user_id' => 'required',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         if ($validateData->fails()) {
@@ -85,7 +85,6 @@ class JournalController extends Controller
     {
         try {
              $userId = $request->user()->id;
-
             $validatedData = self::validateJournalRequest($request);
             if ($validatedData instanceof JsonResponse) {
                 return $validatedData;
@@ -99,7 +98,7 @@ class JournalController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => 'Jurnal tidak ditemukan',
-                ], 404);
+                ], 200);
             }
             if ($request->hasFile('image')) {
 
@@ -110,8 +109,6 @@ class JournalController extends Controller
                 $imagePath = $request->file('image')->store('journal', 'public');
                 $journal->image = asset('storage/' . $imagePath);
             }
-
-
             $journal->update([
                 'title' => $validatedData['title'],
                 'body' => $validatedData['body'],
@@ -181,15 +178,14 @@ class JournalController extends Controller
     public static function getJournal(Request $request, $id)
     {
         try {
-            $journal = Journal::find($id)->where('user_id', $request->user()->id)->get();
-
-            if (!$journal) {
+            $journal = Journal::where('journal_id',$id)->where('user_id', $request->user()->id)->first();
+            if (is_null($journal)) {
                 return response()->json(
                     [
                         'status' => false,
                         'message' => 'Jurnal tidak ditemukan',
                     ],
-                    200
+                    404
                 );
             }
 
@@ -213,14 +209,10 @@ class JournalController extends Controller
     }
     public static function getAllJournal(Request $request)
     {
-
-
         try {
             $userId = $request->user()->id;
-            // $data = $request->json()->all();
-            // $userId = 1;
             $journal = Journal::with('user')->where('user_id', $userId)->get();
-            if (!$journal) {
+            if ($journal->isEmpty()) {
                 return response()->json(
                     [
                         'status' => false,

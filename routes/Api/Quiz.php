@@ -18,7 +18,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('getMaxPoint', function (Request $request) {
         return QuizController::getMaxPoints();
     });
-});
-Route::post('storeAnswer', function (Request $request) {
-    return QuizController::storeAnswer($request);
+    Route::post('storeAnswer', function (Request $request) {
+        return QuizController::storeAnswer($request);
+    });
 });

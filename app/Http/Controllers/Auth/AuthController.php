@@ -316,7 +316,7 @@ class AuthController extends Controller
                 $requestedData,
                 [
                     'name' => 'required|string|max:255',
-                    'email' => 'required|email|max:255|unique:users,email,' . $request->user()->id,
+                    'nickname' => 'required|string|max:255|',
                     'birthdate' => 'required|date',
                 ]
             );

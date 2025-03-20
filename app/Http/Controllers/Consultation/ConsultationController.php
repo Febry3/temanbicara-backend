@@ -90,6 +90,7 @@ class ConsultationController extends Controller
     public static function createConsultation(Request $request)
     {
         try {
+            
             $validated = $request->validate([
                 'description' => 'nullable',
                 'problem' => 'nullable',

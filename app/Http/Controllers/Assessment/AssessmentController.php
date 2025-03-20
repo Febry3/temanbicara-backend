@@ -51,7 +51,7 @@ class AssessmentController extends Controller
                     'message' => 'Ada bagian yang tidak diisi',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
 
             User::where('id', $request->user()->id)->update([
                 'name' => $requestedData['name'],

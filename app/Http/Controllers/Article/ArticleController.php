@@ -26,7 +26,7 @@ class ArticleController extends Controller
             'title' => 'required|string',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'user_id' => 'required',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         if ($validateData->fails()) {
@@ -39,6 +39,15 @@ class ArticleController extends Controller
     {
         try {
             $articles = Article::with('user:id,name,role')->where('status','Published')->get();
+            if($articles->isEmpty()){
+                return response()->json(
+                    [
+                        'status' => false,
+                        'message' => 'Data Artikel tidak di temukan',
+                    ],
+                    200
+                );
+            }
             return response()->json(
                 [
                     'status' => true,
@@ -81,7 +90,7 @@ class ArticleController extends Controller
                     'message' => 'Artikel berhasil dibuat',
                     'data' => $artikels,
                 ],
-                200
+                201
             );
         } catch (\Throwable $e) {
             return response()->json(
@@ -97,13 +106,13 @@ class ArticleController extends Controller
     {
 
         try {
-            $article =Article::where('user_id', $request->user()->id)->get();
+            $article =Article::where('user_id', auth()->user()->id)->get();
 
-            if (!$article) {
+            if ($article->isEmpty()) {
                 return response()->json(
                     [
                         'status' => false,
-                        'message' => 'article tidak ditemukan',
+                        'message' => 'Data Artikel tidak di temukan',
                     ],
                     200
                 );
@@ -140,7 +149,12 @@ class ArticleController extends Controller
                 'message' => 'Artikel berhasil ditemukan',
                 'data' => $artikel,
             ], 200);
-        } catch (\Throwable $e) {
+        }catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data Artikel tidak ditemukan',
+            ], 404);
+        }  catch (\Throwable $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Artikel tidak ditemukan',

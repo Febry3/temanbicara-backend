@@ -6,12 +6,11 @@ use Throwable;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Error;
+use App\Http\Utils\ImageRequestHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpKernel\Profiler\Profile;
 
 class AuthController extends Controller
 {
@@ -353,71 +352,7 @@ class AuthController extends Controller
     public static function editProfileImage(Request $request)
     {
         try {
-            $requestedData = $request->only($request->all(), [
-                'profile_image'
-            ]);
-
-            $validateData = Validator::make(
-                $requestedData,
-                [
-                    'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-                ]
-            );
-
-            if ($validateData->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => $validateData->errors(),
-                ], 400);
-            }
-
-            $image = $request->file('profile_image');
-
-            //cek imagenya ada atau tidak
-            if (!$image) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Image cant be empty',
-                ], 400);
-            }
-
-            //cek tipe
-            if (!in_array($image->getMimeType(), ['image/jpeg', 'image/png', 'image/jpg'])) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Invalid image type. Only JPEG, JPG, and PNG are allowed',
-                ], 400);
-            }
-
-            //cek size < 2mb
-            if ($image->getSize() > 2048 * 1024) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Image size should be less than 2MB',
-                ], 400);
-            }
-
-
-            $imagePath = uniqid() . '.' . $image->getClientOriginalExtension();
-
-            $imageContent = fopen($image->getRealPath(), 'r');
-
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . config('supabase.key'),
-                'Content-Type' => $image->getMimeType(),
-                'Cache-Control' => 'public, max-age=31536000',
-            ])->send('POST', config('supabase.url') . '/profile/' . $imagePath, [
-                'body' => $imageContent
-            ]);
-
-            fclose($imageContent);
-
-            if (!$response->ok()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Error in uploading image',
-                ], 400);
-            }
+            $response = ImageRequestHelper::postImageToSupabase($request);
 
             User::where('id', Auth::user()->id)->update([
                 'profile_url' => config('supabase.url') . '/' . $response->json()['Key']
@@ -427,7 +362,7 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'Profile image updated successfully',
             ], 200);
-        } catch (Error $err) {
+        } catch (Throwable $err) {
             return response()->json(
                 [
                     'status' => false,

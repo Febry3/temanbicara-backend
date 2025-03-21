@@ -48,16 +48,6 @@ class JournalController extends Controller
 
             $response = ImageRequestHelper::postImageToSupabase($request);
 
-            if ($response->failed()) {
-                return response()->json(
-                    [
-                        'status' => false,
-                        'message' => "asdasd"
-                    ],
-                    400
-                );
-            }
-
             $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
 
             $journal = Journal::create([
@@ -90,14 +80,10 @@ class JournalController extends Controller
     public static function updateJournal(Request $request, $id)
     {
         try {
-            $userId = $request->user()->id;
             $validatedData = self::validateJournalRequest($request);
-            if ($validatedData instanceof Response) {
-                return $validatedData;
-            }
 
             $journal = Journal::where('journal_id', $id)
-                ->where('user_id', $userId)
+                ->where('user_id', Auth::user()->id)
                 ->first();
 
             if (!$journal) {
@@ -106,19 +92,15 @@ class JournalController extends Controller
                     'message' => 'Jurnal tidak ditemukan',
                 ], 200);
             }
-            if ($request->hasFile('image')) {
 
-                if ($journal->image) {
-                    $oldImagePath = str_replace(asset('storage/'), '', $journal->image);
-                    Storage::disk('public')->delete($oldImagePath);
-                }
-                $imagePath = $request->file('image')->store('journal', 'public');
-                $journal->image = asset('storage/' . $imagePath);
-            }
+            $response = ImageRequestHelper::postImageToSupabase($request);
+
+            $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
+
             $journal->update([
                 'title' => $validatedData['title'],
                 'body' => $validatedData['body'],
-                'image' => $journal->image,
+                'image' => $imageUrl,
                 'stress_level' => $validatedData['stress_level'],
                 'mood_level' => $validatedData['mood_level'],
             ]);

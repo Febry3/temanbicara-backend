@@ -7,7 +7,6 @@ use App\Models\Journal;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Utils\ImageRequestHelper;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -82,9 +81,10 @@ class JournalController extends Controller
         try {
             $validatedData = self::validateJournalRequest($request);
 
-            $journal = Journal::where('journal_id', $id)
-                ->where('user_id', Auth::user()->id)
-                ->first();
+            $journal = Journal::where([
+                'journal_id' => $id,
+                'user_id' => Auth::user()->id
+            ])->first();
 
             if (!$journal) {
                 return response()->json([
@@ -97,7 +97,7 @@ class JournalController extends Controller
 
             $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
 
-            $journal->update([
+            $journal = $journal->update([
                 'title' => $validatedData['title'],
                 'body' => $validatedData['body'],
                 'image' => $imageUrl,
@@ -122,9 +122,10 @@ class JournalController extends Controller
     {
         try {
 
-            $journal = Journal::where('journal_id', $id)
-                ->where('user_id', 1)
-                ->first();
+            $journal = Journal::where([
+                'journal_id' => $id,
+                'user_id' => Auth::user()->id
+            ])->first();
 
 
             if (!$journal) {
@@ -136,13 +137,6 @@ class JournalController extends Controller
                     404
                 );
             }
-
-            if ($journal) {
-                $imagePath = str_replace(asset('storage/'), '', $journal->image);
-                Storage::disk('public')->delete($imagePath);
-                $journal->delete();
-            }
-
 
             return response()->json(
                 [
@@ -162,11 +156,15 @@ class JournalController extends Controller
         }
     }
 
-    public static function getJournal(Request $request, $id)
+    public static function getJournalById(Request $request, $id)
     {
         try {
-            $journal = Journal::where('journal_id', $id)->where('user_id', $request->user()->id)->first();
-            if (is_null($journal)) {
+            $journal = Journal::where([
+                'journal_id' => $id,
+                'user_id' => Auth::user()->id
+            ])->first();
+
+            if (!$journal) {
                 return response()->json(
                     [
                         'status' => false,
@@ -194,11 +192,13 @@ class JournalController extends Controller
             );
         }
     }
-    public static function getAllJournal(Request $request)
+    public static function getAllJournalByUserId(Request $request)
     {
         try {
             $userId = $request->user()->id;
+
             $journal = Journal::with('user')->where('user_id', $userId)->get();
+
             if ($journal->isEmpty()) {
                 return response()->json(
                     [

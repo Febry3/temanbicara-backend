@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('journal', function (Request $request) {
-        return JournalController::getAllJournal($request);
+        return JournalController::getAllJournalByUserId($request);
     });
     Route::get('journal/{id}', function (Request $request, $id) {
-        return JournalController::getJournal($request, $id);
+        return JournalController::getJournalById($request, $id);
     });
 
     Route::put('journal/{id}', function (Request $request, $id) {
@@ -25,4 +25,3 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return JournalController::deleteJournal($request, $id);
     });
 });
-

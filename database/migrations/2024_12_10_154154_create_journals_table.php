@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('journals', function (Blueprint $table) {
             $table->id('journal_id');
             $table->string('title');
-            $table->string('image')->nullable();
+            $table->string('image_url')->nullable();
             $table->text('body');
             $table->integer('stress_level');
             $table->string('mood_level');

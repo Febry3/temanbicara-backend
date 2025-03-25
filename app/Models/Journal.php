@@ -12,7 +12,7 @@ class Journal extends Model
     protected $fillable = [
         'title',
         'body',
-        'image',
+        'image_url',
         'stress_level',
         'mood_level',
         'user_id'

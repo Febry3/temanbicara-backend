@@ -6,11 +6,11 @@ use Throwable;
 use App\Models\Journal;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Utils\ImageRequestHelper;
+use App\Http\Helper\ImageRequestHelper;
+use App\Http\Utils\ImageRequestHelper as UtilsImageRequestHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Storage;
 
 class JournalController extends Controller
 {
@@ -45,14 +45,25 @@ class JournalController extends Controller
         try {
             $validatedData = self::validateJournalRequest($request);
 
-            $response = ImageRequestHelper::postImageToSupabase($request);
+            if ($request->hasFile('image')) {
+                $response = ImageRequestHelper::postImageToSupabase($request);
+                $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
 
-            $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
+                if ($response->failed()) {
+                    return response()->json(
+                        [
+                            'status' => false,
+                            'message' => 'Kesalahan pada mengupload gambar',
+                        ],
+                        404
+                    );
+                }
+            }
 
             $journal = Journal::create([
                 'title' => $validatedData['title'],
                 'body' => $validatedData['body'],
-                'image' => $imageUrl,
+                'image_url' => $imageUrl ?? config('supabase.url') . '/profile/' . 'default.png',
                 'stress_level' => $validatedData['stress_level'],
                 'mood_level' => $validatedData['mood_level'],
                 'user_id' => Auth::user()->id,
@@ -93,14 +104,29 @@ class JournalController extends Controller
                 ], 200);
             }
 
-            $response = ImageRequestHelper::postImageToSupabase($request);
+            if ($request->hasFile('image')) {
+                if (str_contains($journal->image_url, 'default')) {
+                    $response = ImageRequestHelper::postImageToSupabase($request);
+                    $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
+                } else {
+                    $response = ImageRequestHelper::updateImageFromSupabase($journal->image_url, $request);
+                }
 
-            $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
+                if ($response->failed()) {
+                    return response()->json(
+                        [
+                            'status' => false,
+                            'message' => 'Kesalahan pada memperbaharui gambar',
+                        ],
+                        404
+                    );
+                }
+            }
 
             $journal = $journal->update([
                 'title' => $validatedData['title'],
                 'body' => $validatedData['body'],
-                'image' => $imageUrl,
+                'image_url' => $imageUrl ?? $journal->image_url,
                 'stress_level' => $validatedData['stress_level'],
                 'mood_level' => $validatedData['mood_level'],
             ]);
@@ -118,15 +144,13 @@ class JournalController extends Controller
         }
     }
 
-    public static function deleteJournal(Request $request, $id)
+    public static function deleteJournal($request, $id)
     {
         try {
-
             $journal = Journal::where([
                 'journal_id' => $id,
                 'user_id' => Auth::user()->id
             ])->first();
-
 
             if (!$journal) {
                 return response()->json(
@@ -137,6 +161,20 @@ class JournalController extends Controller
                     404
                 );
             }
+
+            $response = ImageRequestHelper::deleteImageFromSupabase($journal->image_url);
+
+            if ($response->failed()) {
+                return response()->json(
+                    [
+                        'status' => false,
+                        'message' => 'Kesalahan pada menghapus gambar',
+                    ],
+                    404
+                );
+            }
+
+            $journal->delete();
 
             return response()->json(
                 [
@@ -225,6 +263,23 @@ class JournalController extends Controller
                     'message' => $err->getMessage()
                 ],
                 500
+            );
+        }
+    }
+
+    public static function testDelete()
+    {
+        try {
+            $response = ImageRequestHelper::deleteImageFromSupabase("https://qzsrrlobwlisodbasdqi.supabase.co/storage/v1/object/profile/profile67e2a28932b07-1742905993.png");
+            dd($response->body());
+            return response()->json(
+                $response,
+                200
+            );
+        } catch (Throwable $err) {
+            return response()->json(
+                $err->getMessage(),
+                400
             );
         }
     }

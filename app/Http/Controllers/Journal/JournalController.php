@@ -75,6 +75,8 @@ class JournalController extends Controller
                 ], 200);
             }
 
+
+
             if ($request->hasFile('image')) {
                 if (str_contains($journal->image_url, 'default')) {
                     $response = ImageRequestHelper::postImageToSupabase($request);

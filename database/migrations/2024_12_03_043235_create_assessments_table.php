@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('assessments', function (Blueprint $table) {
             $table->id('assessment_id');
-            $table->string('topics');
+            $table->string('topic');
             $table->string('goal');
             $table->string('sleep_quality');
             $table->boolean('have_consulted');

@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('artikels', function (Blueprint $table) {
-            $table->id('artikel_id');
+        Schema::create('articles', function (Blueprint $table) {
+            $table->id('article_id');
             $table->string('title');
             $table->string('content');
-            $table->string('image')->nullable();
+            $table->string('image_url')->nullable();
             $table->enum('status', ['Pending', 'Published', 'Rejected'])->default('Pending');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

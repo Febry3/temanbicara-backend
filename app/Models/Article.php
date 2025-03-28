@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model
 {
     //
-    protected $table = 'artikels';
-    protected $primaryKey = 'artikel_id';
+    protected $table = 'articles';
+    protected $primaryKey = 'article_id';
     protected $fillable = [
         'title',
         'content',
@@ -21,5 +21,3 @@ class Article extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 }
-
-

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Journal\JournalController;
+use App\Http\Requests\JournalRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,9 +20,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return JournalController::updateJournal($request, $id);
     });
 
-    Route::post('journal', function (Request $request) {
-        return JournalController::createJournal($request);
-    });
+    Route::post('/journal', [JournalController::class, 'createJournal']);
 
     Route::delete('journal/{id}', function (Request $request, $id) {
         return JournalController::deleteJournal($request, $id);

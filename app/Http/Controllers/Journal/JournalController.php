@@ -7,44 +7,17 @@ use App\Models\Journal;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Helper\ImageRequestHelper;
-use App\Http\Utils\ImageRequestHelper as UtilsImageRequestHelper;
+use App\Http\Requests\JournalRequest;
+use Error;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class JournalController extends Controller
 {
-    private static function validateJournalRequest(Request $request)
-    {
-        $requestedData = $request->only([
-            'title',
-            'body',
-            'image',
-            'stress_level',
-            'mood_level',
-        ]);
-
-        $validateData = Validator::make($requestedData, [
-            'title' => 'required|string',
-            'body' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'stress_level' => 'required|integer',
-            'mood_level' => 'required|string',
-        ]);
-
-        if ($validateData->fails()) {
-            throw new ValidationException($validateData);
-        }
-
-        return $validateData->validated();
-    }
-
-
-    public static function createJournal(Request $request)
+    public static function createJournal(JournalRequest $request)
     {
         try {
-            $validatedData = self::validateJournalRequest($request);
-
             if ($request->hasFile('image')) {
                 $response = ImageRequestHelper::postImageToSupabase($request);
                 $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
@@ -61,11 +34,11 @@ class JournalController extends Controller
             }
 
             $journal = Journal::create([
-                'title' => $validatedData['title'],
-                'body' => $validatedData['body'],
+                'title' => $request['title'],
+                'body' => $request['body'],
                 'image_url' => $imageUrl ?? config('supabase.url') . '/profile/' . 'default.png',
-                'stress_level' => $validatedData['stress_level'],
-                'mood_level' => $validatedData['mood_level'],
+                'stress_level' => $request['stress_level'],
+                'mood_level' => $request['mood_level'],
                 'user_id' => Auth::user()->id,
             ]);
 
@@ -77,7 +50,7 @@ class JournalController extends Controller
                 ],
                 200
             );
-        } catch (Throwable $err) {
+        } catch (Error $err) {
             return response()->json(
                 [
                     'status' => false,
@@ -90,8 +63,6 @@ class JournalController extends Controller
     public static function updateJournal(Request $request, $id)
     {
         try {
-            $validatedData = self::validateJournalRequest($request);
-
             $journal = Journal::where([
                 'journal_id' => $id,
                 'user_id' => Auth::user()->id
@@ -123,18 +94,17 @@ class JournalController extends Controller
                 }
             }
 
-            $journal = $journal->update([
-                'title' => $validatedData['title'],
-                'body' => $validatedData['body'],
+            $journal->update([
+                'title' => $request['title'],
+                'body' => $request['body'],
                 'image_url' => $imageUrl ?? $journal->image_url,
-                'stress_level' => $validatedData['stress_level'],
-                'mood_level' => $validatedData['mood_level'],
+                'stress_level' => $request['stress_level'],
+                'mood_level' => $request['mood_level'],
             ]);
 
             return response()->json([
                 'status' => true,
                 'message' => 'Data berhasil diubah',
-                'data' => $journal
             ], 200);
         } catch (Throwable $err) {
             return response()->json([
@@ -179,7 +149,7 @@ class JournalController extends Controller
             return response()->json(
                 [
                     'status' => true,
-                    'message' => 'Data berhasil dihapus.',
+                    'message' => 'Data berhasil dihapus',
                 ],
                 200
             );

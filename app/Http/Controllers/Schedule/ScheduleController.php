@@ -28,7 +28,7 @@ class ScheduleController extends Controller
                     'expertise' => $user->expertises->isNotEmpty()
                     ? $user->expertises->pluck('type')->toArray()
                     : ['None'],
-                    
+
                     'schedules' => $user->schedules->groupBy(function ($schedule) {
                         return $schedule->available_date->format('Y-m-d');
                     })->map(function ($dateSchedules, $date) {
@@ -68,8 +68,6 @@ class ScheduleController extends Controller
                     $schedule->whereDate('available_date', '>=', now())->where('status', '=', 'Available')->orderBy('available_date');
                 }
             ])->select('id', 'name')->get();
-
-            // dd($users);
 
             $availableSchedules = $users->map(function ($user) {
                 return [

@@ -86,6 +86,7 @@ class JournalController extends Controller
         try {
              $userId = $request->user()->id;
             $validatedData = self::validateJournalRequest($request);
+            
             if ($validatedData instanceof JsonResponse) {
                 return $validatedData;
             }

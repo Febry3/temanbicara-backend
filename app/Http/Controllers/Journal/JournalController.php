@@ -10,8 +10,6 @@ use App\Http\Helper\ImageRequestHelper;
 use App\Http\Requests\JournalRequest;
 use Error;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 class JournalController extends Controller
 {
@@ -60,7 +58,7 @@ class JournalController extends Controller
             );
         }
     }
-    public static function updateJournal(Request $request, $id)
+    public static function updateJournal(JournalRequest $request, $id)
     {
         try {
             $journal = Journal::where([

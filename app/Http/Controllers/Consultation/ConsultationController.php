@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Consultations;
 use App\Models\User;
 use App\Models\Schedule;
-
+use Throwable;
 
 class ConsultationController extends Controller
 {
@@ -21,32 +21,32 @@ class ConsultationController extends Controller
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
                 'schedule.user:id,name'
             ])
-            ->get()
-            ->map(function ($consultation) {
-                return [
-                    'consultation_id' => $consultation->consultation_id,
-                    'status' => $consultation->status,
-                    'description' => $consultation->description,
-                    'problem' => $consultation->problem,
-                    'summary' => $consultation->summary,
-                    'patient_id' => $consultation->patient_id,
-                    'general_user_name' => $consultation->user->name ?? null,
-                    'birthdate' => $consultation->user->birthdate ?? null,
-                    'schedule_id' => $consultation->schedule->schedule_id ?? null,
-                    'date' => $consultation->schedule->available_date ?? null,
-                    'start_time' => $consultation->schedule->start_time ?? null,
-                    'end_time' => $consultation->schedule->end_time ?? null,
-                    'counselor_name' => $consultation->schedule->user->name ?? null,
-                    'counselor_id' => $consultation->schedule->counselor_id ?? null,
-                ];
-            });
+                ->get()
+                ->map(function ($consultation) {
+                    return [
+                        'consultation_id' => $consultation->consultation_id,
+                        'status' => $consultation->status,
+                        'description' => $consultation->description,
+                        'problem' => $consultation->problem,
+                        'summary' => $consultation->summary,
+                        'patient_id' => $consultation->patient_id,
+                        'general_user_name' => $consultation->user->name ?? null,
+                        'birthdate' => $consultation->user->birthdate ?? null,
+                        'schedule_id' => $consultation->schedule->schedule_id ?? null,
+                        'date' => $consultation->schedule->available_date ?? null,
+                        'start_time' => $consultation->schedule->start_time ?? null,
+                        'end_time' => $consultation->schedule->end_time ?? null,
+                        'counselor_name' => $consultation->schedule->user->name ?? null,
+                        'counselor_id' => $consultation->schedule->counselor_id ?? null,
+                    ];
+                });
 
             return response()->json([
                 'status' => true,
                 'message' => 'Data Consultations grouped by user_id',
                 'data' => $consultations,
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -90,7 +90,7 @@ class ConsultationController extends Controller
     public static function createConsultation(Request $request)
     {
         try {
-            
+
             $validated = $request->validate([
                 'description' => 'nullable',
                 'problem' => 'nullable',
@@ -106,7 +106,7 @@ class ConsultationController extends Controller
                 'message' => 'Consultation created successfully.',
                 'data' => $consultation,
             ], 201);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -124,26 +124,26 @@ class ConsultationController extends Controller
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
                 'schedule.user:id,name'
             ])
-            ->where('consultations.patient_id', $userId)
-            ->get()
-            ->map(function ($consultation) {
-                return [
-                    'consultation_id' => $consultation->consultation_id,
-                    'status' => $consultation->status,
-                    'description' => $consultation->description,
-                    'problem' => $consultation->problem,
-                    'summary' => $consultation->summary,
-                    'patient_id' => $consultation->patient_id,
-                    'general_user_name' => $consultation->user->name ?? null,
-                    'birthdate' => $consultation->user->birthdate ?? null,
-                    'schedule_id' => $consultation->schedule->schedule_id ?? null,
-                    'date' => $consultation->schedule->available_date ?? null,
-                    'start_time' => $consultation->schedule->start_time ?? null,
-                    'end_time' => $consultation->schedule->end_time ?? null,
-                    'counselor_name' => $consultation->schedule->user->name ?? null,
-                    'counselor_id' => $consultation->schedule->counselor_id ?? null,
-                ];
-            });
+                ->where('consultations.patient_id', $userId)
+                ->get()
+                ->map(function ($consultation) {
+                    return [
+                        'consultation_id' => $consultation->consultation_id,
+                        'status' => $consultation->status,
+                        'description' => $consultation->description,
+                        'problem' => $consultation->problem,
+                        'summary' => $consultation->summary,
+                        'patient_id' => $consultation->patient_id,
+                        'general_user_name' => $consultation->user->name ?? null,
+                        'birthdate' => $consultation->user->birthdate ?? null,
+                        'schedule_id' => $consultation->schedule->schedule_id ?? null,
+                        'date' => $consultation->schedule->available_date ?? null,
+                        'start_time' => $consultation->schedule->start_time ?? null,
+                        'end_time' => $consultation->schedule->end_time ?? null,
+                        'counselor_name' => $consultation->schedule->user->name ?? null,
+                        'counselor_id' => $consultation->schedule->counselor_id ?? null,
+                    ];
+                });
             return response()->json([
                 'status' => true,
                 'message' => 'Data consultations for the logged-in user',
@@ -197,6 +197,4 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-
-
 }

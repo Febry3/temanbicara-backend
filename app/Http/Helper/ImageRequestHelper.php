@@ -2,6 +2,7 @@
 
 namespace App\Http\Helper;
 
+use App\Http\Requests\JournalRequest;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Http;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ImageRequestHelper
 {
-    public static function postImageToSupabase(Request $request)
+    public static function postImageToSupabase(JournalRequest $request)
     {
 
         $requestedData = $request->only($request->all(), [

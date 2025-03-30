@@ -11,5 +11,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('consultation', [ConsultationController::class, 'getConsultation']);
     Route::put('consultation/{id}', [ConsultationController::class, 'updateConsultation']);
     Route::post('consultation', [ConsultationController::class, 'createConsultation']);
-    Route::get('consultation/{id}/payment', [ConsultationController::class, 'checkConsulationPaymentStatus']);
+    Route::patch('consultation/{id}/payment', [ConsultationController::class, 'checkConsulationPaymentStatus']);
+    Route::patch('consultation/{id}/cancel', [ConsultationController::class, 'cancelConsultation']);
 });

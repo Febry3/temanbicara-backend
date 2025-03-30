@@ -258,4 +258,43 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
+
+    public static function cancelConsultation(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $consultation = Consultations::findOrFail($id);
+
+            if ($consultation->status === 'Done') {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Consultation already done',
+                ], 200);
+            }
+
+            if ($consultation->status === 'Cancelled') {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Consultation already cancelled',
+                ], 200);
+            }
+
+            $consultation->status = 'Cancelled';
+            $consultation->save();
+
+            Schedule::where('schedule_id', $consultation->schedule_id)->update(['status' => "Available"]);
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Consultation cancelled',
+            ], 201);
+        } catch (Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

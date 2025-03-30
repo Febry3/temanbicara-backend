@@ -133,7 +133,7 @@ class ConsultationController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Consultation crated successfully',
+                'message' => 'Consultation created successfully',
                 'data' => $consultation,
             ], 201);
         } catch (Throwable $e) {

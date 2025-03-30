@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('consultations', function (Blueprint $table) {
             $table->id('consultation_id');
-            $table->enum('status', ['Incoming', 'Done'])->default('Incoming');
+            $table->enum('status', ['Incoming', 'Done', 'Cancelled'])->default('Incoming');
             $table->string('description');
             $table->string('problem');
-            $table->string('summary');
+            $table->string('summary')->nullable()->default('Segera ...');
             $table->bigInteger('patient_id')->unsigned();
             $table->foreign('patient_id')->references('id')->on('users')->onDelete('cascade');
             $table->bigInteger('schedule_id')->unsigned();

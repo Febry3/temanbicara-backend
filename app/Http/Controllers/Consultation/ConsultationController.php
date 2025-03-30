@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Consultation;
 use Illuminate\Http\Request;
 use \Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Payment\PaymentController;
 use Illuminate\Support\Facades\DB;
 use App\Models\Consultations;
+use App\Models\Payment;
 use App\Models\User;
 use App\Models\Schedule;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 
 class ConsultationController extends Controller
@@ -90,23 +93,51 @@ class ConsultationController extends Controller
     public static function createConsultation(Request $request)
     {
         try {
-
-            $validated = $request->validate([
+            $request->validate([
                 'description' => 'nullable',
                 'problem' => 'nullable',
                 'summary' => 'nullable',
                 'schedule_id' => 'required|exists:schedules,schedule_id',
-                'patient_id' => 'required|exists:users,id',
+                'amount' => 'required|integer',
+                'bank' => 'required|string',
             ]);
 
-            $consultation = Consultations::create($validated);
+            DB::beginTransaction();
+
+            $schedule = Schedule::find($request->schedule_id);
+
+            if ($schedule->status === 'Booked') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Schedule already booked',
+                ], 422);
+            }
+
+            $schedule->status = 'Booked';
+            $schedule->save();
+
+            $payment = app(PaymentController::class)->createPayment($request);
+
+            $paymentAfterCreated = Payment::create($payment);
+
+            $consultation = Consultations::create([
+                'description' => $request->description,
+                'problem' => $request->problem,
+                'summary' => $request->summary,
+                'schedule_id' => $request->schedule_id,
+                'patient_id' => Auth::user()->id,
+                'payment_id' => $paymentAfterCreated->payment_id
+            ]);
+
+            DB::commit();
 
             return response()->json([
                 'status' => true,
-                'message' => 'Consultation created successfully.',
+                'message' => 'Consultation crated successfully',
                 'data' => $consultation,
             ], 201);
         } catch (Throwable $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),

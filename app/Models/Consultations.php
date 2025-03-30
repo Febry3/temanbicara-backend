@@ -16,6 +16,7 @@ class Consultations extends Model
         'summary',
         'schedule_id',
         'patient_id',
+        'payment_id'
     ];
 
     public function user()
@@ -23,7 +24,8 @@ class Consultations extends Model
         return $this->belongsTo(User::class, 'patient_id', 'id');
     }
 
-    public function schedule() {
+    public function schedule()
+    {
         return $this->belongsTo(Schedule::class, 'schedule_id', 'schedule_id');
     }
 }

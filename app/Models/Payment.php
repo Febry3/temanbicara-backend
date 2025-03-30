@@ -14,7 +14,7 @@ class Payment extends Model
         'expired_date',
         'bank',
         'va_number',
+        'payment_method',
+        'transaction_id'
     ];
-
-    //cuma bisa bank transfer
 }

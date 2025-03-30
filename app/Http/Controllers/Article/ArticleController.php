@@ -6,9 +6,10 @@ use Carbon\Carbon;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Storage;
 
 
 class ArticleController extends Controller
@@ -38,8 +39,8 @@ class ArticleController extends Controller
     public static function getAllArticle()
     {
         try {
-            $articles = Article::with('user:id,name,role')->where('status','Published')->get();
-            if($articles->isEmpty()){
+            $articles = Article::with('user:id,name,role')->where('status', 'Published')->get();
+            if ($articles->isEmpty()) {
                 return response()->json(
                     [
                         'status' => false,
@@ -106,7 +107,7 @@ class ArticleController extends Controller
     {
 
         try {
-            $article =Article::where('user_id', auth()->user()->id)->get();
+            $article = Article::where('user_id', Auth::user()->id)->get();
 
             if ($article->isEmpty()) {
                 return response()->json(
@@ -149,12 +150,12 @@ class ArticleController extends Controller
                 'message' => 'Artikel berhasil ditemukan',
                 'data' => $artikel,
             ], 200);
-        }catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Data Artikel tidak ditemukan',
             ], 404);
-        }  catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Artikel tidak ditemukan',

@@ -336,7 +336,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Profil updated',
+                'message' => 'Profile updated',
             ], 200);
         } catch (Throwable $err) {
             return response()->json(

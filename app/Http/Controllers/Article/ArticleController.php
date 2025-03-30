@@ -64,7 +64,7 @@ class ArticleController extends Controller
                     'message' => $e->getMessage()
                 ],
                 500
-            );
+            );  
         }
     }
     public static function createArticle(Request $request)

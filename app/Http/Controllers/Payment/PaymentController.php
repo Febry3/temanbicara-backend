@@ -58,7 +58,6 @@ class PaymentController extends Controller
             ->get(
                 "https://api.sandbox.midtrans.com/v2/$uuid/status",
             );
-
-        return $midTransResponse;
+        return $midTransResponse->json();
     }
 }

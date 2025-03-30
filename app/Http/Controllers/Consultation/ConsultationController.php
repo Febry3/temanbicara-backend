@@ -228,4 +228,34 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
+
+    public static function checkConsulationPaymentStatus(Request $request, $id)
+    {
+        try {
+
+            $paymentStatus = app(PaymentController::class)->checkPaymentStatus($id);
+
+            if ($paymentStatus['status_code'] !== "201" && $paymentStatus['status_code'] !== "200") {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Error occured',
+                ], 500);
+            }
+
+            if ($paymentStatus['transaction_status'] === 'settlement') {
+                Payment::where('transaction_id', $id)->update(['payment_status' => 'Success']);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Payment status',
+                'data' => $paymentStatus['transaction_status'] === 'settlement' ? 'Success' : $paymentStatus['transaction_status'],
+            ], 201);
+        } catch (Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

@@ -263,26 +263,19 @@ class ConsultationController extends Controller
     {
         try {
             DB::beginTransaction();
-            $consultation = Consultations::findOrFail($id);
+            $consultation = Consultations::where('consultation_id', $id)
+                ->whereNotIn('status', ['Done', 'Cancelled'])
+                ->update(['status' => 'Cancelled']);
 
-            if ($consultation->status === 'Done') {
+
+            if (!$consultation) {
                 return response()->json([
                     'status' => true,
-                    'message' => 'Consultation already done',
+                    'message' => 'Consultation cant be cancelled either done or already cancelled',
                 ], 200);
             }
 
-            if ($consultation->status === 'Cancelled') {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Consultation already cancelled',
-                ], 200);
-            }
-
-            $consultation->status = 'Cancelled';
-            $consultation->save();
-
-            Schedule::where('schedule_id', $consultation->schedule_id)->update(['status' => "Available"]);
+            Schedule::where('schedule_id', Consultations::findOrFail($id)->schedule_id)->update(['status' => "Available"]);
             DB::commit();
 
             return response()->json([

@@ -246,6 +246,12 @@ class ConsultationController extends Controller
                 Payment::where('transaction_id', $id)->update(['payment_status' => 'Success']);
             }
 
+            if ($paymentStatus['transaction_status'] === 'expired') {
+                Payment::where('transaction_id', $id)->update(['payment_status' => 'Expired']);
+                Consultations::where('consultation_id', $id)->update(['status' => 'Cancelled']);
+                Schedule::where('schedule_id', Consultations::findOrFail($id)->schedule_id)->update(['status' => 'Available']);
+            }
+
             return response()->json([
                 'status' => true,
                 'message' => 'Payment status',

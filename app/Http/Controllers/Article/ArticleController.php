@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Article;
 
+use Throwable;
 use Carbon\Carbon;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Helper\ImageRequestHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -57,32 +59,28 @@ class ArticleController extends Controller
                 ],
                 200
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json(
                 [
                     'status' => false,
                     'message' => $e->getMessage()
                 ],
                 500
-            );  
+            );
         }
     }
     public static function createArticle(Request $request)
     {
         try {
-            $imageUrl = null;
             $validatedData = self::validateArticleRequest($request);
-            if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('article', 'public');
 
-                $imageUrl = asset('storage/' . $imagePath);
-            }
+            $response = ImageRequestHelper::postImageToSupabase($request);
 
             $artikels = Article::create([
                 'title' => $validatedData['title'],
                 'content' => $validatedData['content'],
-                'image' => $imageUrl,
-                'user_id' => $validatedData['user_id'],
+                'image_url' => config('supabase.url') . '/' . $response->json()['Key'],
+                'user_id' => Auth::user()->id,
             ]);
 
             return response()->json(
@@ -93,7 +91,7 @@ class ArticleController extends Controller
                 ],
                 201
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json(
                 [
                     'status' => false,
@@ -127,7 +125,7 @@ class ArticleController extends Controller
                 ],
                 200
             );
-        } catch (\Throwable $err) {
+        } catch (Throwable $err) {
             return response()->json(
                 [
                     'status' => false,
@@ -155,11 +153,11 @@ class ArticleController extends Controller
                 'status' => false,
                 'message' => 'Data Artikel tidak ditemukan',
             ], 404);
-        } catch (\Throwable $e) {
+        } catch (Throwable $err) {
             return response()->json([
                 'status' => false,
-                'message' => 'Artikel tidak ditemukan',
-            ], 404);
+                'message' => $err->getMessage(),
+            ], 500);
         }
     }
 }

@@ -19,5 +19,3 @@ Route::middleware('auth:sanctum')->group(function () {
         return ArticleController::createArticle($request);
     });
 });
-
-

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ImageRequestHelper
 {
-    public static function postImageToSupabase(JournalRequest $request)
+    public static function postImageToSupabase(Request $request)
     {
 
         $requestedData = $request->only($request->all(), [

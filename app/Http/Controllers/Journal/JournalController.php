@@ -17,7 +17,7 @@ class JournalController extends Controller
     {
         try {
             if ($request->hasFile('image')) {
-                $response = ImageRequestHelper::postImageToSupabase($request);
+                $response = ImageRequestHelper::postImageToSupabase($request, 'journal');
                 $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
 
                 if ($response->failed()) {
@@ -77,7 +77,7 @@ class JournalController extends Controller
 
             if ($request->hasFile('image')) {
                 if (str_contains($journal->image_url, 'default')) {
-                    $response = ImageRequestHelper::postImageToSupabase($request);
+                    $response = ImageRequestHelper::postImageToSupabase($request, 'journal');
                     $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
                 } else {
                     $response = ImageRequestHelper::updateImageFromSupabase($journal->image_url, $request);

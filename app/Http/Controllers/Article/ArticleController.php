@@ -22,14 +22,12 @@ class ArticleController extends Controller
             'title',
             'content',
             'image',
-            'user_id',
         ]);
 
         $validateData = Validator::make($requestedData, [
             'title' => 'required|string',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'user_id' => 'required|exists:users,id',
         ]);
 
         if ($validateData->fails()) {
@@ -74,8 +72,7 @@ class ArticleController extends Controller
         try {
             $validatedData = self::validateArticleRequest($request);
 
-            $response = ImageRequestHelper::postImageToSupabase($request);
-
+            $response = ImageRequestHelper::postImageToSupabase($request, 'article');
             $artikels = Article::create([
                 'title' => $validatedData['title'],
                 'content' => $validatedData['content'],
@@ -135,8 +132,6 @@ class ArticleController extends Controller
             );
         }
     }
-
-
 
     public static function getArticleById($id)
     {

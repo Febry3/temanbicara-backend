@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ImageRequestHelper
 {
-    public static function postImageToSupabase(JournalRequest $request)
+    public static function postImageToSupabase(Request $request, string $storageName)
     {
 
         $requestedData = $request->only($request->all(), [
@@ -55,7 +55,7 @@ class ImageRequestHelper
             'Authorization' => 'Bearer ' . config('supabase.key'),
             'Content-Type' => $image->getMimeType(),
             'Cache-Control' => 'public, max-age=31536000',
-        ])->send('POST', config('supabase.url') . '/profile/' . $imagePath, [
+        ])->send('POST', config('supabase.url') . '/' . $storageName . '/' . $imagePath, [
             'body' => $imageContent
         ]);
 

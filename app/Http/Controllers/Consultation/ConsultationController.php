@@ -134,7 +134,7 @@ class ConsultationController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Consultation created successfully',
-                'data' => $consultation,
+                'data' => $paymentAfterCreated,
             ], 201);
         } catch (Throwable $e) {
             DB::rollBack();
@@ -180,7 +180,7 @@ class ConsultationController extends Controller
                 'message' => 'Data consultations for the logged-in user',
                 'data' => $consultations,
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -229,13 +229,34 @@ class ConsultationController extends Controller
         }
     }
 
+    public static function getConsultationAndPaymentInfo(Request $request, $id)
+    {
+        try {
+            $data = Consultations::where('consultation_id', $id)
+                ->join('payments', 'consultations.payment_id', 'payments.payment_id')
+                ->select('description', 'problem', 'summary', 'schedule_id', 'patient_id', 'consultations.payment_id', 'consultation_id', 'amount', 'expired_date', 'bank', 'va_number', 'payment_method', 'transaction_id')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Payment status',
+                'data' => $data
+            ], 201);
+        } catch (Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public static function checkConsulationPaymentStatus(Request $request, $id)
     {
         try {
 
             $paymentStatus = app(PaymentController::class)->checkPaymentStatus($id);
 
-            if ($paymentStatus['status_code'] !== "201" && $paymentStatus['status_code'] !== "200") {
+            if (!in_array($paymentStatus['status_code'], ['200', '201'])) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Error occured',
@@ -244,6 +265,14 @@ class ConsultationController extends Controller
 
             if ($paymentStatus['transaction_status'] === 'settlement') {
                 Payment::where('transaction_id', $id)->update(['payment_status' => 'Success']);
+            }
+
+            if ($paymentStatus['transaction_status'] === 'expired') {
+                DB::beginTransaction();
+                Payment::where('transaction_id', $id)->update(['payment_status' => 'Expired']);
+                Consultations::where('consultation_id', $id)->update(['status' => 'Cancelled']);
+                Schedule::where('schedule_id', Consultations::findOrFail($id)->schedule_id)->update(['status' => 'Available']);
+                DB::commit();
             }
 
             return response()->json([

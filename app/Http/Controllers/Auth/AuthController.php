@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers\Auth;
 
+
 use Throwable;
 use App\Models\User;
+use App\Models\OTPRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Helper\ImageRequestHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
+use App\Http\Helper\ImageRequestHelper;
+use App\Mail\PasswordResetEmail;
+use Carbon\Carbon;
+use Carbon\CarbonTimeZone;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -143,56 +148,52 @@ class AuthController extends Controller
     {
         try {
             $requestedData = $request->only([
-                'old_password',
                 'new_password',
                 'confirm_password',
+                'otp'
             ]);
 
-            $validateData = Validator::make(
+            Validator::validate(
                 $requestedData,
                 [
-                    'old_password' => 'required',
                     'new_password' => 'required',
                     'confirm_password' => 'required',
+                    'otp' => 'required'
                 ]
             );
 
-            if ($validateData->fails()) {
+            if ($requestedData['new_password'] != $requestedData['confirm_password']) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Password Baru/Password Lama tidak boleh kosong',
-                    'error' => $validateData->errors(),
-                ], 200);
-            };
-
-            if ($requestedData['confirm_password'] !== $requestedData['new_password']) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Password baru dan confirm password tidak sama',
-                ], 200);
+                    'message' => 'New password and confirm password cant be difference',
+                ], 400);
             }
 
-            if ($requestedData['old_password'] === $requestedData['new_password']) {
+            $otp = OTPRequest::where('user_id', Auth::user()->id)->first();
+
+            if ($otp->otp != $requestedData['otp']) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Password baru dan lama tidak boleh sama',
-                ], 200);
+                    'message' => 'Invalid OTP',
+                ], 400);
             }
 
-            if (!Hash::check($requestedData['old_password'], $request->user()->password)) {
+            if (Carbon::parse($otp->expired_at)->lessThan(Carbon::now('Asia/Jakarta')->format('Y-m-d H:i:s'))) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Password lama tidak sesuai',
-                ], 200);
+                    'message' => 'Expired OTP',
+                ], 410);
             }
 
             User::where('id', $request->user()->id)->update([
                 'password' => Hash::make($requestedData['new_password'])
             ]);
 
+            $otp->delete();
+
             return response()->json([
                 'status' => true,
-                'message' => 'Password berhasil diperbaharui',
+                'message' => 'Password changed successfully',
             ], 200);
         } catch (Throwable $err) {
             return response()->json(
@@ -361,6 +362,47 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Profile image updated successfully',
+            ], 200);
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
+
+    public static function sendResetPasswordOTP(Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            $otp = rand(100000, 999999);
+
+            Mail::to($user->email)->send(new PasswordResetEmail(explode('@', $user->email)[0], $otp));
+
+            $otpRequest = OTPRequest::where('user_id', $user->id)->first();
+
+            $expired_at = Carbon::now(new CarbonTimeZone('Asia/Bangkok'))->addMinutes(5)->format('Y-m-d H:i:s');
+
+            if (!$otpRequest) {
+                $otpRequest = OTPRequest::create([
+                    'user_id' => $user->id,
+                    'otp' => $otp,
+                    'expired_at' => $expired_at
+                ]);
+            } else {
+                $otpRequest->otp = $otp;
+                $otpRequest->expired_at = $expired_at;
+                $otpRequest->save();
+            }
+
+
+            return response()->json([
+                'status' => true,
+                'message' => 'OTP email sended',
             ], 200);
         } catch (Throwable $err) {
             return response()->json(

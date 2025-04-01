@@ -162,6 +162,13 @@ class AuthController extends Controller
                 ]
             );
 
+            if ($requestedData['new_password'] != $requestedData['confirm_password']) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'New password and confirm password cant be difference',
+                ], 400);
+            }
+
             $otp = OTPRequest::where('user_id', Auth::user()->id)->first();
 
             if ($otp->otp != $requestedData['otp']) {
@@ -171,8 +178,7 @@ class AuthController extends Controller
                 ], 400);
             }
 
-            //ngecek lebih dari 900 detik atau tidak ehehehe
-            if (Carbon::parse($otp->expired_at)->diffInSeconds(Carbon::now()) > 900) {
+            if (Carbon::parse($otp->expired_at)->lessThan(Carbon::now('Asia/Jakarta')->format('Y-m-d H:i:s'))) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Expired OTP',
@@ -182,6 +188,8 @@ class AuthController extends Controller
             User::where('id', $request->user()->id)->update([
                 'password' => Hash::make($requestedData['new_password'])
             ]);
+
+            $otp->delete();
 
             return response()->json([
                 'status' => true,
@@ -377,17 +385,17 @@ class AuthController extends Controller
 
             $otpRequest = OTPRequest::where('user_id', $user->id)->first();
 
-            $expires_at = Carbon::now(new CarbonTimeZone('Asia/Bangkok'))->addMinutes(15)->format('Y-m-d H:i:s');
+            $expired_at = Carbon::now(new CarbonTimeZone('Asia/Bangkok'))->addMinutes(5)->format('Y-m-d H:i:s');
 
             if (!$otpRequest) {
                 $otpRequest = OTPRequest::create([
                     'user_id' => $user->id,
                     'otp' => $otp,
-                    'expired_at' => $expires_at
+                    'expired_at' => $expired_at
                 ]);
             } else {
                 $otpRequest->otp = $otp;
-                $otpRequest->expired_at = $expires_at;
+                $otpRequest->expired_at = $expired_at;
                 $otpRequest->save();
             }
 

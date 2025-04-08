@@ -1,6 +1,9 @@
 <?php
 
+use Carbon\Carbon;
 use App\Models\User;
+use App\Models\OTPRequest;
+use Carbon\CarbonTimeZone;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -63,9 +66,7 @@ test('Login Test', function () {
 });
 
 test('Logout Test', function () {
-    $user = User::factory()->create();
-
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($this->user);
     $response = $this
         ->postJson(
             '/api/v1/logout',
@@ -81,4 +82,34 @@ test('Logout Test', function () {
         );
 
     expect(DB::select('SELECT * FROM personal_access_tokens WHERE tokenable_id = ?', [$this->user->id]))->toBeEmpty();
+});
+
+test('Change Password Test', function () {
+    Sanctum::actingAs($this->user);
+
+    $otpRequest = OTPRequest::create([
+        'user_id' => $this->user->id,
+        'otp' => 123456,
+        'expired_at' => Carbon::now(new CarbonTimeZone('Asia/Bangkok'))->addMinutes(5)->format('Y-m-d H:i:s')
+    ]);
+
+    $response = $this
+        ->postJson(
+            '/api/v1/profile/password',
+            [
+                'new_password' => 'alpha',
+                'confirm_password' => 'alpha',
+                'otp' => $otpRequest->otp
+            ]
+        );
+
+    $response
+        ->assertStatus(200)
+        ->assertJson(
+            fn(AssertableJson $json) =>
+            $json->where('status', true)
+                ->where('message', 'Password changed successfully')
+        );
+
+    expect(DB::select('SELECT * FROM otp_requests WHERE user_id = ?', [$this->user->id]))->toBeEmpty();
 });

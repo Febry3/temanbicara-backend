@@ -316,7 +316,7 @@ class AuthController extends Controller
                 $requestedData,
                 [
                     'name' => 'required|string|max:255',
-                    'nickname' => 'required|string|max:255|',
+                    'email' => 'required|string|max:255|',
                     'birthdate' => 'required|date',
                 ]
             );
@@ -337,7 +337,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Profile updated',
+                'message' => 'Profile data updated',
             ], 200);
         } catch (Throwable $err) {
             return response()->json(

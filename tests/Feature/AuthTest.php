@@ -5,7 +5,10 @@ use App\Models\User;
 use App\Models\OTPRequest;
 use Carbon\CarbonTimeZone;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -112,4 +115,64 @@ test('Change Password Test', function () {
         );
 
     expect(DB::select('SELECT * FROM otp_requests WHERE user_id = ?', [$this->user->id]))->toBeEmpty();
+});
+
+test('Edit Profile Data Test', function () {
+    Sanctum::actingAs($this->user);
+
+    $response = $this
+        ->postJson(
+            '/api/v1/profile',
+            [
+                'name' => 'asep',
+                'email' => 'asep@gmail.com',
+                'birthdate' => '2025-12-12',
+            ]
+        );
+
+
+    $response
+        ->assertStatus(200)
+        ->assertJson(
+            fn(AssertableJson $json) =>
+            $json->where('status', true)
+                ->where('message', 'Profile data updated')
+        );
+
+    $this->assertDatabaseHas('users', [
+        'name' => 'asep',
+        'email' => 'asep@gmail.com',
+        'birthdate' => '2025-12-12',
+    ]);
+});
+
+test('Update User Profile Image Test', function () {
+    Sanctum::actingAs($this->user);
+
+    Storage::fake('public');
+
+    Http::fake([
+        '*' => Http::response(['Key' => 'test.jpg'], 200),
+    ]);
+
+    $file = UploadedFile::fake()->image('test.jpg');
+
+    $response = $this->actingAs($this->user)
+        ->post('/api/v1/profile/image', [
+            'image' => $file,
+        ]);
+
+
+    $response
+        ->assertStatus(200)
+        ->assertJson(
+            fn(AssertableJson $json) =>
+            $json->where('status', true)
+                ->where('message', 'Profile image updated successfully')
+        );
+
+    $this->assertDatabaseHas('users', [
+        'id' => $this->user->id,
+        'profile_url' => config('supabase.url') . '/test.jpg'
+    ]);
 });

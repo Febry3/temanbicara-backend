@@ -1,64 +1,69 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Testing\Fluent\AssertableJson;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-// test('Register Test', function () {
-//     $response = $this->postJson(
-//         '/api/v1/register',
-//         [
-//             "email" => fake()->email(),
-//             "password" => fake()->password(7),
-//             "phone_number" => fake()->phoneNumber()
-//         ]
-//     );
+uses(RefreshDatabase::class);
 
-//     $response
-//         ->assertStatus(200)
-//         ->assertJson(
-//             fn(AssertableJson $json) =>
-//             $json->where('status', true)
-//                 ->where('message', 'Akun berhasil dibuat')
-//                 ->has('token')
-//                 ->has('data')
-//         );
-// });
+test('Register Test', function () {
+    $response = $this->postJson(
+        '/api/v1/register',
+        [
+            "email" => "test@gmail.com",
+            "password" => "test123",
+            "phone_number" => "08123456789"
+        ]
+    );
 
-// test('Login Test', function () {
-//     $response = $this->postJson(
-//         '/api/v1/login',
-//         [
-//             "email" => "asep@gmail.com",
-//             "password" => "test",
-//         ]
-//     );
+    $response
+        ->assertStatus(200)
+        ->assertJson(
+            fn(AssertableJson $json) =>
+            $json->where('status', true)
+                ->where('message', 'Akun berhasil dibuat')
+                ->has('token')
+                ->has('data')
+        );
 
-//     $response
-//         ->assertStatus(200)
-//         ->assertJson(
-//             fn(AssertableJson $json) =>
-//             $json->where('status', true)
-//                 ->where('message', 'Login berhasil')
-//                 ->has('token')
-//                 ->has('data')
-//         );
-// });
+    expect(User::where('email', 'test@gmail.com', '=')->where('phone_number', 'test123')->exists()->toBeTrue());
+});
 
-// test('Logout Test', function () {
-//     $user = User::factory()->create();
+test('Login Test', function () {
+    $response = $this->postJson(
+        '/api/v1/login',
+        [
+            "email" => "asep@gmail.com",
+            "password" => "test",
+        ]
+    );
 
-//     Sanctum::actingAs($user);
-//     $response = $this
-//         ->getJson(
-//             '/api/v1/logout',
-//         );
+    $response
+        ->assertStatus(200)
+        ->assertJson(
+            fn(AssertableJson $json) =>
+            $json->where('status', true)
+                ->where('message', 'Login berhasil')
+                ->has('token')
+                ->has('data')
+        );
+});
 
-//     $response
-//         ->assertStatus(200)
-//         ->assertJson(
-//             fn(AssertableJson $json) =>
-//             $json->where('status', true)
-//                 ->where('message', 'Logged Out')
-//         );
-// });
+test('Logout Test', function () {
+    $user = User::factory()->create();
+
+    Sanctum::actingAs($user);
+    $response = $this
+        ->getJson(
+            '/api/v1/logout',
+        );
+
+    $response
+        ->assertStatus(200)
+        ->assertJson(
+            fn(AssertableJson $json) =>
+            $json->where('status', true)
+                ->where('message', 'Logged Out')
+        );
+});

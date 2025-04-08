@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -61,20 +62,23 @@ test('Login Test', function () {
         );
 });
 
-// test('Logout Test', function () {
-//     $user = User::factory()->create();
+test('Logout Test', function () {
+    $user = User::factory()->create();
 
-//     Sanctum::actingAs($user);
-//     $response = $this
-//         ->getJson(
-//             '/api/v1/logout',
-//         );
+    Sanctum::actingAs($user);
+    $response = $this
+        ->postJson(
+            '/api/v1/logout',
+        );
 
-//     $response
-//         ->assertStatus(200)
-//         ->assertJson(
-//             fn(AssertableJson $json) =>
-//             $json->where('status', true)
-//                 ->where('message', 'Logged Out')
-//         );
-// });
+
+    $response
+        ->assertStatus(200)
+        ->assertJson(
+            fn(AssertableJson $json) =>
+            $json->where('status', true)
+                ->where('message', 'Logged Out')
+        );
+
+    expect(DB::select('SELECT * FROM personal_access_tokens WHERE tokenable_id = ?', [$this->user->id]))->toBeEmpty();
+});

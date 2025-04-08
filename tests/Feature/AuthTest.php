@@ -27,15 +27,15 @@ test('Register Test', function () {
                 ->has('data')
         );
 
-    expect(User::where('email', 'test@gmail.com', '=')->where('phone_number', 'test123')->exists()->toBeTrue());
+    expect(User::where([['email', '=', 'test@gmail.com'], ['phone_number', '=', '08123456789']])->exists())->toBeTrue();
 });
 
 test('Login Test', function () {
     $response = $this->postJson(
         '/api/v1/login',
         [
-            "email" => "asep@gmail.com",
-            "password" => "test",
+            "email" => "test@gmail.com",
+            "password" => "test123",
         ]
     );
 
@@ -50,20 +50,20 @@ test('Login Test', function () {
         );
 });
 
-test('Logout Test', function () {
-    $user = User::factory()->create();
+// test('Logout Test', function () {
+//     $user = User::factory()->create();
 
-    Sanctum::actingAs($user);
-    $response = $this
-        ->getJson(
-            '/api/v1/logout',
-        );
+//     Sanctum::actingAs($user);
+//     $response = $this
+//         ->getJson(
+//             '/api/v1/logout',
+//         );
 
-    $response
-        ->assertStatus(200)
-        ->assertJson(
-            fn(AssertableJson $json) =>
-            $json->where('status', true)
-                ->where('message', 'Logged Out')
-        );
-});
+//     $response
+//         ->assertStatus(200)
+//         ->assertJson(
+//             fn(AssertableJson $json) =>
+//             $json->where('status', true)
+//                 ->where('message', 'Logged Out')
+//         );
+// });

@@ -4,16 +4,27 @@ use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-uses(RefreshDatabase::class);
+uses(DatabaseTransactions::class);
+
+beforeEach(
+    function () {
+        $this->user = User::create([
+            "email" => "test@gmail.com",
+            "password" => "test123",
+            "phone_number" => "08123456789"
+        ]);
+    }
+);
 
 test('Register Test', function () {
     $response = $this->postJson(
         '/api/v1/register',
         [
-            "email" => "test@gmail.com",
-            "password" => "test123",
-            "phone_number" => "08123456789"
+            "email" => "test2@gmail.com",
+            "password" => "test1234",
+            "phone_number" => "0812345678"
         ]
     );
 
@@ -34,8 +45,8 @@ test('Login Test', function () {
     $response = $this->postJson(
         '/api/v1/login',
         [
-            "email" => "test@gmail.com",
-            "password" => "test123",
+            'email' => 'test@gmail.com',
+            'password' => 'test123',
         ]
     );
 

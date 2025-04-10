@@ -377,14 +377,23 @@ class AuthController extends Controller
     public static function sendResetPasswordOTP(Request $request)
     {
         try {
-            $user = Auth::user();
+            $request->validate([
+                'email' => 'required|email'
+            ]);
+
+            $email = $request->email;
+            $user = User::where('email', $email)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email didnt correspond with any email records',
+                ], 404);
+            }
 
             $otp = rand(100000, 999999);
-
-            Mail::to($user->email)->send(new PasswordResetEmail(explode('@', $user->email)[0], $otp));
-
+            Mail::to($email)->send(new PasswordResetEmail(explode('@', $email)[0], $otp));
             $otpRequest = OTPRequest::where('user_id', $user->id)->first();
-
             $expired_at = Carbon::now(new CarbonTimeZone('Asia/Bangkok'))->addMinutes(5)->format('Y-m-d H:i:s');
 
             if (!$otpRequest) {
@@ -398,7 +407,6 @@ class AuthController extends Controller
                 $otpRequest->expired_at = $expired_at;
                 $otpRequest->save();
             }
-
 
             return response()->json([
                 'status' => true,

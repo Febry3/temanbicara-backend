@@ -18,7 +18,10 @@ jobs:
           php-version: 8.3
 
       - name: Install Composer Dependencies
-        run: composer install --optimize-autoloader --no-dev --no-progress --no-interaction --prefer-dist
+        run: composer install --optimize-autoloader --no-progress --no-interaction --prefer-dist
+
+      - name: Run Pest Test
+        run: ./vendor/bin/pest
 
       - name: Install Node
         uses: actions/setup-node@v3
@@ -30,9 +33,6 @@ jobs:
 
       - name: Build NPM Assets
         run: npm run build
-
-      - name: Run Pest test
-        run: npm run pest
 
       - name: Synchronize Files To Server
         uses: easingthemes/ssh-deploy@v5.1.0

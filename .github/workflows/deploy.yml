@@ -39,7 +39,6 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            git config --global url."https://${{ secrets.TOKEN }}@github.com/".insteadOf https://github.com/
             cd /var/www/html/temanbicara-backend
             git pull origin main
 

@@ -35,12 +35,10 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           port: ${{ secrets.VPS_PORT }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
           host: ${{ secrets.VPS_HOST }}
-          username: root
-          script: |
-            cd /var/www/html/temanbicara-backend
-            git pull origin Development
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          target: "/var/www/html/temanbicara-backend"
 
       - name: Run Remote/Artisan Commands
         uses: appleboy/ssh-action@v1.2.2

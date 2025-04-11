@@ -18,7 +18,7 @@ jobs:
           php-version: 8.3
 
       - name: Install Composer Dependencies
-        run: composer install --optimize-autoloader --no-progress --no-interaction --prefer-dist
+        run: composer install --optimize-autoloader --no-dev --no-progress --no-interaction --prefer-dist
 
       - name: Install Node
         uses: actions/setup-node@v3
@@ -32,14 +32,16 @@ jobs:
         run: npm run build
 
       - name: Synchronize Files To Server
-        uses: easingthemes/ssh-deploy@v5.1.0
+        uses: appleboy/ssh-action@v1
         with:
-          REMOTE_PORT: ${{ secrets.VPS_PORT }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SOURCE: "."
-          REMOTE_HOST: ${{ secrets.VPS_HOST }}
-          REMOTE_USER: ${{ secrets.VPS_USER }}
-          TARGET: "/var/www/html/temanbicara-backend"
+          port: ${{ secrets.VPS_PORT }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            git config --global url."https://${{ secrets.TOKEN }}@github.com/".insteadOf https://github.com/
+            cd /var/www/html/temanbicara-backend
+            git pull origin main
 
       - name: Run Remote/Artisan Commands
         uses: appleboy/ssh-action@v1.2.2

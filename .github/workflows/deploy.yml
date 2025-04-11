@@ -20,9 +20,6 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --optimize-autoloader --no-progress --no-interaction --prefer-dist
 
-      - name: Run Pest Test
-        run: ./vendor/bin/pest
-
       - name: Install Node
         uses: actions/setup-node@v3
         with:

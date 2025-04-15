@@ -425,4 +425,36 @@ class AuthController extends Controller
             );
         }
     }
+
+    public static function verifyOtp(Request $request)
+    {
+        try {
+            $request->validate([
+                'otp' => 'required',
+                'user_id' => 'required'
+            ]);
+
+            $isValid = OTPRequest::where(['user_id' => $request->user_id, 'otp' => $request->otp]);
+
+            if (!$isValid) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'OTP is not valid',
+                ], 200);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'OTP is valid',
+            ], 200);
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
 }

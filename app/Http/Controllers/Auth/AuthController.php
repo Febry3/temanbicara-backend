@@ -150,7 +150,8 @@ class AuthController extends Controller
             $requestedData = $request->only([
                 'new_password',
                 'confirm_password',
-                'otp'
+                'otp',
+                'user_id'
             ]);
 
             Validator::validate(
@@ -158,7 +159,8 @@ class AuthController extends Controller
                 [
                     'new_password' => 'required',
                     'confirm_password' => 'required',
-                    'otp' => 'required'
+                    'otp' => 'required',
+                    'user_id' => 'required'
                 ]
             );
 
@@ -169,7 +171,7 @@ class AuthController extends Controller
                 ], 400);
             }
 
-            $otp = OTPRequest::where('user_id', Auth::user()->id)->first();
+            $otp = OTPRequest::where('user_id', $request->user_id)->first();
 
             if ($otp->otp != $requestedData['otp']) {
                 return response()->json([
@@ -185,7 +187,7 @@ class AuthController extends Controller
                 ], 410);
             }
 
-            User::where('id', $request->user()->id)->update([
+            User::where('id', $request->user_id)->update([
                 'password' => Hash::make($requestedData['new_password'])
             ]);
 
@@ -411,6 +413,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'OTP email sended',
+                'user_id' => $user->id
             ], 200);
         } catch (Throwable $err) {
             return response()->json(

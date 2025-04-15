@@ -20,7 +20,7 @@ class AssessmentController extends Controller
                 'gender',
                 'birthdate',
                 'mbti',
-                'topics',
+                'topic',
                 'goal',
                 'sleep_quality',
                 'have_consulted',
@@ -36,7 +36,7 @@ class AssessmentController extends Controller
                     'gender' => 'required',
                     'birthdate' => 'required',
                     'mbti' => 'required',
-                    'topics' => 'required',
+                    'topic' => 'required',
                     'goal' => 'required',
                     'sleep_quality' => 'required',
                     'have_consulted' => 'required',
@@ -62,7 +62,7 @@ class AssessmentController extends Controller
 
             Assessment::create([
                 'mbti' => $requestedData['mbti'],
-                'topics' => $requestedData['topics'],
+                'topic' => $requestedData['topic'],
                 'goal' => $requestedData['goal'],
                 'sleep_quality' => $requestedData['sleep_quality'],
                 'have_consulted' => $requestedData['have_consulted'],

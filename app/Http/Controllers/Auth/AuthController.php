@@ -434,7 +434,7 @@ class AuthController extends Controller
                 'user_id' => 'required'
             ]);
 
-            $isValid = OTPRequest::where(['user_id' => $request->user_id, 'otp' => $request->otp]);
+            $isValid = OTPRequest::where(['user_id' => $request->user_id, 'otp' => $request->otp])->first();
 
             if (!$isValid) {
                 return response()->json([

@@ -458,4 +458,25 @@ class AuthController extends Controller
             );
         }
     }
+
+    public function getUser(Request $request)
+    {
+        try {
+            $userData = User::find(Auth::user()->id);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Success',
+                'data' => $userData
+            ], 200);
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
 }

@@ -12,6 +12,7 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Models\Schedule;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\ExpireConsultationJob;
 use Throwable;
 
 class ConsultationController extends Controller
@@ -116,6 +117,10 @@ class ConsultationController extends Controller
             $payment = app(PaymentController::class)->createPayment($request);
 
             $paymentAfterCreated = Payment::create($payment);
+            \Log::info('Payment expired_date: ' . $paymentAfterCreated->expired_date);
+
+            ExpireConsultationJob::dispatch($paymentAfterCreated->id)
+            ->delay($paymentAfterCreated->expired_date);
 
             $consultation = Consultations::create([
                 'description' => $request->description,

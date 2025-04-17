@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Consultation\ConsultationController;
+use Illuminate\Support\Carbon;
+
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -14,4 +16,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::patch('consultation/{id}/payment', [ConsultationController::class, 'checkConsulationPaymentStatus']);
     Route::get('consultation/{id}', [ConsultationController::class, 'getConsultationAndPaymentInfo']);
     Route::patch('consultation/{id}/cancel', [ConsultationController::class, 'cancelConsultation']);
+    Route::post('bookingHistory', [ConsultationController::class, 'bookingHistoryConsultation']);
+    Route::get('/server-time', function () {
+        return Carbon::now();
+    });
 });
+

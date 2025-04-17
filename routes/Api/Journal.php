@@ -18,3 +18,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::delete('tett', function () {
     return JournalController::testDelete();
 });
+Route::post('/test-journal', function (Illuminate\Http\Request $request) {
+    dd($request->all());
+});

@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('trackings', function (Blueprint $table) {
             $table->id('tracking_id');
-            $table->string('sleep_quality');
+            $table->string('bed_time');
             $table->string('mood_level');
             $table->integer('stress_level');
+            $table->String('screen_time');
+            $table->String('activity');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();

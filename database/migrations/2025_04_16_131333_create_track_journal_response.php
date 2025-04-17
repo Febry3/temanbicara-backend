@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('journals', function (Blueprint $table) {
-            $table->id('journal_id');
-            $table->string('title');
-            $table->string('image_url')->nullable();
-            $table->text('body');
-            $table->bigInteger('tracking_id')->unsigned()->nullable();
+        Schema::create('track_journal_response', function (Blueprint $table) {
+            $table->id("response_id");
+            $table->integer("metrix");
+            $table->longText("assesment");
+            $table->longText("short_term");
+            $table->longText("long_term");
+            $table->longText("closing");
+            $table->bigInteger('tracking_id')->unsigned();
             $table->foreign('tracking_id')->references('tracking_id')->on('trackings')->onDelete('cascade');
-            $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('journals');
+        Schema::dropIfExists('track_journal_response');
     }
 };

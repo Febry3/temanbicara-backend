@@ -74,7 +74,7 @@ class AssessmentController extends Controller
             return response()->json(
                 [
                     'status' => true,
-                    'message' => 'Akun berhasil dibuat',
+                    'message' => 'Assessment berhasil dibuat',
                     'data' => $request->user(),
                 ],
                 200

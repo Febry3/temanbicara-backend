@@ -9,7 +9,7 @@ class Assessment extends Model
     protected $primaryKey = 'assessment_id';
 
     protected $fillable = [
-        'topics',
+        'topic',
         'goal',
         'sleep_quality',
         'have_consulted',

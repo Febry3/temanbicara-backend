@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
@@ -17,4 +18,8 @@ class Payment extends Model
         'payment_method',
         'transaction_id'
     ];
+    public function consultation()
+{
+    return $this->hasOne(Consultations::class, 'payment_id');
+}
 }

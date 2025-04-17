@@ -331,7 +331,7 @@ class AuthController extends Controller
                 ], 400);
             }
 
-            $res = User::where('id', Auth::user()->id)->update([
+            User::where('id', Auth::user()->id)->update([
                 'name' => $requestedData['name'],
                 'email' => $requestedData['email'],
                 'birthdate' => $requestedData['birthdate']
@@ -340,7 +340,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Profile data updated',
-                'data' => $res
+                'data' => User::find(Auth::user()->id)->first(),
             ], 200);
         } catch (Throwable $err) {
             return response()->json(

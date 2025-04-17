@@ -8,9 +8,11 @@ class Tracking extends Model
 {
     protected $primaryKey = "tracking_id";
     protected $fillable = [
-        'sleep_quality',
+        'bed_time',
         'mood_level',
         'stress_level',
+        'screen_time',
+        'activity',
         'user_id'
     ];
 }

@@ -56,7 +56,6 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-
     public static function updateConsultation(Request $request, $id)
     {
         try {
@@ -88,8 +87,6 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-
-
     public static function createConsultation(Request $request)
     {
         try {
@@ -134,7 +131,7 @@ class ConsultationController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Consultation created successfully',
-                'data' => $paymentAfterCreated,
+                'data' => $consultation,
             ], 201);
         } catch (Throwable $e) {
             DB::rollBack();
@@ -144,7 +141,6 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-
     public static function getConsultationByUserId(Request $request)
     {
         try {
@@ -187,7 +183,6 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-
     public static function getConsultationByCounselorId(Request $request)
     {
         try {
@@ -228,7 +223,6 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-
     public static function getConsultationAndPaymentInfo(Request $request, $id)
     {
         try {
@@ -249,7 +243,6 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-
     public static function checkConsulationPaymentStatus(Request $request, $id)
     {
         try {
@@ -287,7 +280,6 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-
     public static function cancelConsultation(Request $request, $id)
     {
         try {
@@ -318,5 +310,29 @@ class ConsultationController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+    public static function bookingHistoryConsultation(Request $request)
+    {
+        try {
+            $status = $request['payment_status'];
+
+            $consultations = Consultations::with(['payment', 'schedule'])
+                ->whereHas('payment', function ($query) use ($status) {
+                    $query->where('payment_status', $status);
+                })->get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'History Consultation',
+                'data' => $consultations,
+            ], 201);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+
     }
 }

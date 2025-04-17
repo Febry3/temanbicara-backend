@@ -10,12 +10,28 @@ use App\Http\Helper\ImageRequestHelper;
 use App\Http\Requests\JournalRequest;
 use Error;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class JournalController extends Controller
 {
     public static function createJournal(JournalRequest $request)
     {
+
+        // dd($request->all());
         try {
+            $requestedData = $request->only([
+                'title',
+                'body',
+            ]);
+
+            $validateData = Validator::make(
+                $requestedData,
+                [
+                    'title' => 'required',
+                    'body' => 'required',
+
+                ]
+            );
             if ($request->hasFile('image')) {
                 $response = ImageRequestHelper::postImageToSupabase($request, 'journal');
                 $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
@@ -35,8 +51,6 @@ class JournalController extends Controller
                 'title' => $request['title'],
                 'body' => $request['body'],
                 'image_url' => $imageUrl ?? config('supabase.url') . '/profile/' . 'default.png',
-                'stress_level' => $request['stress_level'],
-                'mood_level' => $request['mood_level'],
                 'user_id' => Auth::user()->id,
             ]);
 
@@ -73,8 +87,6 @@ class JournalController extends Controller
                 ], 200);
             }
 
-
-
             if ($request->hasFile('image')) {
                 if (str_contains($journal->image_url, 'default')) {
                     $response = ImageRequestHelper::postImageToSupabase($request, 'journal');
@@ -98,8 +110,6 @@ class JournalController extends Controller
                 'title' => $request['title'],
                 'body' => $request['body'],
                 'image_url' => $imageUrl ?? $journal->image_url,
-                'stress_level' => $request['stress_level'],
-                'mood_level' => $request['mood_level'],
             ]);
 
             return response()->json([

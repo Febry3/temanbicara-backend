@@ -13,6 +13,7 @@ class Schedule extends Model
         'available_date',
         'start_time',
         'end_time',
+        'status',
         'is_available',
         'counselor_id',
     ];
@@ -28,4 +29,8 @@ class Schedule extends Model
     {
         return $this->belongsTo(User::class, 'counselor_id');
     }
+    public function consultation()
+{
+    return $this->hasOne(Consultations::class, 'schedule_id');
+}
 }

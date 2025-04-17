@@ -23,9 +23,12 @@ class Consultations extends Model
     {
         return $this->belongsTo(User::class, 'patient_id', 'id');
     }
-
     public function schedule()
     {
         return $this->belongsTo(Schedule::class, 'schedule_id', 'schedule_id');
+    }
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class, 'payment_id', 'payment_id');
     }
 }

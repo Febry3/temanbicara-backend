@@ -13,8 +13,7 @@ class Journal extends Model
         'title',
         'body',
         'image_url',
-        'stress_level',
-        'mood_level',
+        'tracking_id',
         'user_id'
     ];
 

@@ -28,9 +28,9 @@ class JournalRequest extends FormRequest
         return [
             'title' => 'required|string|max:100',
             'body' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'stress_level' => 'required|integer|max:5',
-            'mood_level' => 'required|string',
+            // 'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            // 'stress_level' => 'required|integer|max:5',
+            // 'mood_level' => 'required|string',
         ];
     }
 

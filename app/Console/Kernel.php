@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         \Log::info('Task consultation:expire has been scheduled!');
-        $schedule->command('consultation:expire')->everyMinute();
+        $schedule->command('consultation:expire')->everyMinute()->withoutOverlapping();;
     }
 
     protected function commands()

@@ -10,9 +10,10 @@ use Exception;
 use Illuminate\Support\Facades\Http;
 use Throwable;
 
+
 class PaymentController extends Controller
 {
-    private String $serverKey;
+    private string $serverKey;
 
     public function __construct()
     {
@@ -39,10 +40,12 @@ class PaymentController extends Controller
                     ]
                 );
 
+
+
             return [
                 'amount' => $request->amount,
                 // 'expired_date' => date('Y-m-d H:i:s', strtotime($midTransResponse['transaction_time'] . '+24 hours')),
-                'expired_date' => now()->addMinutes(1),
+                'expired_date' => now()->addMinutes(20),
                 'bank' => $request->bank,
                 'va_number' => $midTransResponse['va_numbers'][0]['va_number'],
                 'payment_method' => 'Bank Transfer',
@@ -53,7 +56,7 @@ class PaymentController extends Controller
         }
     }
 
-    public function checkPaymentStatus(String $uuid)
+    public function checkPaymentStatus(string $uuid)
     {
         $midTransResponse = Http::withBasicAuth($this->serverKey, '')
             ->get(

@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Consultation;
 
-use Illuminate\Http\Request;
-use \Illuminate\Validation\ValidationException;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\Payment\PaymentController;
-use Illuminate\Support\Facades\DB;
-use App\Models\Consultations;
-use App\Models\Payment;
-use App\Models\User;
-use App\Models\Schedule;
-use Illuminate\Support\Facades\Auth;
-use App\Jobs\ExpireConsultationJob;
+use Log;
 use Throwable;
+
+use App\Models\Payment;
+use App\Models\Schedule;
+use Illuminate\Http\Request;
+use App\Models\Consultations;
+use Illuminate\Support\Facades\DB;
+use App\Jobs\ExpireConsultationJob;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Payment\PaymentController;
+use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ConsultationController extends Controller
 {
@@ -117,10 +118,10 @@ class ConsultationController extends Controller
             $payment = app(PaymentController::class)->createPayment($request);
 
             $paymentAfterCreated = Payment::create($payment);
-            \Log::info('Payment expired_date: ' . $paymentAfterCreated->expired_date);
+            FacadesLog::info('Payment expired_date: ' . $paymentAfterCreated->expired_date);
 
             ExpireConsultationJob::dispatch($paymentAfterCreated->id)
-            ->delay($paymentAfterCreated->expired_date);
+                ->delay($paymentAfterCreated->expired_date);
 
             $consultation = Consultations::create([
                 'description' => $request->description,
@@ -337,7 +338,5 @@ class ConsultationController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
-
-
     }
 }

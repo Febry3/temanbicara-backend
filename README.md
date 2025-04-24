@@ -1,4 +1,4 @@
-# Teman Bicara Backend
+# Teman Bicara Backend - [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Febry3_temanbicara-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Febry3_temanbicara-backend) [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Febry3_temanbicara-backend&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Febry3_temanbicara-backend) [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Febry3_temanbicara-backend&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Febry3_temanbicara-backend)
 
 Teman Bicara Backend adalah API backend yang dibangun menggunakan [Laravel](https://laravel.com/), dirancang untuk mendukung aplikasi Teman Bicara. Proyek ini menyediakan endpoint RESTful untuk berbagai fitur aplikasi.
 
@@ -18,7 +18,6 @@ Teman Bicara Backend adalah API backend yang dibangun menggunakan [Laravel](http
 - **Database**: MySQL
 - **Manajemen Paket**: Composer
 - **Testing**: PHPUnit
-- **Deployment**: Vercel
 
 ## 📁 Struktur Folder
 
@@ -62,7 +61,7 @@ Teman Bicara Backend adalah API backend yang dibangun menggunakan [Laravel](http
 
 4. **Migrasi dan seeding database**
    ```bash
-   php artisan migrate --seed
+   php artisan migrate:fresh
    ```
 
 5. **Jalankan server lokal**
@@ -77,11 +76,3 @@ Untuk menjalankan tes unit dan fitur:
 ```bash
 php artisan test
 ```
-
-## 📄 Lisensi
-
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
-
----
-
-> Untuk kontribusi, silakan fork repositori ini dan ajukan pull request dengan perubahan yang diusulkan.

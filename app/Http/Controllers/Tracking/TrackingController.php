@@ -49,6 +49,14 @@ class TrackingController extends Controller
                 'activity' => $requestedData['activity'],
                 'user_id' => $request->user()->id
             ]);
+            $today = now()->toDateString();
+
+            Journal::where('user_id', $request->user()->id)
+                ->whereNull('tracking_id')
+                ->whereDate('created_at', $today)
+                ->update([
+                    'tracking_id' => $tracking->tracking_id,
+                ]);
 
             return response()->json(
                 [

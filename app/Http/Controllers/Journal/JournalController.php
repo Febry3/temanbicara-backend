@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Journal;
 
 use Throwable;
 use App\Models\Journal;
+use App\Models\Tracking;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Helper\ImageRequestHelper;
@@ -47,12 +48,45 @@ class JournalController extends Controller
                 }
             }
 
-            $journal = Journal::create([
-                'title' => $request['title'],
-                'body' => $request['body'],
-                'image_url' => $imageUrl ?? config('supabase.url') . '/profile/' . 'default.png',
-                'user_id' => Auth::user()->id,
-            ]);
+            $today = now()->toDateString();
+            $trackingId = $request['tracking_id'];
+            if (empty($trackingId)) {
+
+                $tracking = Tracking::where('user_id', Auth::user()->id)
+                    ->whereDate('created_at', $today)
+                    ->first();
+                if ($tracking) {
+                    $trackingId = $tracking['tracking_id'];
+                }
+            }
+            $journal = Journal::where('user_id', Auth::user()->id)
+                ->whereDate('created_at', $today)
+                ->first();
+
+            if ($journal) {
+                $journal->update([
+                    'title' => $request['title'],
+                    'body' => $request['body'],
+                    'image_url' => $imageUrl ?? $journal->image_url,
+                    'tracking_id' => $trackingId ?? $journal->tracking_id,
+                ]);
+            } else {
+
+                $journal = Journal::create([
+                    'title' => $request['title'],
+                    'body' => $request['body'],
+                    'image_url' => $imageUrl ?? config('supabase.url') . '/profile/' . 'default.png',
+                    'tracking_id' => $trackingId,
+                    'user_id' => Auth::user()->id,
+                ]);
+            }
+            // $journal = Journal::create([
+            //     'title' => $request['title'],
+            //     'body' => $request['body'],
+            //     'image_url' => $imageUrl ?? config('supabase.url') . '/profile/' . 'default.png',
+            //     'tracking_id' => $trackingId,
+            //     'user_id' => Auth::user()->id,
+            // ]);
 
             return response()->json(
                 [

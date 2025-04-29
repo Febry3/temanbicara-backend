@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -13,7 +14,7 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-        \Log::info('Task consultation:expire has been scheduled!');
+        Log::info('Task consultation:expire has been scheduled!');
         $schedule->command('consultation:expire')->everyMinute()->withoutOverlapping();;
     }
 
@@ -23,6 +24,3 @@ class Kernel extends ConsoleKernel
         require base_path('routes/console.php');
     }
 }
-
-
-

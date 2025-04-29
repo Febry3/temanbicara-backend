@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id('payment_id');
             $table->bigInteger('amount');
-            $table->enum('payment_status', ['Pending', 'Failed', 'Success', 'Cancelled'])->default('Pending');
+            $table->enum('payment_status', ['Pending', 'Failed', 'Success', 'Cancelled', 'Expired'])->default('Pending');
             $table->dateTime('expired_date');
             $table->enum('bank', ['BCA', 'BNI', 'BRI', 'CIMB']);
             $table->string('va_number');

@@ -249,7 +249,8 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-        public static function checkConsulationPaymentStatus(Request $request, $id)
+
+    public static function checkConsulationPaymentStatus(Request $request, $id)
     {
         try {
 
@@ -326,7 +327,7 @@ class ConsultationController extends Controller
             $consultations = Consultations::with(['payment', 'schedule.user'])
                 ->whereHas('payment', function ($query) use ($status) {
                     $query->where('payment_status', $status);
-                })->where('patient_id',$userId)
+                })->where('patient_id', $userId)
                 ->get();
 
             return response()->json([

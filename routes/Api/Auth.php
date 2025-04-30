@@ -13,6 +13,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('verify-token', [AuthController::class, 'verifySanctumToken']);
     Route::post('profile', [AuthController::class, 'editProfileData']);
     Route::post('profile/image', [AuthController::class, 'editProfileImage']);
+    Route::get('profile', [AuthController::class, 'getUser']);
 });
 
 Route::post('password', [AuthController::class, 'changePassword']);

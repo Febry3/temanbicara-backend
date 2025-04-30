@@ -28,9 +28,9 @@ class JournalController extends Controller
                 [
                     'title' => 'required',
                     'body' => 'required',
-
                 ]
             );
+
             if ($request->hasFile('image')) {
                 $response = ImageRequestHelper::postImageToSupabase($request, 'journal');
                 $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
@@ -45,12 +45,12 @@ class JournalController extends Controller
                     );
                 }
             }
+
             //cek apakah id_tracking masih kosong.
             //jika kosong dan tracking tersebut sudah tersedia maka akan di assign ke id_tracking yg tersedia di hari ini.
             $today = now()->toDateString();
             $trackingId = $request['tracking_id'];
             if (empty($trackingId)) {
-
                 $tracking = Tracking::where('user_id', Auth::user()->id)
                     ->whereDate('created_at', $today)
                     ->first();
@@ -62,7 +62,7 @@ class JournalController extends Controller
             $journal = Journal::create([
                 'title' => $request['title'],
                 'body' => $request['body'],
-                'image_url' => $imageUrl ?? config('supabase.url') . '/profile/' . 'default.png',
+                'image_url' => $imageUrl ?? "Empty",
                 'tracking_id' => $trackingId,
                 'user_id' => Auth::user()->id,
             ]);
@@ -85,6 +85,7 @@ class JournalController extends Controller
             );
         }
     }
+
     public static function updateJournal(JournalRequest $request, $id)
     {
         try {
@@ -155,16 +156,18 @@ class JournalController extends Controller
                 );
             }
 
-            $response = ImageRequestHelper::deleteImageFromSupabase($journal->image_url);
+            if ($journal->image_url != 'Empty') {
+                $response = ImageRequestHelper::deleteImageFromSupabase($journal->image_url);
 
-            if ($response->failed()) {
-                return response()->json(
-                    [
-                        'status' => false,
-                        'message' => 'Kesalahan pada menghapus gambar',
-                    ],
-                    404
-                );
+                if ($response->failed()) {
+                    return response()->json(
+                        [
+                            'status' => false,
+                            'message' => 'Kesalahan pada menghapus gambar',
+                        ],
+                        404
+                    );
+                }
             }
 
             $journal->delete();

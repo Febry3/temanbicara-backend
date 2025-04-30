@@ -28,7 +28,7 @@ class UpdateExpiredPaymentJob implements ShouldQueue
 
     /**
      * Execute the job.
-     * Mengupdate status payment dan consultation setelah 15 menit data payment dibuat
+     * Mengupdate status payment dan consultation setelah 20 menit data payment dibuat
      */
     public function handle(): void
     {

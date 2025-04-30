@@ -17,8 +17,6 @@ class JournalController extends Controller
 {
     public static function createJournal(JournalRequest $request)
     {
-
-        // dd($request->all());
         try {
             $requestedData = $request->only([
                 'title',
@@ -47,7 +45,8 @@ class JournalController extends Controller
                     );
                 }
             }
-
+            //cek apakah id_tracking masih kosong.
+            //jika kosong dan tracking tersebut sudah tersedia maka akan di assign ke id_tracking yg tersedia di hari ini.
             $today = now()->toDateString();
             $trackingId = $request['tracking_id'];
             if (empty($trackingId)) {
@@ -59,34 +58,14 @@ class JournalController extends Controller
                     $trackingId = $tracking['tracking_id'];
                 }
             }
-            $journal = Journal::where('user_id', Auth::user()->id)
-                ->whereDate('created_at', $today)
-                ->first();
 
-            if ($journal) {
-                $journal->update([
-                    'title' => $request['title'],
-                    'body' => $request['body'],
-                    'image_url' => $imageUrl ?? $journal->image_url,
-                    'tracking_id' => $trackingId ?? $journal->tracking_id,
-                ]);
-            } else {
-
-                $journal = Journal::create([
-                    'title' => $request['title'],
-                    'body' => $request['body'],
-                    'image_url' => $imageUrl ?? config('supabase.url') . '/profile/' . 'default.png',
-                    'tracking_id' => $trackingId,
-                    'user_id' => Auth::user()->id,
-                ]);
-            }
-            // $journal = Journal::create([
-            //     'title' => $request['title'],
-            //     'body' => $request['body'],
-            //     'image_url' => $imageUrl ?? config('supabase.url') . '/profile/' . 'default.png',
-            //     'tracking_id' => $trackingId,
-            //     'user_id' => Auth::user()->id,
-            // ]);
+            $journal = Journal::create([
+                'title' => $request['title'],
+                'body' => $request['body'],
+                'image_url' => $imageUrl ?? config('supabase.url') . '/profile/' . 'default.png',
+                'tracking_id' => $trackingId,
+                'user_id' => Auth::user()->id,
+            ]);
 
             return response()->json(
                 [

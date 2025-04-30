@@ -9,19 +9,21 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 
 class UpdateExpiredPaymentJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    private $payment;
+    use Dispatchable, InteractsWithQueue, SerializesModels, Queueable;
     /**
      * Create a new job instance.
      */
-    public function __construct(Payment $payment)
+
+    private $payment;
+
+    public function __construct(String $paymentId)
     {
-        $this->payment = $payment->withoutRelations();
+        $this->payment =  Payment::find($paymentId);
     }
 
     /**
@@ -30,10 +32,16 @@ class UpdateExpiredPaymentJob implements ShouldQueue
      */
     public function handle(): void
     {
+        Log::info('Works');
         $this->payment->update(['payment_status' => 'Expired']);
-        $consultation = Consultations::where('payment_id', $this->payment->payment_id)->get();
+
+        $consultation = Consultations::where('payment_id', $this->payment->payment_id)->first();
+
+        if (!$consultation) return;
         $consultation->update(['status' => 'Cancelled']);
+
         $schedule = Schedule::find($consultation->schedule_id);
+        if (!$schedule) return;
         $schedule->update(['status' => 'Available']);
     }
 }

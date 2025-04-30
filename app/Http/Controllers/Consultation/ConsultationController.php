@@ -14,6 +14,8 @@ use App\Jobs\ExpireConsultationJob;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Payment\PaymentController;
+use App\Jobs\UpdateExpiredPaymentJob;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ConsultationController extends Controller
@@ -118,10 +120,10 @@ class ConsultationController extends Controller
             $payment = app(PaymentController::class)->createPayment($request);
 
             $paymentAfterCreated = Payment::create($payment);
-            FacadesLog::info('Payment expired_date: ' . $paymentAfterCreated->expired_date);
+            // FacadesLog::info('Payment expired_date: ' . $paymentAfterCreated->expired_date);
 
-            ExpireConsultationJob::dispatch($paymentAfterCreated->id)
-                ->delay($paymentAfterCreated->expired_date);
+            // ExpireConsultationJob::dispatch($paymentAfterCreated->id)
+            //     ->delay($paymentAfterCreated->expired_date);
 
             $consultation = Consultations::create([
                 'description' => $request->description,
@@ -131,6 +133,8 @@ class ConsultationController extends Controller
                 'patient_id' => Auth::user()->id,
                 'payment_id' => $paymentAfterCreated->payment_id
             ]);
+
+            UpdateExpiredPaymentJob::dispatch($paymentAfterCreated->payment_id)->delay(Carbon::now()->addSeconds(20));
 
             DB::commit();
 

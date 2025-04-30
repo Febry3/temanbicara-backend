@@ -32,6 +32,7 @@ class JournalController extends Controller
             );
 
             if ($request->hasFile('image')) {
+
                 $response = ImageRequestHelper::postImageToSupabase($request, 'journal');
                 $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
 

@@ -1,0 +1,201 @@
+Illuminate\Http\Client\Response {#1360 // app\Http\Controllers\Payment\PaymentController.php:43
+  #response:
+GuzzleHttp\Psr7
+\
+Response {#1397
+    -reasonPhrase: "OK"
+    -statusCode: 200
+    -headers: array:10 [
+      "date" => array:1 [
+        0 => "Sun, 27 Apr 2025 14:04:21 GMT"
+      ]
+      "content-type" => array:1 [
+        0 => "application/json"
+      ]
+      "content-length" => array:1 [
+        0 => "160"
+      ]
+      "pragma" => array:1 [
+        0 => "no-cache"
+      ]
+      "cache-control" => array:1 [
+        0 => "no-cache"
+      ]
+      "merchant-id" => array:1 [
+        0 => "G062624485"
+      ]
+      "payment-type" => array:1 [
+        0 => "bank_transfer"
+      ]
+      "status-code" => array:1 [
+        0 => "502"
+      ]
+      "via" => array:1 [
+        0 => "flip/flop"
+      ]
+      "strict-transport-security" => array:1 [
+        0 => "max-age=15724800; includeSubDomains"
+      ]
+    ]
+    -headerNames: array:10 [
+      "date" => "date"
+      "content-type" => "content-type"
+      "content-length" => "content-length"
+      "pragma" => "pragma"
+      "cache-control" => "cache-control"
+      "merchant-id" => "merchant-id"
+      "payment-type" => "payment-type"
+      "status-code" => "status-code"
+      "via" => "via"
+      "strict-transport-security" => "strict-transport-security"
+    ]
+    -protocol: "1.1"
+    -stream:
+GuzzleHttp\Psr7
+\
+Stream {#1393
+      -stream: stream resource @637
+        wrapper_type: "PHP"
+        stream_type: "TEMP"
+        mode: "w+b"
+        unread_bytes: 0
+        seekable: true
+        uri: "php://temp"
+        options: []
+      }
+      -size: null
+      -seekable: true
+      -readable: true
+      -writable: true
+      -uri: "php://temp"
+      -customMetadata: []
+    }
+  }
+  #decoded: null
+  +cookies:
+GuzzleHttp\Cookie
+\
+CookieJar {#1378
+    -cookies: []
+    -strictMode: false
+  }
+  +transferStats:
+GuzzleHttp
+\
+TransferStats {#1398
+    -request:
+GuzzleHttp\Psr7
+\
+Request {#1390
+      -method: "POST"
+      -requestTarget: null
+      -uri:
+GuzzleHttp\Psr7
+\
+Uri {#1379
+        -scheme: "https"
+        -userInfo: ""
+        -host: "api.sandbox.midtrans.com"
+        -port: null
+        -path: "/v2/charge"
+        -query: ""
+        -fragment: ""
+        -composedComponents: "https://api.sandbox.midtrans.com/v2/charge"
+      }
+      -headers: array:5 [
+        "Content-Length" => array:1 [
+          0 => "159"
+        ]
+        "User-Agent" => array:1 [
+          0 => "GuzzleHttp/7"
+        ]
+        "Content-Type" => array:1 [
+          0 => "application/json"
+        ]
+        "Authorization" => array:1 [
+          0 => "Basic U0ItTWlkLXNlcnZlci1ScVQ2VFVpTmNVd09SaXVRZ3FhTkk0MnQ6"
+        ]
+        "Host" => array:1 [
+          0 => "api.sandbox.midtrans.com"
+        ]
+      ]
+      -headerNames: array:5 [
+        "content-length" => "Content-Length"
+        "user-agent" => "User-Agent"
+        "content-type" => "Content-Type"
+        "authorization" => "Authorization"
+        "host" => "Host"
+      ]
+      -protocol: "1.1"
+      -stream:
+GuzzleHttp\Psr7
+\
+Stream {#1381
+        -stream: stream resource @627
+          wrapper_type: "PHP"
+          stream_type: "TEMP"
+          mode: "w+b"
+          unread_bytes: 0
+          seekable: true
+          uri: "php://temp"
+          options: []
+        }
+        -size: 159
+        -seekable: true
+        -readable: true
+        -writable: true
+        -uri: "php://temp"
+        -customMetadata: []
+      }
+    }
+    -response:
+GuzzleHttp\Psr7
+\
+Response {#1397}
+    -transferTime: 0.448068
+    -handlerStats: array:41 [
+      "url" => "https://api.sandbox.midtrans.com/v2/charge"
+      "content_type" => "application/json"
+      "http_code" => 200
+      "header_size" => 302
+      "request_size" => 0
+      "filetime" => -1
+      "ssl_verify_result" => 0
+      "redirect_count" => 0
+      "total_time" => 0.448068
+      "namelookup_time" => 0.0012
+      "connect_time" => 0.016084
+      "pretransfer_time" => 0.402897
+      "size_upload" => 159.0
+      "size_download" => 160.0
+      "speed_download" => 357.0
+      "speed_upload" => 354.0
+      "download_content_length" => 160.0
+      "upload_content_length" => 159.0
+      "starttransfer_time" => 0.445479
+      "redirect_time" => 0.0
+      "redirect_url" => ""
+      "primary_ip" => "34.101.67.219"
+      "certinfo" => []
+      "primary_port" => 443
+      "local_ip" => "192.168.0.111"
+      "local_port" => 51493
+      "http_version" => 2
+      "protocol" => 2
+      "ssl_verifyresult" => 0
+      "scheme" => "HTTPS"
+      "appconnect_time_us" => 402672
+      "connect_time_us" => 16084
+      "namelookup_time_us" => 1200
+      "pretransfer_time_us" => 402897
+      "redirect_time_us" => 0
+      "starttransfer_time_us" => 445479
+      "total_time_us" => 448068
+      "effective_method" => "POST"
+      "capath" => ""
+      "cainfo" => ""
+      "appconnect_time" => 0.402672
+    ]
+    -handlerErrorData: 0
+  }
+}

@@ -71,7 +71,6 @@ class JournalController extends Controller
                     'tracking_id' => $trackingId ?? $journal->tracking_id,
                 ]);
             } else {
-
                 $journal = Journal::create([
                     'title' => $request['title'],
                     'body' => $request['body'],
@@ -158,7 +157,7 @@ class JournalController extends Controller
         }
     }
 
-    public static function deleteJournal($request, $id)
+    public static function deleteJournal(Request $request, $id)
     {
         try {
             $journal = Journal::where([
@@ -176,17 +175,7 @@ class JournalController extends Controller
                 );
             }
 
-            $response = ImageRequestHelper::deleteImageFromSupabase($journal->image_url);
 
-            if ($response->failed()) {
-                return response()->json(
-                    [
-                        'status' => false,
-                        'message' => 'Kesalahan pada menghapus gambar',
-                    ],
-                    404
-                );
-            }
 
             $journal->delete();
 

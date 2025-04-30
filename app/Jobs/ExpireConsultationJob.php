@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Jobs;
+
 use App\Models\Payment;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -27,15 +28,15 @@ class ExpireConsultationJob implements ShouldQueue
      */
     public function handle(): void
     {
-        \Log::info('Command consultation:expire dipanggil');
+        Log::info('Command consultation:expire dipanggil');
         $expiredPayments = \App\Models\Payment::where('payment_status', 'Pending')
             ->where('expired_date', '<', now())
             ->get();
 
-        \Log::info('Expired payments found: ' . $expiredPayments->count());
+        Log::info('Expired payments found: ' . $expiredPayments->count());
 
         if ($expiredPayments->isEmpty()) {
-            \Log::info('No expired payments found at this moment.');
+            Log::info('No expired payments found at this moment.');
         }
 
         foreach ($expiredPayments as $payment) {

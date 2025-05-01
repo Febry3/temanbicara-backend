@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Helper\ImageRequestHelper;
 use App\Http\Requests\JournalRequest;
 use Error;
+use App\Http\Controllers\Ai\AiController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -46,7 +47,6 @@ class JournalController extends Controller
                     );
                 }
             }
-
             //cek apakah id_tracking masih kosong.
             //jika kosong dan tracking tersebut sudah tersedia maka akan di assign ke id_tracking yg tersedia di hari ini.
             $today = now()->toDateString();
@@ -68,11 +68,14 @@ class JournalController extends Controller
                 'user_id' => Auth::user()->id,
             ]);
 
+            $responseAi = app(AiController::class)->generate($request->user()->id);
+
             return response()->json(
                 [
                     'status' => true,
                     'message' => 'Data berhasil disimpan',
-                    'data' => $journal
+                    'data' => $journal,
+                    'response_ai' => $responseAi
                 ],
                 200
             );

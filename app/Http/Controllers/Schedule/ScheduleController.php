@@ -14,7 +14,6 @@ class ScheduleController extends Controller
     public static function getSchedule(Request $request)
     {
         try {
-            //menggunakan eager loaging mengurai jumlah execute query
             $users = User::where('role', 'Counselor')->with([
                 'expertises',
                 'schedules' => function ($schedule) {

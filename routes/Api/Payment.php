@@ -6,6 +6,4 @@ use App\Http\Controllers\Payment\PaymentController;
 
 Route::post('/payment', [PaymentController::class, 'createPayment']);
 Route::get('/payment/{uuid}', [PaymentController::class, 'checkPaymentStatus']);
-Route::post('/notify/payment', function (Request $request) {
-    return response()->json($request, 200);
-});
+Route::post('/notify/payment', [PaymentController::class, 'handleCompletedPayment']);

@@ -134,14 +134,26 @@ class ConsultationController extends Controller
                 'payment_id' => $paymentAfterCreated->payment_id
             ]);
 
-            UpdateExpiredPaymentJob::dispatch($paymentAfterCreated->payment_id)->delay(Carbon::now()->addSeconds(20));
+            UpdateExpiredPaymentJob::dispatch($paymentAfterCreated->payment_id)->delay(Carbon::now('Asia/Jakarta')->diffInSeconds(Carbon::parse($paymentAfterCreated->expired_date)));
 
             DB::commit();
 
             return response()->json([
                 'status' => true,
                 'message' => 'Consultation created successfully',
-                'data' => $consultation,
+                'data' => [
+                    "description" => $consultation->description,
+                    "problem" => $consultation->problem,
+                    "summary" => $consultation->summary,
+                    "amount" => $paymentAfterCreated->amount,
+                    "expired_date" => $paymentAfterCreated->expired_date,
+                    "bank" => $paymentAfterCreated->bank,
+                    "va_number" => $paymentAfterCreated->va_number,
+                    "payment_method" => $paymentAfterCreated->payment_method,
+                    "transaction_id" => $paymentAfterCreated->transaction_id,
+                    "status" => $paymentAfterCreated->payment_status,
+
+                ],
             ], 201);
         } catch (Throwable $e) {
             DB::rollBack();

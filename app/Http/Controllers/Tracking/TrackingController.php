@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Tracking;
 
+use Carbon\Carbon;
 use Throwable;
 use App\Models\Journal;
 use App\Models\Tracking;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Ai\AiController;
+use Illuminate\Support\Facades\Auth;
 
 class TrackingController extends Controller
 {
@@ -39,7 +42,23 @@ class TrackingController extends Controller
                     'message' => 'Ada bagian yang tidak diisi',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
+            ;
+
+            $tracking = Tracking::where('user_id', $request->user()->id)
+                ->whereDate('created_at', Carbon::today())
+                ->latest()
+                ->first();
+
+            if ($tracking) {
+                return response()->json(
+                    [
+                        'status' => true,
+                        'message' => 'Anda sudah melakukan tracking hari ini',
+                    ],
+                    200
+                );
+            }
 
             $tracking = Tracking::create([
                 'bed_time' => $requestedData['bed_time'],
@@ -58,11 +77,18 @@ class TrackingController extends Controller
                     'tracking_id' => $tracking->tracking_id,
                 ]);
 
+            $responseAi = null;
+            if ($tracking) {
+                $responseAi = app(AiController::class)->generate($request->user()->id);
+            }
+
+
             return response()->json(
                 [
                     'status' => true,
                     'message' => 'Data berhasil disimpan',
-                    'data' => $tracking
+                    'data' => $tracking,
+                    'response_ai' => $responseAi
                 ],
                 200
             );

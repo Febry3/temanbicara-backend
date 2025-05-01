@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 class user_answer extends Model
 {
     protected $primaryKey = 'user_answer_id';

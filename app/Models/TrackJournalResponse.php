@@ -5,22 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Journal extends Model
+class TrackJournalResponse extends Model
 {
-    protected $primaryKey = "journal_id";
-
+    protected $table = 'track_journal_response';
+    protected $primaryKey = "response_id";
     protected $fillable = [
-        'title',
-        'body',
-        'image_url',
-        'tracking_id',
-        'user_id'
+        'metrix',
+        'assesment',
+        'short_term',
+        'long_term',
+        'closing',
+        'tracking_id'
     ];
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
-    }
     public function tracking(): BelongsTo
     {
         return $this->belongsTo(Tracking::class, 'tracking_id', 'tracking_id');

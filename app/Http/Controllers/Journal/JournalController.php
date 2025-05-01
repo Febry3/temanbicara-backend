@@ -18,6 +18,7 @@ class JournalController extends Controller
     public static function createJournal(JournalRequest $request)
     {
         try {
+	    $imageUrl = "Empty";
             $requestedData = $request->only([
                 'title',
                 'body',
@@ -30,11 +31,12 @@ class JournalController extends Controller
                     'body' => 'required',
                 ]
             );
-
+	    
             if ($request->hasFile('image')) {
-                $response = ImageRequestHelper::postImageToSupabase($request, 'journal');
+                
+		$response = ImageRequestHelper::postImageToSupabase($request, 'journal');
                 $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
-
+			
                 if ($response->failed()) {
                     return response()->json(
                         [
@@ -45,7 +47,7 @@ class JournalController extends Controller
                     );
                 }
             }
-
+            
             //cek apakah id_tracking masih kosong.
             //jika kosong dan tracking tersebut sudah tersedia maka akan di assign ke id_tracking yg tersedia di hari ini.
             $today = now()->toDateString();
@@ -58,11 +60,11 @@ class JournalController extends Controller
                     $trackingId = $tracking['tracking_id'];
                 }
             }
-
+	    
             $journal = Journal::create([
                 'title' => $request['title'],
                 'body' => $request['body'],
-                'image_url' => $imageUrl ?? "Empty",
+                'image_url' => $imageUrl,
                 'tracking_id' => $trackingId,
                 'user_id' => Auth::user()->id,
             ]);
@@ -155,7 +157,7 @@ class JournalController extends Controller
                     404
                 );
             }
-
+	    
             if ($journal->image_url != 'Empty') {
                 $response = ImageRequestHelper::deleteImageFromSupabase($journal->image_url);
 

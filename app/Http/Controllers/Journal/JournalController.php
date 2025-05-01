@@ -63,7 +63,7 @@ class JournalController extends Controller
             $journal = Journal::create([
                 'title' => $request['title'],
                 'body' => $request['body'],
-                'image_url' => $imageUrl,
+                'image_url' => $imageUrl ?? "Empty",
                 'tracking_id' => $trackingId,
                 'user_id' => Auth::user()->id,
             ]);

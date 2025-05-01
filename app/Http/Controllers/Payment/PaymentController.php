@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Payment;
 
+use Exception;
+use Throwable;
+use App\Models\Payment;
+use App\Models\Schedule;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Consultations;
-use App\Models\Payment;
-use Exception;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
-use Throwable;
 
 
 class PaymentController extends Controller
@@ -70,17 +71,33 @@ class PaymentController extends Controller
 
     public function handleCompletedPayment(Request $request)
     {
-        if (!$request['transaction_status'] == 'settlement') return;
+        try {
+            if (!$request['transaction_status'] == 'settlement') {
+                return response()->json(
+                    [
+                        'status' => false,
+                        'message' => 'Pembayaran dengan id tersebut telah berhasil sebelumnya',
+                    ],
+                    409
+                );
+            }
+            Payment::where('transaction_id', $request['transaction_id'])->first()->completePayment();
 
-        $payment = Payment::where('transaction_id', $request['transaction_id'])->first();
-        $payment->completePayment();
-        return response()->json(
-            [
-                'status' => true,
-                'message' => 'Data berhasil diambil',
-                'data' => $payment
-            ],
-            200
-        );
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Pembayaran berhasil',
+                ],
+                200
+            );
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err,
+                ],
+                500
+            );
+        }
     }
 }

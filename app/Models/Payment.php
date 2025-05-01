@@ -25,9 +25,6 @@ class Payment extends Model
 
     public function completePayment()
     {
-        $consultation = Consultations::where('transaction_id', $this->payment_id)->first();
-        Schedule::where('schedule_id', $consultation->schedule_id)->update(['status' => 'Available']);
-        $consultation->update(['status' => 'Done']);
         $this->payment_status = 'Success';
         $this->save();
         return $this;

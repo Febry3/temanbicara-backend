@@ -120,10 +120,6 @@ class ConsultationController extends Controller
             $payment = app(PaymentController::class)->createPayment($request);
 
             $paymentAfterCreated = Payment::create($payment);
-            // FacadesLog::info('Payment expired_date: ' . $paymentAfterCreated->expired_date);
-
-            // ExpireConsultationJob::dispatch($paymentAfterCreated->id)
-            //     ->delay($paymentAfterCreated->expired_date);
 
             $consultation = Consultations::create([
                 'description' => $request->description,

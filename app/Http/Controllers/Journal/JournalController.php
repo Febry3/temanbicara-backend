@@ -18,6 +18,7 @@ class JournalController extends Controller
     public static function createJournal(JournalRequest $request)
     {
         try {
+            $imageUrl = "Empty";
             $requestedData = $request->only([
                 'title',
                 'body',
@@ -32,7 +33,6 @@ class JournalController extends Controller
             );
 
             if ($request->hasFile('image')) {
-
                 $response = ImageRequestHelper::postImageToSupabase($request, 'journal');
                 $imageUrl = config('supabase.url') . '/' . $response->json()['Key'];
 
@@ -63,7 +63,7 @@ class JournalController extends Controller
             $journal = Journal::create([
                 'title' => $request['title'],
                 'body' => $request['body'],
-                'image_url' => $imageUrl ?? "Empty",
+                'image_url' => $imageUrl,
                 'tracking_id' => $trackingId,
                 'user_id' => Auth::user()->id,
             ]);

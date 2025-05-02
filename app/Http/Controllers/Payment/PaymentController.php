@@ -81,7 +81,8 @@ class PaymentController extends Controller
                     409
                 );
             }
-            Payment::where('transaction_id', $request['transaction_id'])->first()->completePayment();
+
+            Payment::where('transaction_id', $request->transaction_id)->first()->completePayment();
 
             return response()->json(
                 [

@@ -13,7 +13,7 @@ class ReportController extends Controller
     public function getReport(Request $request)
     {
         try {
-            $report = TrackJournalResponse::with('tracking:tracking_id,user_id')
+            $report = TrackJournalResponse::with('tracking')
                 ->whereHas('tracking', function ($query) use ($request) {
                     $query->where('user_id', $request->user()->id);
                 })

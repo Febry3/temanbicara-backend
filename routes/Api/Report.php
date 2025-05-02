@@ -6,6 +6,5 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Expertise\ExpertiseController;
 
 Route::middleware(['auth:sanctum'])->group(function () {
-
-    Route::get('Report', [ReportController::class, 'getReport']);
+    Route::get('report', [ReportController::class, 'getReport']);
 });

@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::post('forget-password', [AuthController::class, 'forgetPassword']);
+Route::post('forget-password', [AuthController::class, 'changePassword']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
@@ -16,6 +16,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('profile', [AuthController::class, 'getUser']);
 });
 
-Route::post('password', [AuthController::class, 'changePassword']);
+Route::post('password', [AuthController::class, 'forgetPassword']);
 Route::post('password/otp', [AuthController::class, 'sendResetPasswordOTP']);
 Route::post('password/otp/valid', [AuthController::class, 'verifyOtp']);

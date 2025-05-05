@@ -144,7 +144,7 @@ class AuthController extends Controller
         );
     }
 
-    public static function changePassword(Request $request)
+    public static function forgetPassword(Request $request)
     {
         try {
             $requestedData = $request->only([
@@ -208,12 +208,12 @@ class AuthController extends Controller
         }
     }
 
-    public static function forgetPassword(Request $request)
+    public static function changePassword(Request $request)
     {
         try {
             $requestedData = $request->only([
                 'email',
-                'phone_number',
+                'old_password',
                 'new_password',
             ]);
 
@@ -221,7 +221,7 @@ class AuthController extends Controller
                 $requestedData,
                 [
                     'email' => 'required',
-                    'phone_number' => 'required',
+                    'old_password' => 'required',
                     'new_password' => 'required'
                 ]
             );
@@ -229,7 +229,7 @@ class AuthController extends Controller
             if ($validateData->fails()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Email/nomor telepon/ password tidak boleh kosong',
+                    'message' => 'Email/ password lama/ password baru tidak boleh kosong',
                     'error' => $validateData->errors(),
                 ], 200);
             };
@@ -241,6 +241,13 @@ class AuthController extends Controller
                     'status' => false,
                     'message' => 'Tidak ada email dan nomor telepon yang sesuai',
                 ], 200);
+            }
+
+            if (!Hash::check($requestedData['new_password'], $user->password)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Password lama tidak sesuai',
+                ], 401);
             }
 
             $user->password = Hash::make($requestedData['new_password']);

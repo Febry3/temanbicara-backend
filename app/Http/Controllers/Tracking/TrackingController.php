@@ -35,15 +35,13 @@ class TrackingController extends Controller
                     'activity' => 'required',
                 ]
             );
-            // dd($request->all());
             if ($validateData->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Ada bagian yang tidak diisi',
                     'error' => $validateData->errors(),
                 ], 200);
-            }
-            ;
+            };
 
             $tracking = Tracking::where('user_id', $request->user()->id)
                 ->whereDate('created_at', Carbon::today())
@@ -69,7 +67,6 @@ class TrackingController extends Controller
                 'user_id' => $request->user()->id
             ]);
             $today = now()->toDateString();
-
             Journal::where('user_id', $request->user()->id)
                 ->whereNull('tracking_id')
                 ->whereDate('created_at', $today)
@@ -113,11 +110,11 @@ class TrackingController extends Controller
 
 
 
-            if (!$trackings) {
+            if ($trackings->isEmpty()) {
                 return response()->json(
                     [
                         'status' => false,
-                        'message' => 'Jurnal tidak ditemukan',
+                        'message' => 'Tracking tidak ditemukan',
                     ],
                     200
                 );

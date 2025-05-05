@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Models\TrackJournalResponse;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Http\Request;
 use Throwable;
 
@@ -17,11 +18,23 @@ class ReportController extends Controller
                 ->whereHas('tracking', function ($query) use ($request) {
                     $query->where('user_id', $request->user()->id);
                 })
+                ->whereDate('created_at', now()->toDateString())
                 ->get();
+
+
+            if($report->isEmpty()){
+                return response()->json(
+                    [
+                        'status' => false,
+                        'message' => 'Data report tidak tersedia',
+                    ],
+                    200
+                );
+            }
             return response()->json(
                 [
                     'status' => true,
-                    'message' => 'Data berhasil disimpan',
+                    'message' => 'Data response tersedia',
                     'data' => $report
                 ],
                 200

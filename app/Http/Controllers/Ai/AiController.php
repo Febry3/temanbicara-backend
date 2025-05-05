@@ -83,7 +83,7 @@ class AiController extends Controller
         $journalText = $journal->body ?? null;
 
         $prompt = $this->prompt($mood, $sleep, $stress, $screenTime, $steps, $journalText);
-
+        
         try {
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . config('services.gemini.token'),

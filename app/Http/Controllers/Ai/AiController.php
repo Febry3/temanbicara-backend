@@ -83,11 +83,11 @@ class AiController extends Controller
         $journalText = $journal->body ?? null;
 
         $prompt = $this->prompt($mood, $sleep, $stress, $screenTime, $steps, $journalText);
-
+        
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-            ])->post(env('GEMINI_API_URL') . '?key=' . env('GEMINI_API_KEY'), [
+            ])->post(config('services.gemini.url') . '?key=' . config('services.gemini.key'), [
                         'contents' => [
                             [
                                 'parts' => [

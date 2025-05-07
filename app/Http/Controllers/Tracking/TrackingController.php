@@ -9,7 +9,7 @@ use App\Models\Tracking;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Ai\AiController;
+use App\Http\Controllers\Report\ReportController;
 use Illuminate\Support\Facades\Auth;
 
 class TrackingController extends Controller
@@ -41,7 +41,8 @@ class TrackingController extends Controller
                     'message' => 'Ada bagian yang tidak diisi',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
+            ;
 
             $tracking = Tracking::where('user_id', $request->user()->id)
                 ->whereDate('created_at', Carbon::today())
@@ -76,7 +77,7 @@ class TrackingController extends Controller
 
             $responseAi = null;
             if ($tracking) {
-                $responseAi = app(AiController::class)->generate($request->user()->id);
+                $responseAi = app(ReportController::class)->doReport($request->user()->id);
             }
 
 

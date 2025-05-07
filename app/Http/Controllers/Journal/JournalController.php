@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Helper\ImageRequestHelper;
 use App\Http\Requests\JournalRequest;
 use Error;
-use App\Http\Controllers\Ai\AiController;
+use App\Http\Controllers\Report\ReportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -67,9 +67,7 @@ class JournalController extends Controller
                 'tracking_id' => $trackingId,
                 'user_id' => Auth::user()->id,
             ]);
-
-            $responseAi = app(AiController::class)->generate($request->user()->id);
-
+            $responseAi = app(ReportController::class)->doReport($request->user()->id);
             return response()->json(
                 [
                     'status' => true,
@@ -234,8 +232,20 @@ class JournalController extends Controller
     {
         try {
             $userId = $request->user()->id;
+            $requestedData = $request->only([
+                'date_request'
+            ]);
 
-            $journal = Journal::with('user')->where('user_id', $userId)->get();
+            $validateData = Validator::make(
+                $requestedData,
+                [
+                    'date_request' => ['required', 'date_format:YYYY-mm-dd'],
+                ]
+            );
+
+            $datereq = $request['date_request'];
+            $journal = Journal::with('user')->where('user_id', $userId)
+            ->whereDate('created_at', $datereq)->get();
 
             if ($journal->isEmpty()) {
                 return response()->json(

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Tracking;
 use App\Models\TrackJournalResponse;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
 use App\Models\Journal;
 use Illuminate\Support\Facades\Http;
 
@@ -83,7 +83,7 @@ class AiController extends Controller
         $journalText = $journal->body ?? null;
 
         $prompt = $this->prompt($mood, $sleep, $stress, $screenTime, $steps, $journalText);
-        
+
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
@@ -110,18 +110,9 @@ class AiController extends Controller
                 ]);
             }
 
-            TrackJournalResponse::updateOrCreate(
-                ['tracking_id' => $tracking->tracking_id],
-                [
-                    'assesment' => $jsonResult['assessment'] ?? null,
-                    'metrix' => $jsonResult['matrix'] ?? null,
-                    'short_term' => json_encode($jsonResult['recommendations']['short_term'] ?? []),
-                    'long_term' => json_encode($jsonResult['recommendations']['long_term'] ?? []),
-                    'closing' => $jsonResult['closing'] ?? null,
-                ]
-            );
             return response()->json([
                 'status' => true,
+                'tracking_id' => $tracking->tracking_id,
                 'result' => $jsonResult
             ]);
         } catch (\Exception $e) {

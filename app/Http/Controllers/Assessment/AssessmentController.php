@@ -19,13 +19,7 @@ class AssessmentController extends Controller
                 'nickname',
                 'gender',
                 'birthdate',
-                'mbti',
-                'topic',
-                'goal',
-                'sleep_quality',
-                'have_consulted',
-                'consumed_medicine',
-                'stress_level',
+                'phone_number'
             ]);
 
             $validateData = Validator::make(
@@ -35,13 +29,7 @@ class AssessmentController extends Controller
                     'nickname' => 'required',
                     'gender' => 'required',
                     'birthdate' => 'required',
-                    'mbti' => 'required',
-                    'topic' => 'required',
-                    'goal' => 'required',
-                    'sleep_quality' => 'required',
-                    'have_consulted' => 'required',
-                    'consumed_medicine' => 'required',
-                    'stress_level' => 'required',
+                    'phone_number' => 'required|unique:users,phone_number',
                 ]
             );
 
@@ -53,24 +41,14 @@ class AssessmentController extends Controller
                 ], 200);
             }
 
-            User::where('id', $request->user()->id)->update([
+           User::where('id', $request->user()->id)->update([
                 'name' => $requestedData['name'],
                 'nickname' => $requestedData['nickname'],
                 'gender' => $requestedData['gender'],
                 'birthdate' => $requestedData['birthdate'],
+                'phone_number' => $requestedData['phone_number'],
             ]);
-
-            Assessment::create([
-                'mbti' => $requestedData['mbti'],
-                'topic' => $requestedData['topic'],
-                'goal' => $requestedData['goal'],
-                'sleep_quality' => $requestedData['sleep_quality'],
-                'have_consulted' => $requestedData['have_consulted'],
-                'consumed_medicine' => $requestedData['consumed_medicine'],
-                'stress_level' => $requestedData['stress_level'],
-                'user_id' => $request->user()->id,
-            ]);
-
+ 
             return response()->json(
                 [
                     'status' => true,

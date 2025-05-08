@@ -24,7 +24,6 @@ class AuthController extends Controller
         try {
             $requestedData = $request->only([
                 'email',
-                'phone_number',
                 'password'
             ]);
 
@@ -32,7 +31,6 @@ class AuthController extends Controller
                 $requestedData,
                 [
                     'email' => 'required|unique:users,email|email',
-                    'phone_number' => 'required|unique:users,phone_number',
                     'password' => 'required',
                 ]
             );
@@ -47,7 +45,7 @@ class AuthController extends Controller
 
             $user = User::create([
                 'email' => $requestedData['email'],
-                'phone_number' => $requestedData['phone_number'],
+                // 'phone_number' => $requestedData['phone_number'],
                 'password' => $requestedData['password'],
 
             ]);

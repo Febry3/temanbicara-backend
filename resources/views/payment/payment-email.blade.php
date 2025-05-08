@@ -33,8 +33,10 @@
                 <div style="margin-bottom: 10px; background-color: #E5E5E5; border-radius: 20px; padding: 15px;">
                     <table width="100%">
                         <tr>
-                            <td style="font-weight: bold; color: #7D944D; font-size: 16px;">Total Bayar</td>
-                            <td style="font-weight: bold; color: red; font-size: 16px;">{{ $amount }}</td>
+                            <td align="left" style="font-weight: bold; color: #7D944D; font-size: 16px;">Total Bayar
+                            </td>
+                            <td align="right" style="font-weight: bold; color: red; font-size: 16px;">
+                                {{ $amount }}</td>
                         </tr>
                     </table>
                 </div>
@@ -42,8 +44,10 @@
                 <div style="margin-bottom: 10px; background-color: #E5E5E5; border-radius: 20px; padding: 15px;">
                     <table width="100%">
                         <tr>
-                            <td style="font-weight: bold; color: #7D944D; font-size: 16px;">Virtual Account</td>
-                            <td style="font-weight: bold; color: #7D944D; font-size: 16px;">{{ $va_number }}</td>
+                            <td align="left" style="font-weight: bold; color: #7D944D; font-size: 16px;">Virtual
+                                Account</td>
+                            <td align="left" style="font-weight: bold; color: #7D944D; font-size: 16px;">
+                                {{ $va_number }}</td>
                         </tr>
                     </table>
                 </div>
@@ -51,8 +55,10 @@
                 <div style="background-color: #E5E5E5; border-radius: 20px; padding: 15px;">
                     <table width="100%">
                         <tr>
-                            <td style="font-weight: bold; color: #7D944D; font-size: 16px;">Metode Pembayaran</td>
-                            <td style="font-weight: bold; color: #7D944D; font-size: 16px;">{{ $payment_method }}</td>
+                            <td align="left" style="font-weight: bold; color: #7D944D; font-size: 16px;">Metode
+                                Pembayaran</td>
+                            <td align="left" style="font-weight: bold; color: #7D944D; font-size: 16px;">
+                                {{ $payment_method }}</td>
                         </tr>
                     </table>
                 </div>

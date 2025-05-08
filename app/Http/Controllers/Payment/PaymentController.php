@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Payment;
 
 use Exception;
 use Throwable;
+use App\Models\User;
 use App\Models\Payment;
 use App\Models\Schedule;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Consultations;
 use App\Http\Controllers\Controller;
+use App\Jobs\PaymentSuccessEmailJob;
 use Illuminate\Support\Facades\Http;
 
 
@@ -69,10 +71,10 @@ class PaymentController extends Controller
         return $midTransResponse->json();
     }
 
-    public function handleCompletedPayment(Request $request)
+    public function handlePaymentNotification(Request $request)
     {
         try {
-            if (!$request['transaction_status'] == 'pending') {
+            if ($request->transaction_status == 'pending') {
                 return response()->json(
                     [
                         'status' => true,
@@ -81,8 +83,12 @@ class PaymentController extends Controller
                     200
                 );
             }
+            $payment = Payment::where('transaction_id', $request->transaction_id)->first();
+            $payment->completePayment();
+            $consultation = Consultations::where("payment_id", $payment->payment_id)->first();
+            $customer = User::findOrFail($consultation->patient_id);
 
-            Payment::where('transaction_id', $request->transaction_id)->first()->completePayment();
+            PaymentSuccessEmailJob::dispatch($customer->name, $payment->transaction_id, $payment->amount, $customer->email);
 
             return response()->json(
                 [

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\PasswordResetEmail;
 use App\Mail\PaymentEmail;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Queue\SerializesModels;
@@ -24,7 +25,7 @@ class PaymentEmailJob implements ShouldQueue
     {
         $this->name = $name;
         $this->bank = $bank;
-        $this->expired_date = $expired_date;
+        $this->expired_date = Carbon::parse($expired_date)->format('l, j F Y \a\t H:i');
         $this->amount = $amount;
         $this->va_number = $va_number;
         $this->payment_method = $payment_method;

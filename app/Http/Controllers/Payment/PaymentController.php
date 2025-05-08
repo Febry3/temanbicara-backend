@@ -72,13 +72,13 @@ class PaymentController extends Controller
     public function handleCompletedPayment(Request $request)
     {
         try {
-            if (!$request['transaction_status'] == 'settlement') {
+            if (!$request['transaction_status'] == 'pending') {
                 return response()->json(
                     [
-                        'status' => false,
-                        'message' => 'Pembayaran dengan id tersebut telah berhasil sebelumnya',
+                        'status' => true,
+                        'message' => 'Pembayaran masih tertunda',
                     ],
-                    409
+                    200
                 );
             }
 

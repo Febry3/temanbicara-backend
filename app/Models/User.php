@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -72,5 +75,12 @@ class User extends Authenticatable
     public function schedules()
     {
         return $this->hasMany(Schedule::class, 'counselor_id');
+    }
+
+    protected function lastSevenDaysTracking(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => Tracking::where("user_id", $this->id)->where("created_at", ">=", Carbon::today()->subDays(6))->get()
+        );
     }
 }

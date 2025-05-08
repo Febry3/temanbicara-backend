@@ -14,6 +14,7 @@ use App\Jobs\ExpireConsultationJob;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Payment\PaymentController;
+use App\Jobs\PaymentEmailJob;
 use App\Jobs\UpdateExpiredPaymentJob;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log as FacadesLog;
@@ -131,6 +132,7 @@ class ConsultationController extends Controller
             ]);
 
             UpdateExpiredPaymentJob::dispatch($paymentAfterCreated->payment_id)->delay(Carbon::now('Asia/Jakarta')->diffInSeconds(Carbon::parse($paymentAfterCreated->expired_date)));
+            PaymentEmailJob::dispatch(Auth::user()->name, $paymentAfterCreated->bank, $paymentAfterCreated->expired_date, $paymentAfterCreated->amount, $paymentAfterCreated->va_number, $paymentAfterCreated->payment_method, Auth::user()->email);
 
             DB::commit();
 

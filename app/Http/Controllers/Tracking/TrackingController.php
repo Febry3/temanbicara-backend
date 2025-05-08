@@ -41,8 +41,7 @@ class TrackingController extends Controller
                     'message' => 'Ada bagian yang tidak diisi',
                     'error' => $validateData->errors(),
                 ], 200);
-            }
-            ;
+            };
 
             $tracking = Tracking::where('user_id', $request->user()->id)
                 ->whereDate('created_at', Carbon::today())
@@ -109,8 +108,6 @@ class TrackingController extends Controller
 
             $trackings = Tracking::where('user_id', $request->user()->id)->get();
 
-
-
             if ($trackings->isEmpty()) {
                 return response()->json(
                     [
@@ -127,6 +124,30 @@ class TrackingController extends Controller
                     'message' => 'Data berhasil diambil',
                     'user_id' => $request->user()->id,
                     'data' => $trackings
+                ],
+                200
+            );
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
+
+    public function getLastSevenDaysTracking(Request $request)
+    {
+        try {
+            $lastSevenData = Auth::user()->lastSevenDaysTracking;
+
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Data berhasil diambil',
+                    'data' => $lastSevenData
                 ],
                 200
             );

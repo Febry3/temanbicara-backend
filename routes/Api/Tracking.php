@@ -11,4 +11,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('tracking', function (Request $request) {
         return TrackingController::getAllTracking($request);
     });
+    Route::get('tracking/lastseven', [TrackingController::class, 'getLastSevenDaysTracking']);
 });

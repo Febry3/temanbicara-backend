@@ -11,6 +11,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Helper\ImageRequestHelper;
+use App\Jobs\PaymentEmailJob;
+use App\Jobs\ResetPasswordEmailJob;
 use App\Mail\PasswordResetEmail;
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
@@ -400,7 +402,9 @@ class AuthController extends Controller
             }
 
             $otp = rand(100000, 999999);
-            Mail::to($email)->send(new PasswordResetEmail(explode('@', $email)[0], $otp));
+
+            ResetPasswordEmailJob::dispatch($email, $otp);
+
             $otpRequest = OTPRequest::where('user_id', $user->id)->first();
             $expired_at = Carbon::now(new CarbonTimeZone('Asia/Bangkok'))->addMinutes(5)->format('Y-m-d H:i:s');
 

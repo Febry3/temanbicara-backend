@@ -160,38 +160,38 @@ class TrackingController extends Controller
             ];
 
             foreach ($lastSevenData as $data) {
-                $sum['mood'] += match ($data['mood_level']) {
-                    "Depressed" => 1,
-                    "Sad" => 2,
-                    "Neutral" => 3,
-                    "Happy" => 4,
-                    "Cheerful" => 5,
+                $sum['mood'] += match (strtolower(implode('', explode(' ', $data['mood_level'])))) {
+                    "depressed" => 1,
+                    "sad" => 2,
+                    "neutral" => 3,
+                    "happy" => 4,
+                    "cheerful" => 5,
                 };
 
                 $sum['stress_level'] += $data['stress_level'];
 
-                $sum['bed_time'] += match ($data['bed_time']) {
-                    "> 8 hours" => 9,
-                    "7-8 hours" => 8,
-                    "6 hours" => 6,
-                    "4-5 hours" => 5,
-                    "< 4 hours" => 3,
+                $sum['bed_time'] += match (strtolower(implode('', explode(' ', $data['bed_time'])))) {
+                    ">8hours" => 9,
+                    "7-8hours" => 8,
+                    "6hours" => 6,
+                    "4-5hours" => 5,
+                    "<4hours" => 3,
                 };
 
-                $sum['screen_time'] += match ($data['screen_time']) {
-                    "< 1 hours" => 1,
-                    "1-3 hours" => 3,
-                    "3-5 hours" => 5,
-                    "5-8 hours" => 8,
-                    "> 8 hours" => 9,
+                $sum['screen_time'] += match (strtolower(implode('', explode(' ', $data['screen_time'])))) {
+                    "<1hours" => 1,
+                    "1-3hours" => 3,
+                    "3-5hours" => 5,
+                    "5-8hours" => 8,
+                    ">8hours" => 9,
                 };
 
-                $sum['activity'] += match ($data['activity']) {
-                    "< 2 steps" => 1,
-                    "2k-5k steps" => 5,
-                    "5k-7.5k steps" => 7.5,
-                    "7.5k-10k steps" => 10,
-                    "> 10k steps" => 11,
+                $sum['activity'] += match (strtolower(implode('', explode(' ', $data['activity'])))) {
+                    "<2steps" => 1,
+                    "2k-5ksteps" => 5,
+                    "5k-7.5ksteps" => 7.5,
+                    "7.5k-10ksteps" => 10,
+                    ">10ksteps" => 11,
                 };
             }
 

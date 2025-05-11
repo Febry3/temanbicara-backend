@@ -6,9 +6,9 @@ use App\Http\Controllers\Auth\AuthController;
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::post('change-password', [AuthController::class, 'changePassword']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('change-password', [AuthController::class, 'changePassword']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('verify-token', [AuthController::class, 'verifySanctumToken']);
     Route::post('profile', [AuthController::class, 'editProfileData']);

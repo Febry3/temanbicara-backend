@@ -232,7 +232,7 @@ class AuthController extends Controller
                 ], 200);
             };
 
-            $user = User::find(Auth::user()->id);
+            $user = User::find(Auth::id());
 
             if (!$user) {
                 return response()->json([

@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Tracking;
 
-use Carbon\Carbon;
 use Throwable;
+use Carbon\Carbon;
 use App\Models\Journal;
 use App\Models\Tracking;
+use UnhandledMatchError;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Report\ReportController;
-use Illuminate\Support\Facades\Auth;
 
 class TrackingController extends Controller
 {
@@ -171,27 +172,27 @@ class TrackingController extends Controller
                 $sum['stress_level'] += $data['stress_level'];
 
                 $sum['bed_time'] += match (strtolower(implode('', explode(' ', $data['bed_time'])))) {
-                    ">8hours" => 9,
-                    "7-8hours" => 8,
-                    "6hours" => 6,
-                    "4-5hours" => 5,
-                    "<4hours" => 3,
+                    ">7hours" => 7.5,
+                    "5-6hours" => 5.5,
+                    "4-5hours" => 4.5,
+                    "3-4hours" => 3.5,
+                    "<3hours" => 2.5,
                 };
 
                 $sum['screen_time'] += match (strtolower(implode('', explode(' ', $data['screen_time'])))) {
-                    "<1hours" => 1,
-                    "1-3hours" => 3,
-                    "3-5hours" => 5,
-                    "5-8hours" => 8,
-                    ">8hours" => 9,
+                    "<1hours" => 0.5,
+                    "1-2hours" => 1.5,
+                    "2-3hours" => 2.5,
+                    "3-4hours" => 3.5,
+                    ">5hours" => 5.5,
                 };
 
                 $sum['activity'] += match (strtolower(implode('', explode(' ', $data['activity'])))) {
-                    "<2steps" => 1,
-                    "2k-5ksteps" => 5,
-                    "5k-7.5ksteps" => 7.5,
-                    "7.5k-10ksteps" => 10,
-                    ">10ksteps" => 11,
+                    "<0.5ksteps" => 0.25,
+                    "0.5k-1ksteps" => 0.75,
+                    "1k-3ksteps" => 2,
+                    "3k-5ksteps" => 4,
+                    ">6ksteps" => 6.5,
                 };
             }
 
@@ -215,6 +216,14 @@ class TrackingController extends Controller
                     ]
                 ],
                 200
+            );
+        } catch (UnhandledMatchError $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Wrong data format'
+                ],
+                500
             );
         } catch (Throwable $err) {
             return response()->json(

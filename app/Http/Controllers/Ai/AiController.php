@@ -21,11 +21,11 @@ class AiController extends Controller
 
         Berikut datanya:
 
-        Mood (Depresi, Sedih, Netral, Senang, Bahagia) : {$mood}
-        Kualitas Tidur (<3 jam, 4-5 jam, 5-6 jam, 7-8 jam, >8 jam) : {$sleep}
+        Mood (depressed, sad, neutral, happy, cheerful) : {$mood}
+        Kualitas Tidur (<3hours, 3-4hours, 4-5hours, 5-6hours, >7hours) : {$sleep}
         Stress Level (Range 1 - 5) : {$stress}
-        Screen Time (<1 jam, 1-2 jam, 3-4 jam, 5-6 jam, >6 jam) : {$screenTime}
-        Steps (<500, 500-1000, 1000-3000, 3000-5000, >5000) : {$steps}
+        Screen Time (<1hours, 1-2hours, 2-3hours, 3-4hours, >5hours) : {$screenTime}
+        Steps (<500, 500-1000, 1000-3000, 3000-5000, >6000) : {$steps}
         Journal : "{$journalText}"
 
         Terakhir, berikan juga nilai matrix terhadap keseluruhan hasil dengan indikator sebagai berikut:

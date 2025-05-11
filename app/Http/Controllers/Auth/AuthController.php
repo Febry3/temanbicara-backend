@@ -241,7 +241,7 @@ class AuthController extends Controller
                 ], 200);
             }
 
-            if (!Hash::check($requestedData['new_password'], $user->password)) {
+            if (!Hash::check($requestedData['old_password'], $user->password)) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Password lama tidak sesuai',

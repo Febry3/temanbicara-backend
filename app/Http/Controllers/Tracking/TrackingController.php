@@ -189,10 +189,10 @@ class TrackingController extends Controller
 
                 $sum['activity'] += match (strtolower(implode('', explode(' ', $data['activity'])))) {
                     "<500steps" => 0.25,
-                    "500-1000steps" => 0.75,
-                    "1000-3000steps" => 2,
-                    "3000-5000steps" => 4,
-                    ">6000steps" => 6.5,
+                    "500-1ksteps" => 0.75,
+                    "1k-3ksteps" => 2,
+                    "3k-5ksteps" => 4,
+                    ">6ksteps" => 6.5,
                 };
             }
 

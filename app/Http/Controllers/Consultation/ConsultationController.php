@@ -10,7 +10,6 @@ use App\Models\Schedule;
 use Illuminate\Http\Request;
 use App\Models\Consultations;
 use Illuminate\Support\Facades\DB;
-use App\Jobs\ExpireConsultationJob;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Payment\PaymentController;

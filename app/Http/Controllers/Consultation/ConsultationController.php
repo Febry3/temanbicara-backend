@@ -338,7 +338,7 @@ class ConsultationController extends Controller
             $status = $request['payment_status'];
             $userId = $request->user()->id;
 
-            $consultations = Consultations::with(['payment', 'schedule.user'])
+            $consultations = Consultations::with(['payment', 'schedule.user.expertises'])
                 ->whereHas('payment', function ($query) use ($status) {
                     $query->where('payment_status', $status);
                 })->where('patient_id', $userId)

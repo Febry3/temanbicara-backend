@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Date;
 use Illuminate\Database\Eloquent\Model;
 
 class Schedule extends Model
@@ -30,7 +32,7 @@ class Schedule extends Model
         return $this->belongsTo(User::class, 'counselor_id');
     }
     public function consultation()
-{
-    return $this->hasOne(Consultations::class, 'schedule_id');
-}
+    {
+        return $this->hasOne(Consultations::class, 'schedule_id');
+    }
 }

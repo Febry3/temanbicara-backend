@@ -60,15 +60,17 @@ class AiController extends Controller
     }
     public function generate($userId)
     {
+        $responseData=[];
         $tracking = Tracking::where('user_id', $userId)
             ->whereDate('created_at', Carbon::today())
             ->latest()
             ->first();
 
         if (!$tracking) {
-            return response()->json([
+            $responseData = [
                 'error' => 'Silahkan mengisi tracking terlebih dahulu'
-            ], 404);
+            ];
+            return response()->json($responseData, 404);
         }
 
         $journal = Journal::with('user')
@@ -104,23 +106,25 @@ class AiController extends Controller
             $jsonResult = json_decode($cleanedText, true);
 
             if (!$jsonResult) {
-                return response()->json([
+                $responseData = [
                     'error' => 'Format JSON tidak valid dari Gemini',
                     'raw_response' => $jsonResult
-                ]);
+                ];
+                return response()->json($responseData, 404);
             }
 
-            return response()->json([
+            $responseData =[
                 'status' => true,
                 'tracking_id' => $tracking->tracking_id,
                 'result' => $jsonResult
-            ]);
+            ];
         } catch (\Exception $e) {
-            return response()->json([
+            $responseData = [
                 'error' => 'Failed to store data',
                 'message' => $e->getMessage()
-            ]);
+            ];
         }
+        return response()->json($responseData);
     }
 
 }

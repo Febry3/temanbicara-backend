@@ -25,7 +25,7 @@ class AiController extends Controller
         Kualitas Tidur (<3hours, 3-4hours, 4-5hours, 5-6hours, >7hours) : {$sleep}
         Stress Level (Range 1 - 5) : {$stress}
         Screen Time (<1hours, 1-2hours, 2-3hours, 3-4hours, >5hours) : {$screenTime}
-        Steps (<500, 500-1k, 1k-3k, 3k-5k, >k) : {$steps}
+        Steps (<500, 500-1k, 1k-3k, 3k-5k, >6k) : {$steps}
         Journal : "{$journalText}"
 
         Terakhir, berikan juga nilai matrix terhadap keseluruhan hasil dengan indikator sebagai berikut:

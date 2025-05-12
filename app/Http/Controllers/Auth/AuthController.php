@@ -212,7 +212,6 @@ class AuthController extends Controller
     {
         try {
             $requestedData = $request->only([
-                'email',
                 'old_password',
                 'new_password',
             ]);
@@ -220,7 +219,6 @@ class AuthController extends Controller
             $validateData = Validator::make(
                 $requestedData,
                 [
-                    'email' => 'required',
                     'old_password' => 'required',
                     'new_password' => 'required'
                 ]
@@ -234,7 +232,7 @@ class AuthController extends Controller
                 ], 200);
             };
 
-            $user = User::where('email', $requestedData['email'], 'AND')->where('phone_number', $requestedData['phone_number'])->first();
+            $user = User::find(Auth::id());
 
             if (!$user) {
                 return response()->json([
@@ -243,7 +241,7 @@ class AuthController extends Controller
                 ], 200);
             }
 
-            if (!Hash::check($requestedData['new_password'], $user->password)) {
+            if (!Hash::check($requestedData['old_password'], $user->password)) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Password lama tidak sesuai',

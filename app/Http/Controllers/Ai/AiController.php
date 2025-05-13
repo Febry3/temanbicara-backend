@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Ai;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tracking;
-use App\Models\TrackJournalResponse;
 use Carbon\Carbon;
-// use Illuminate\Http\Request;
 use App\Models\Journal;
 use Illuminate\Support\Facades\Http;
 

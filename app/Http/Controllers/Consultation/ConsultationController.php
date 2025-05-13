@@ -304,11 +304,10 @@ class ConsultationController extends Controller
     {
         try {
             DB::beginTransaction();
-            $consultation = Consultations::where('consultation_id', $id)
+            $consultation = Consultations::with('payment')
+                ->where('consultation_id', $id)
                 ->whereNotIn('status', ['Done', 'Cancelled'])
                 ->update(['status' => 'Cancelled']);
-
-
             if (!$consultation) {
                 return response()->json([
                     'status' => true,
@@ -317,6 +316,7 @@ class ConsultationController extends Controller
             }
 
             Schedule::where('schedule_id', Consultations::findOrFail($id)->schedule_id)->update(['status' => "Available"]);
+            Payment::where('payment_id',Consultations::findOrFail($id)->payment_id)->update(['payment_status'=>"Expired"]);
             DB::commit();
 
             return response()->json([

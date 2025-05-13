@@ -35,4 +35,8 @@ class Schedule extends Model
     {
         return $this->hasOne(Consultations::class, 'schedule_id');
     }
+    public function getAvailableDateAttribute($value)
+    {
+        return Carbon::parse( $value)->format('Y-m-d h:i:s');
+    }
 }

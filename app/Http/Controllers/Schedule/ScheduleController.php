@@ -77,7 +77,7 @@ class ScheduleController extends Controller
                         ? $user->expertises->pluck('type')->toArray()
                         : ['None'],
                     'schedules' => $user->schedules->groupBy(function ($schedule) {
-                        return $schedule->available_date->format('Y-m-d');
+                        return $schedule->available_date;
                     })->map(function ($dateSchedules, $date) {
                         return [
                             'date' => $date,

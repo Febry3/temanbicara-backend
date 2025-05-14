@@ -15,10 +15,6 @@
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
         style="background-color: #f4f4f4; padding: 20px;">
         <tr>
-            <th>
-            <th>
-        </tr>
-        <tr>
             <td align="center">
                 <table role="presentation" width="100%" max-width="600px" cellspacing="0" cellpadding="0"
                     border="0" sty le="background-color: #ffffff; border-radius: 10px; padding: 20px;">

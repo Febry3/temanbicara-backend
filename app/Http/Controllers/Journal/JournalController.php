@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 
 class JournalController extends Controller
 {
+    private const notFoundMsg = 'Jurnal tidak ditemukan';
     public static function createJournal(JournalRequest $request)
     {
         try {
@@ -98,7 +99,7 @@ class JournalController extends Controller
             if (!$journal) {
                 $responseData = [
                     'status' => false,
-                    'message' => 'Jurnal tidak ditemukan',
+                    'message' => self::notFoundMsg,
                 ];
                 return response()->json($responseData, 500);
             }
@@ -142,6 +143,8 @@ class JournalController extends Controller
 
     public static function deleteJournal($id)
     {
+        $responseData = [];
+        $statusCode = 200;
         try {
             $journal = Journal::where([
                 'journal_id' => $id,
@@ -149,50 +152,47 @@ class JournalController extends Controller
             ])->first();
 
             if (!$journal) {
-                return response()->json(
+                $responseData =
                     [
                         'status' => false,
                         'message' => 'Jurnal tidak ditemukan atau Anda tidak memiliki akses.',
-                    ],
-                    404
-                );
+                    ];
+                $statusCode = 204;
+                return response()->json($responseData,$statusCode);
             }
 
             if ($journal->image_url != 'Empty') {
                 $response = ImageRequestHelper::deleteImageFromSupabase($journal->image_url);
 
                 if ($response->failed()) {
-                    return response()->json(
+                    $responseData =
                         [
                             'status' => false,
                             'message' => 'Kesalahan pada menghapus gambar',
-                        ],
-                        404
-                    );
+                        ];
+                    $statusCode = 500;
+                    return response()->json($responseData,$statusCode);
                 }
             }
 
             $journal->delete();
 
-            return response()->json(
+            $responseData =
                 [
                     'status' => true,
                     'message' => 'Data berhasil dihapus',
-                ],
-                200
-            );
+                ];
         } catch (\Throwable $err) {
-            return response()->json(
+            $responseData =
                 [
                     'status' => false,
                     'message' => 'Terjadi kesalahan: ' . $err->getMessage(),
-                ],
-                500
-            );
+                ];
         }
+        return response()->json($responseData,$statusCode);
     }
 
-    public static function getJournalById(Request $request, $id)
+    public static function getJournalById($id)
     {
         try {
             $journal = Journal::where([
@@ -204,7 +204,7 @@ class JournalController extends Controller
                 return response()->json(
                     [
                         'status' => false,
-                        'message' => 'Jurnal tidak ditemukan',
+                        'message' => self::notFoundMsg,
                     ],
                     404
                 );
@@ -251,7 +251,7 @@ class JournalController extends Controller
                 return response()->json(
                     [
                         'status' => false,
-                        'message' => 'Jurnal tidak ditemukan',
+                        'message' => self::notFoundMsg,
                     ],
                     200
                 );
@@ -289,7 +289,7 @@ class JournalController extends Controller
         } catch (Throwable $err) {
             return response()->json(
                 $err->getMessage(),
-                400
+                500
             );
         }
     }

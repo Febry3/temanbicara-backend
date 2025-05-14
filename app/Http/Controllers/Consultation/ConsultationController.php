@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ConsultationController extends Controller
 {
+    private const required = 'required|string';
     public static function getConsultation()
     {
         try {
@@ -64,9 +65,9 @@ class ConsultationController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'description' => 'required|string',
-                'problem' => 'required|string',
-                'summary' => 'required|string',
+                'description' => self::required,
+                'problem' => self::required,
+                'summary' => self::required,
                 'status' => 'required',
             ]);
 
@@ -100,7 +101,7 @@ class ConsultationController extends Controller
                 'summary' => 'nullable',
                 'schedule_id' => 'required|exists:schedules,schedule_id',
                 'amount' => 'required|integer',
-                'bank' => 'required|string',
+                'bank' => self::required,
             ]);
 
             DB::beginTransaction();
@@ -242,7 +243,7 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-    public static function getConsultationAndPaymentInfo(Request $request, $id)
+    public static function getConsultationAndPaymentInfo($id)
     {
         try {
             $data = Consultations::where('consultation_id', $id)
@@ -263,7 +264,7 @@ class ConsultationController extends Controller
         }
     }
 
-    public static function checkConsulationPaymentStatus(Request $request, $id)
+    public static function checkConsulationPaymentStatus($id)
     {
         try {
 
@@ -342,7 +343,6 @@ class ConsultationController extends Controller
                     $query->where('payment_status', $status);
                 })->where('patient_id', $userId)
                 ->get();
-            // dd($consultations);
             return response()->json([
                 'status' => true,
                 'message' => 'History Consultation',

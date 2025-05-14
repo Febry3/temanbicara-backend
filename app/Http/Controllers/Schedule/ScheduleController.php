@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 
 class ScheduleController extends Controller
 {
+     private const notFoundMsg = 'User not found or does not have Counselor role';
     public static function getSchedule()
     {
         try {
@@ -106,7 +107,7 @@ class ScheduleController extends Controller
             ], 500);
         }
     }
-    public static function getScheduleByID(Request $request, $id)
+    public static function getScheduleByID($id)
     {
         try {
 
@@ -118,7 +119,7 @@ class ScheduleController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'User not found or does not have Counselor role',
+                    'message' => self::notFoundMsg,
                 ], 404);
             }
 
@@ -129,7 +130,7 @@ class ScheduleController extends Controller
                     ? $user->expertises->pluck('type')->toArray()
                     : ['None'],
                 'schedules' => $user->relationLoaded('schedules') && $user->schedules->isNotEmpty()
-                    ? $user->schedules->groupBy(fn($schedule) => $schedule->available_date->format('Y-m-d'))
+                    ? $user->schedules->groupBy(fn($schedule) => $schedule->available_date)
                     ->map(fn($dateSchedules, $date) => [
                         'date' => $date,
                         'schedulesByDate' => $dateSchedules->map(fn($schedule) => [
@@ -167,7 +168,7 @@ class ScheduleController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'User not found or does not have Counselor role',
+                    'message' => self::notFoundMsg,
                 ], 404);
             }
 
@@ -219,7 +220,7 @@ class ScheduleController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'User not found or does not have Counselor role',
+                    'message' => self::notFoundMsg,
                 ], 404);
             }
 
@@ -237,7 +238,7 @@ class ScheduleController extends Controller
             ], 500);
         }
     }
-    public static function updateScheduleStatus(Request $request, $id)
+    public static function updateScheduleStatus($id)
     {
         try {
             $schedule = Schedule::find($id);

@@ -43,7 +43,7 @@ class AuthController extends Controller
                     'message' => 'Terjadi kesalahan pada validasi',
                     'error' => $validateData->errors(),
                 ], 200);
-            };
+            }
 
             $user = User::create([
                 'email' => $requestedData['email'],
@@ -466,7 +466,7 @@ class AuthController extends Controller
         }
     }
 
-    public function getUser(Request $request)
+    public function getUser()
     {
         try {
             $userData = User::find(Auth::user()->id);

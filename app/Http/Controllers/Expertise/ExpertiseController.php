@@ -15,7 +15,7 @@ class ExpertiseController extends Controller
     {
         try {
 
-            $Expertise = Expertise::with(['user:id,name,email'])
+            $expertise = Expertise::with(['user:id,name,email'])
                 ->whereHas('user', function ($query) {
                     $query->where('role', 'Counselor');
                 })
@@ -25,7 +25,7 @@ class ExpertiseController extends Controller
                 [
                     'status' => true,
                     'message' => 'Data keahlian berhasil diambil',
-                    'data' => $Expertise,
+                    'data' => $expertise,
                 ],
                 200
             );
@@ -55,10 +55,9 @@ class ExpertiseController extends Controller
                     'message' => 'type tidak diisi',
                     'error' => $validate->errors(),
                 ], 200);
-            };
-            //ganti sesuai id user lu
+            }
             $idUser = $request->user()->id;
-            $Expertise=Expertise::create([
+            $expertise=Expertise::create([
                 'type' => $reqData['type'],
                 'user_id' => $idUser,
             ]);
@@ -67,7 +66,7 @@ class ExpertiseController extends Controller
                 [
                     'status' => true,
                     'message' => 'Expertise berhasil dibuat',
-                    'data' => $Expertise,
+                    'data' => $expertise,
                 ],
                 200
             );

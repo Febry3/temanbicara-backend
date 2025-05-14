@@ -44,7 +44,7 @@ class TrackingController extends Controller
                     'error' => $validateData->errors(),
                 ];
                 return response()->json($responseData, 500);
-            };
+            }
 
             $tracking = Tracking::where('user_id', $request->user()->id)
                 ->whereDate('created_at', Carbon::today())
@@ -96,7 +96,7 @@ class TrackingController extends Controller
                     'message' => $err->getMessage()
                 ];
         }
-         return response()->json($responseData);
+        return response()->json($responseData);
     }
 
     public static function getAllTracking(Request $request)
@@ -135,17 +135,21 @@ class TrackingController extends Controller
         }
     }
 
-    public function getLastSevenDaysTracking(Request $request)
+    public function getLastSevenDaysTracking()
     {
+        $responseData = [];
+        $statusCode = 200;
         try {
             $lastSevenData = Auth::user()->lastSevenDaysTracking;
 
             if ($lastSevenData->isEmpty()) {
-                return response()->json([
-                    'status' => true,
+                $responseData = [
+                    'status' => false,
                     'message' => 'No tracking data available',
                     'data' => null
-                ], 200);
+                ];
+                $statusCode = 204;
+                return response()->json($responseData, $statusCode);
             }
 
             $sum = [
@@ -192,7 +196,7 @@ class TrackingController extends Controller
                 };
             }
 
-            return response()->json(
+            $responseData =
                 [
                     'status' => true,
                     'message' => 'Data berhasil diambil',
@@ -210,25 +214,22 @@ class TrackingController extends Controller
                         'average_screen_time' => round($sum['screen_time'] / count($lastSevenData)) . " hours",
                         'average_activity' => round($sum['activity'] / count($lastSevenData)) . "k steps",
                     ]
-                ],
-                200
-            );
+                ];
         } catch (UnhandledMatchError $err) {
-            return response()->json(
+           $responseData =
                 [
                     'status' => false,
                     'message' => 'Wrong data format'
-                ],
-                500
-            );
+                ];
+            $statusCode = 500;
         } catch (Throwable $err) {
-            return response()->json(
+           $responseData =
                 [
                     'status' => false,
                     'message' => $err->getMessage()
-                ],
-                500
-            );
+                ];
+            $statusCode = 500;
         }
+        return response()->json($responseData,$statusCode);
     }
 }

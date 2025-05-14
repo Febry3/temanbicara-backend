@@ -58,7 +58,13 @@ class PaymentController extends Controller
                 'transaction_id' => $midTransResponse['transaction_id']
             ];
         } catch (Throwable $err) {
-            throw new Exception($err->getMessage());
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage(),
+                ],
+                500
+            );
         }
     }
 

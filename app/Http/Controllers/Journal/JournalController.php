@@ -25,7 +25,7 @@ class JournalController extends Controller
                 'body',
             ]);
 
-            $validateData = Validator::make(
+            Validator::make(
                 $requestedData,
                 [
                     'title' => 'required',
@@ -47,8 +47,6 @@ class JournalController extends Controller
                     );
                 }
             }
-            //cek apakah id_tracking masih kosong.
-            //jika kosong dan tracking tersebut sudah tersedia maka akan di assign ke id_tracking yg tersedia di hari ini.
             $today = now()->toDateString();
             $trackingId = $request['tracking_id'];
             if (empty($trackingId)) {
@@ -91,16 +89,18 @@ class JournalController extends Controller
     public static function updateJournal(JournalRequest $request, $id)
     {
         try {
+            $responseData = [];
             $journal = Journal::where([
                 'journal_id' => $id,
                 'user_id' => Auth::user()->id
             ])->first();
 
             if (!$journal) {
-                return response()->json([
+                $responseData = [
                     'status' => false,
                     'message' => 'Jurnal tidak ditemukan',
-                ], 200);
+                ];
+                return response()->json($responseData, 500);
             }
 
             if ($request->hasFile('image')) {
@@ -112,13 +112,12 @@ class JournalController extends Controller
                 }
 
                 if ($response->failed()) {
-                    return response()->json(
+                    $responseData =
                         [
                             'status' => false,
                             'message' => 'Kesalahan pada memperbaharui gambar',
-                        ],
-                        404
-                    );
+                        ];
+                    return response()->json($responseData, 500);
                 }
             }
 
@@ -128,19 +127,20 @@ class JournalController extends Controller
                 'image_url' => $imageUrl ?? $journal->image_url,
             ]);
 
-            return response()->json([
+            $responseData =[
                 'status' => true,
                 'message' => 'Data berhasil diubah',
-            ], 200);
+            ];
         } catch (Throwable $err) {
-            return response()->json([
+            $responseData = [
                 'status' => false,
                 'message' => $err->getMessage()
-            ], 500);
+            ];
         }
+         return response()->json($responseData);
     }
 
-    public static function deleteJournal(Request $request, $id)
+    public static function deleteJournal($id)
     {
         try {
             $journal = Journal::where([
@@ -236,7 +236,7 @@ class JournalController extends Controller
                 'date_request'
             ]);
 
-            $validateData = Validator::make(
+            Validator::make(
                 $requestedData,
                 [
                     'date_request' => ['required', 'date_format:YYYY-mm-dd'],
@@ -245,7 +245,7 @@ class JournalController extends Controller
 
             $datereq = $request['date_request'];
             $journal = Journal::with('user')->where('user_id', $userId)
-            ->whereDate('created_at', $datereq)->get();
+                ->whereDate('created_at', $datereq)->get();
 
             if ($journal->isEmpty()) {
                 return response()->json(

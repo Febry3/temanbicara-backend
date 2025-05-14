@@ -17,6 +17,7 @@ class TrackingController extends Controller
 {
     public static function doTracking(Request $request)
     {
+        $responseData = [];
         try {
             $requestedData = $request->only([
                 'bed_time',
@@ -37,11 +38,12 @@ class TrackingController extends Controller
                 ]
             );
             if ($validateData->fails()) {
-                return response()->json([
+                $responseData = [
                     'status' => false,
                     'message' => 'Ada bagian yang tidak diisi',
                     'error' => $validateData->errors(),
-                ], 200);
+                ];
+                return response()->json($responseData, 500);
             };
 
             $tracking = Tracking::where('user_id', $request->user()->id)
@@ -50,13 +52,12 @@ class TrackingController extends Controller
                 ->first();
 
             if ($tracking) {
-                return response()->json(
+                $responseData =
                     [
                         'status' => true,
                         'message' => 'Anda sudah melakukan tracking hari ini',
-                    ],
-                    200
-                );
+                    ];
+                return response()->json($responseData, 500);
             }
 
             $tracking = Tracking::create([
@@ -81,31 +82,26 @@ class TrackingController extends Controller
             }
 
 
-            return response()->json(
+            $responseData =
                 [
                     'status' => true,
                     'message' => 'Data berhasil disimpan',
                     'data' => $tracking,
                     'response_ai' => $responseAi
-                ],
-                200
-            );
+                ];
         } catch (\Throwable $err) {
-            return response()->json(
+            $responseData =
                 [
                     'status' => false,
                     'message' => $err->getMessage()
-                ],
-                500
-            );
+                ];
         }
+         return response()->json($responseData);
     }
 
     public static function getAllTracking(Request $request)
     {
         try {
-
-            $mood_level = ["Depresi", "Sedih", "Netral", "Senang", "Bahagia"];
 
             $trackings = Tracking::where('user_id', $request->user()->id)->get();
 
@@ -202,7 +198,7 @@ class TrackingController extends Controller
                     'message' => 'Data berhasil diambil',
                     'data' => [
                         'tracking_data' => $lastSevenData,
-                        'average_mood' => match ((int)round($sum['mood'] / count($lastSevenData))) {
+                        'average_mood' => match ((int) round($sum['mood'] / count($lastSevenData))) {
                             1 => 'Depressed',
                             2 => 'Sad',
                             3 => 'Neutral',

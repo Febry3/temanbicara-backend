@@ -97,7 +97,7 @@ class ArticleController extends Controller
             );
         }
     }
-    public static function getAllArticleByCounselor(Request $request)
+    public static function getAllArticleByCounselor()
     {
 
         try {

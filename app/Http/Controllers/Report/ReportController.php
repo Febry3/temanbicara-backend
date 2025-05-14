@@ -22,7 +22,7 @@ class ReportController extends Controller
                 'date_request'
             ]);
 
-            $validateData = Validator::make(
+            Validator::make(
                 $requestedData,
                 [
                     'date_request' => ['required', 'date_format:YYYY-mm-dd'],

@@ -68,7 +68,7 @@ class AiController extends Controller
             $responseData = [
                 'error' => 'Silahkan mengisi tracking terlebih dahulu'
             ];
-            return response()->json($responseData, 404);
+            return response()->json($responseData, 500);
         }
 
         $journal = Journal::with('user')

@@ -46,20 +46,7 @@ class ExpiredTimeConsultation extends Command
                 }
             }
         }
-        //state nya itu succes kalo udah emang bayar
-        // $successPayments = \App\Models\Payment::where('payment_status', 'Success')
-        //     ->whereHas('consultation', function ($q) {
-        //         $q->where('status', 'Incoming');
-        //     })
-        //     ->get();
-
-        // foreach ($successPayments as $payment) {
-        //     $consultation = \App\Models\Consultations::where('payment_id', $payment->payment_id)->first();
-        //     $consultation?->update(['status' => 'Incoming']);
-        //     $schedule = \App\Models\Schedule::where('schedule_id', $consultation->schedule_id)->first();
-        //     $schedule?->update(['status' => 'Booked']);
-        // }
-
+      
         if ($this->hasOutput()) {
             $this->info("Expired consultations processed successfully.");
         }

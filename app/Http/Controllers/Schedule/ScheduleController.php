@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 
 class ScheduleController extends Controller
 {
-    public static function getSchedule(Request $request)
+    public static function getSchedule()
     {
         try {
             $users = User::where('role', 'Counselor')->with([
@@ -59,7 +59,7 @@ class ScheduleController extends Controller
             ], 500);
         }
     }
-    public static function getAvailableSchedule(Request $request)
+    public static function getAvailableSchedule()
     {
         try {
             $users = User::where('role', 'Counselor')->with([
@@ -153,7 +153,7 @@ class ScheduleController extends Controller
             ], 500);
         }
     }
-    public static function getAvailableScheduleByID(Request $request, $id)
+    public static function getAvailableScheduleByID($id)
     {
         try {
 

@@ -300,7 +300,7 @@ class ConsultationController extends Controller
             ], 500);
         }
     }
-    public static function cancelConsultation(Request $request, $id)
+    public static function cancelConsultation($id)
     {
         try {
             DB::beginTransaction();
@@ -342,7 +342,7 @@ class ConsultationController extends Controller
                     $query->where('payment_status', $status);
                 })->where('patient_id', $userId)
                 ->get();
-
+            // dd($consultations);
             return response()->json([
                 'status' => true,
                 'message' => 'History Consultation',

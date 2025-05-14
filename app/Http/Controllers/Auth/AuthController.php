@@ -345,7 +345,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Profile data updated',
-                'data' => User::find(Auth::user()->id)->first(),
+                'data' => User::find(Auth::user()->id),
             ], 200);
         } catch (Throwable $err) {
             return response()->json(

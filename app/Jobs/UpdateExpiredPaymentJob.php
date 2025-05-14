@@ -37,11 +37,15 @@ class UpdateExpiredPaymentJob implements ShouldQueue
 
         $consultation = Consultations::where('payment_id', $this->payment->payment_id)->first();
 
-        if (!$consultation) return;
+        if (!$consultation) {
+            return;
+        }
         $consultation->update(['status' => 'Cancelled']);
 
         $schedule = Schedule::find($consultation->schedule_id);
-        if (!$schedule) return;
+        if (!$schedule) {
+            return;
+        }
         $schedule->update(['status' => 'Available']);
     }
 }

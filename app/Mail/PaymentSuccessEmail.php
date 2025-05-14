@@ -12,14 +12,14 @@ use Illuminate\Queue\SerializesModels;
 class PaymentSuccessEmail extends Mailable
 {
     use Queueable, SerializesModels;
-    private $customer_name, $order_id, $amount;
+    private $customerName, $orderId, $amount;
     /**
      * Create a new message instance.
      */
-    public function __construct($customer_name, $order_id, $amount)
+    public function __construct($customerName, $orderId, $amount)
     {
-        $this->customer_name = $customer_name;
-        $this->order_id = $order_id;
+        $this->customerName = $customerName;
+        $this->orderId = $orderId;
         $this->amount = $amount;
     }
 
@@ -41,9 +41,9 @@ class PaymentSuccessEmail extends Mailable
         return new Content(
             view: 'payment.payment-success',
             with: [
-                'customer_name' => $this->customer_name,
+                'customer_name' => $this->customerName,
                 'amount' => $this->amount,
-                'order_id' => $this->order_id
+                'order_id' => $this->orderId
             ]
         );
     }

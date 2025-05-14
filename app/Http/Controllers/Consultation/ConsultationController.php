@@ -10,7 +10,6 @@ use App\Models\Schedule;
 use Illuminate\Http\Request;
 use App\Models\Consultations;
 use Illuminate\Support\Facades\DB;
-use App\Jobs\ExpireConsultationJob;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Payment\PaymentController;
@@ -305,11 +304,10 @@ class ConsultationController extends Controller
     {
         try {
             DB::beginTransaction();
-            $consultation = Consultations::where('consultation_id', $id)
+            $consultation = Consultations::with('payment')
+                ->where('consultation_id', $id)
                 ->whereNotIn('status', ['Done', 'Cancelled'])
                 ->update(['status' => 'Cancelled']);
-
-
             if (!$consultation) {
                 return response()->json([
                     'status' => true,
@@ -318,6 +316,7 @@ class ConsultationController extends Controller
             }
 
             Schedule::where('schedule_id', Consultations::findOrFail($id)->schedule_id)->update(['status' => "Available"]);
+            Payment::where('payment_id',Consultations::findOrFail($id)->payment_id)->update(['payment_status'=>"Expired"]);
             DB::commit();
 
             return response()->json([
@@ -338,7 +337,7 @@ class ConsultationController extends Controller
             $status = $request['payment_status'];
             $userId = $request->user()->id;
 
-            $consultations = Consultations::with(['payment', 'schedule.user'])
+            $consultations = Consultations::with(['payment', 'schedule.user.expertises'])
                 ->whereHas('payment', function ($query) use ($status) {
                     $query->where('payment_status', $status);
                 })->where('patient_id', $userId)

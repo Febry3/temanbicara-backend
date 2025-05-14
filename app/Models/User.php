@@ -53,7 +53,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'birthdate' => 'datetime',
+            'birthdate' => 'date',
         ];
     }
     public function artikels()
@@ -82,5 +82,9 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn() => Tracking::where("user_id", $this->id)->where("created_at", ">=", Carbon::today()->subDays(6))->get()
         );
+    }
+        public function getBirthdateAttribute($value)
+    {
+        return Carbon::parse( $value)->format('Y-m-d h:i:s');
     }
 }

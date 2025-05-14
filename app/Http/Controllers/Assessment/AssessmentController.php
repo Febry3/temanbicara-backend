@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Assessment;
 
 use App\Models\User;
-use App\Models\Assessment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -48,7 +47,7 @@ class AssessmentController extends Controller
                 'birthdate' => $requestedData['birthdate'],
                 'phone_number' => $requestedData['phone_number'],
             ]);
- 
+
             return response()->json(
                 [
                     'status' => true,

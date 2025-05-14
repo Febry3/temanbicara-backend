@@ -14,6 +14,10 @@
 <body style="margin: 0; padding: 20px; font-family: 'Poppins', sans-serif; background-color: #f4f4f4;">
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding: 20px;">
         <tr>
+            <th>
+            <th>
+        </tr>
+        <tr>
             <td align="center">
                 <img src="https://qzsrrlobwlisodbasdqi.supabase.co/storage/v1/object/public/asset//admin-bicara.png"
                     alt="Logo Teman Bicara" width="100" style="display: block;" />

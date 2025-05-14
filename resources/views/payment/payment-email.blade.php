@@ -15,6 +15,10 @@
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
         style="background-color: #f4f4f4; padding: 20px;">
         <tr>
+            <th>
+            <th>
+        </tr>
+        <tr>
             <td colspan="2" align="center">
                 <img src="https://qzsrrlobwlisodbasdqi.supabase.co/storage/v1/object/public/asset//admin-bicara.png"
                     alt="Logo Teman Bicara" width="100" style="display: block;" />

@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 
 class ScheduleController extends Controller
 {
-     private const notFoundMsg = 'User not found or does not have Counselor role';
+     private const NOT_FOUND_MSG = 'User not found or does not have Counselor role';
     public static function getSchedule()
     {
         try {
@@ -119,7 +119,7 @@ class ScheduleController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => self::notFoundMsg,
+                    'message' => self::NOT_FOUND_MSG,
                 ], 404);
             }
 
@@ -168,7 +168,7 @@ class ScheduleController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => self::notFoundMsg,
+                    'message' => self::NOT_FOUND_MSG,
                 ], 404);
             }
 
@@ -220,7 +220,7 @@ class ScheduleController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => self::notFoundMsg,
+                    'message' => self::NOT_FOUND_MSG,
                 ], 404);
             }
 

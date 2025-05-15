@@ -315,7 +315,7 @@ class AuthController extends Controller
         try {
             $requestedData = $request->only([
                 'name',
-                'email',
+                'nickname',
                 'birthdate',
             ]);
 
@@ -323,7 +323,7 @@ class AuthController extends Controller
                 $requestedData,
                 [
                     'name' => 'nullable|string|max:255',
-                    'email' => 'nullable|unique:users,email|email',
+                    'nickname' => 'nullable|string|max:255',
                     'birthdate' => 'nullable|date',
                 ]
             );

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Validator;
 
 class JournalController extends Controller
 {
-    private const notFoundMsg = 'Jurnal tidak ditemukan';
+    private const NOT_FOUND_MSG = 'Jurnal tidak ditemukan';
     public static function createJournal(JournalRequest $request)
     {
         try {
@@ -99,7 +99,7 @@ class JournalController extends Controller
             if (!$journal) {
                 $responseData = [
                     'status' => false,
-                    'message' => self::notFoundMsg,
+                    'message' => self::NOT_FOUND_MSG,
                 ];
                 return response()->json($responseData, 500);
             }
@@ -204,7 +204,7 @@ class JournalController extends Controller
                 return response()->json(
                     [
                         'status' => false,
-                        'message' => self::notFoundMsg,
+                        'message' => self::NOT_FOUND_MSG,
                     ],
                     404
                 );
@@ -251,7 +251,7 @@ class JournalController extends Controller
                 return response()->json(
                     [
                         'status' => false,
-                        'message' => self::notFoundMsg,
+                        'message' => self::NOT_FOUND_MSG,
                     ],
                     200
                 );

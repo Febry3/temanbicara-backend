@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ConsultationController extends Controller
 {
-    private const required = 'required|string';
+    private const REQUIRED = 'required|string';
     public static function getConsultation()
     {
         try {
@@ -65,9 +65,9 @@ class ConsultationController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'description' => self::required,
-                'problem' => self::required,
-                'summary' => self::required,
+                'description' => self::REQUIRED,
+                'problem' => self::REQUIRED,
+                'summary' => self::REQUIRED,
                 'status' => 'required',
             ]);
 
@@ -101,7 +101,7 @@ class ConsultationController extends Controller
                 'summary' => 'nullable',
                 'schedule_id' => 'required|exists:schedules,schedule_id',
                 'amount' => 'required|integer',
-                'bank' => self::required,
+                'bank' => self::REQUIRED,
             ]);
 
             DB::beginTransaction();

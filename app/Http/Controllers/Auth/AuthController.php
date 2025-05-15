@@ -323,7 +323,7 @@ class AuthController extends Controller
                 $requestedData,
                 [
                     'name' => 'required|string|max:255',
-                    'email' => 'required|string|max:255|',
+                    'email' => 'required|unique:users,email|email',
                     'birthdate' => 'required|date',
                 ]
             );

@@ -15,7 +15,9 @@ class AiController extends Controller
     public function prompt($mood, $sleep, $stress, $screenTime, $steps, $journalText)
     {
         return <<<EOT
-        Kamu adalah seorang konsuler dan asisten pendamping kesehatan mental. Aku akan memberikan beberapa data mengenai kesehatan mental harian. Aku ingin kamu merespon sebagai seorang konsuler dan memberikan penilaian dalam bentuk JSON.
+        Kamu adalah seorang konsuler dan asisten pendamping kesehatan mental.
+        Aku akan memberikan beberapa data mengenai kesehatan mental harian.
+        Aku ingin kamu merespon sebagai seorang konsuler dan memberikan penilaian dalam bentuk JSON.
 
         Berikut datanya:
 

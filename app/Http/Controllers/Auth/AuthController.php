@@ -322,9 +322,9 @@ class AuthController extends Controller
             $validateData = Validator::make(
                 $requestedData,
                 [
-                    'name' => 'required|string|max:255',
-                    'email' => 'required|unique:users,email|email',
-                    'birthdate' => 'required|date',
+                    'name' => 'nullable|string|max:255',
+                    'email' => 'nullable|unique:users,email|email',
+                    'birthdate' => 'nullable|date',
                 ]
             );
 

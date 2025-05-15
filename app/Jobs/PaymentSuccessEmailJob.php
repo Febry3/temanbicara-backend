@@ -10,14 +10,14 @@ use Illuminate\Support\Facades\Mail;
 class PaymentSuccessEmailJob implements ShouldQueue
 {
     use Queueable;
-    private $customer_name, $order_id, $amount, $email;
+    private $customerName, $orderId, $amount, $email;
     /**
      * Create a new job instance.
      */
-    public function __construct($customer_name, $order_id, $amount, $email)
+    public function __construct($customerName, $orderId, $amount, $email)
     {
-        $this->customer_name = $customer_name;
-        $this->order_id = $order_id;
+        $this->customerName = $customerName;
+        $this->orderId = $orderId;
         $this->amount = $amount;
         $this->email = $email;
     }
@@ -28,6 +28,6 @@ class PaymentSuccessEmailJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->email)->send(new PaymentSuccessEmail($this->customer_name, $this->order_id, $this->amount));
+        Mail::to($this->email)->send(new PaymentSuccessEmail($this->customerName, $this->orderId, $this->amount));
     }
 }

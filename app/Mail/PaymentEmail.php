@@ -13,19 +13,24 @@ class PaymentEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private $name, $bank, $expired_date, $amount, $va_number, $payment_method;
+    private $name;
+    private $bank;
+    private $expiredDate;
+    private $amount;
+    private $vaNumber;
+    private $paymentMethod;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($name, $bank, $expired_date, $amount, $va_number, $payment_method)
+    public function __construct($name, $bank, $expiredDate, $amount, $vaNumber, $paymentMethod)
     {
         $this->name = $name;
         $this->bank = $bank;
-        $this->expired_date = $expired_date;
+        $this->expiredDate = $expiredDate;
         $this->amount = $amount;
-        $this->va_number = $va_number;
-        $this->payment_method = $payment_method;
+        $this->vaNumber = $vaNumber;
+        $this->paymentMethod = $paymentMethod;
     }
 
     /**
@@ -48,10 +53,10 @@ class PaymentEmail extends Mailable
             with: [
                 'name' => $this->name,
                 'bank' => $this->bank,
-                'expired_date' => $this->expired_date,
+                'expired_date' => $this->expiredDate,
                 'amount' => $this->amount,
-                'va_number' => $this->va_number,
-                'payment_method' => $this->payment_method,
+                'va_number' => $this->vaNumber,
+                'payment_method' => $this->paymentMethod,
             ]
         );
     }

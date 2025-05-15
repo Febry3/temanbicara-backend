@@ -145,7 +145,7 @@ class TrackingController extends Controller
             if ($lastSevenData->isEmpty()) {
                 $responseData = [
                     'status' => false,
-                    'message' => 'No tracking data available',
+                    'message' => '',
                     'data' => null
                 ];
                 $statusCode = 204;
@@ -216,20 +216,20 @@ class TrackingController extends Controller
                     ]
                 ];
         } catch (UnhandledMatchError $err) {
-           $responseData =
+            $responseData =
                 [
                     'status' => false,
                     'message' => 'Wrong data format'
                 ];
             $statusCode = 500;
         } catch (Throwable $err) {
-           $responseData =
+            $responseData =
                 [
                     'status' => false,
                     'message' => $err->getMessage()
                 ];
             $statusCode = 500;
         }
-        return response()->json($responseData,$statusCode);
+        return response()->json($responseData, $statusCode);
     }
 }

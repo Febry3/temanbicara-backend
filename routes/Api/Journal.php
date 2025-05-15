@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::put('/journal/{id}', [JournalController::class, 'updateJournal']);
+    $journalById = '/journal/{id}';
+    Route::put($journalById, [JournalController::class, 'updateJournal']);
     Route::post('/journal', [JournalController::class, 'createJournal']);
     Route::post('/journal/get', [JournalController::class, 'getAllJournalByUserId']);
-    Route::get('/journal/{id}', [JournalController::class, 'getJournalById']);
-    Route::delete('/journal/{id}', [JournalController::class, 'deleteJournal']);
+    Route::get($journalById, [JournalController::class, 'getJournalById']);
+    Route::delete($journalById, [JournalController::class, 'deleteJournal']);
 });
 
 Route::post('/test-journal', function (Illuminate\Http\Request $request) {

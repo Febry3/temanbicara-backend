@@ -9,7 +9,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('Expertise', function (Request $request) {
         return ExpertiseController::doExpertise($request);
     });
-    Route::get('Expertise', function (Request $request) {
+    Route::get('Expertise', function () {
         return ExpertiseController::getAllExpertise();
     });
 });

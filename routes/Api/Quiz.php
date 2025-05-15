@@ -10,12 +10,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('Result', function (Request $request) {
         return QuizController::getAllAnswer($request);
     });
-    Route::get('Quiz', function (Request $request) {
+    Route::get('Quiz', function () {
         return QuizController::getAllQuestion();
     });
 
 
-    Route::get('getMaxPoint', function (Request $request) {
+    Route::get('getMaxPoint', function () {
         return QuizController::getMaxPoints();
     });
     Route::post('storeAnswer', function (Request $request) {

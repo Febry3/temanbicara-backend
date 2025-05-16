@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Mail;
 class PaymentSuccessEmailJob implements ShouldQueue
 {
     use Queueable;
-    private $customerName, $orderId, $amount, $email;
+    private $customerName;
+    private $orderId;
+    private $amount;
+    private $email;
     /**
      * Create a new job instance.
      */

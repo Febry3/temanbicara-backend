@@ -12,7 +12,9 @@ use Illuminate\Queue\SerializesModels;
 class PaymentSuccessEmail extends Mailable
 {
     use Queueable, SerializesModels;
-    private $customerName, $orderId, $amount;
+    private $customerName;
+    private $orderId;
+    private $amount;
     /**
      * Create a new message instance.
      */

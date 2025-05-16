@@ -18,7 +18,7 @@ class PaymentEmailJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, SerializesModels, Queueable;
     private $name;
     private $bank;
-    private $expired_date;
+    private $expiredDate;
     private $amount;
     private $vaNumber;
     private $paymentMethod;
@@ -27,11 +27,11 @@ class PaymentEmailJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($name, $bank, $expired_date, $amount, $vaNumber, $paymentMethod, $email)
+    public function __construct($name, $bank, $expiredDate, $amount, $vaNumber, $paymentMethod, $email)
     {
         $this->name = $name;
         $this->bank = $bank;
-        $this->expired_date = Carbon::parse($expired_date)->format('l, j F Y \a\t H:i');
+        $this->expiredDate = Carbon::parse($expiredDate)->format('l, j F Y \a\t H:i');
         $this->amount = $amount;
         $this->vaNumber = $vaNumber;
         $this->paymentMethod = $paymentMethod;
@@ -43,6 +43,6 @@ class PaymentEmailJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->email)->send(new PaymentEmail($this->name, $this->bank, $this->expired_date, $this->amount, $this->vaNumber, $this->paymentMethod, $this->email));
+        Mail::to($this->email)->send(new PaymentEmail($this->name, $this->bank, $this->expiredDate, $this->amount, $this->vaNumber, $this->paymentMethod, $this->email));
     }
 }

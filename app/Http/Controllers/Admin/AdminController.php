@@ -8,13 +8,27 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Exceptions;
+
 
 class AdminController extends Controller
 {
-    public static function loginAdmin(Request $request)
+    private $statusCode;
+    private $rules = [
+        'email' => 'required|unique:users,email|email',
+        'phone_number' => 'required|unique:users,phone_number',
+        'password' => 'required',
+        'name' => 'required',
+        'nickname' => 'required',
+        'gender' => 'required',
+        'birthdate' => 'required',
+    ];
+
+    public function loginAdmin(Request $request)
     {
         try {
+            $this->statusCode = 200;
+
             $requestedData = $request->only([
                 'email',
                 'password'
@@ -29,40 +43,31 @@ class AdminController extends Controller
             );
 
             if ($validateData->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Email dan password tidak boleh kosong',
-                    'error' => $validateData->errors(),
-                ], 200);
-            };
+                $this->statusCode = 422;
+                throw new Exceptions($validateData->errors());
+            }
 
             $user = User::where('email', $requestedData['email'])->first();
             if (!$user) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Email tidak sesuai',
-                ], 401);
+                $this->statusCode = 401;
+                throw new Exceptions('Email tidak sesuai');
             }
 
             if ($user->role != 'Admin') {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Bukan admin',
-                ], 401);
+                $this->statusCode = 401;
+                throw new Exceptions('Bukan admin');
             }
 
             if (!Hash::check($requestedData['password'], $user->password)) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Password tidak sesuai',
-                ], 401);
+                $this->statusCode = 401;
+                throw new Exceptions('Password tidak sesuai');
             }
 
             return response()->json(
                 [
                     'status' => true,
                     'message' => 'Login berhasil',
-                    'token' => $user->createToken('RevanGay', ['Admin'])->plainTextToken,
+                    'token' => $user->createToken('0xFFFFFF', ['Admin'])->plainTextToken,
                     'data' => $user,
                 ],
                 200
@@ -73,14 +78,16 @@ class AdminController extends Controller
                     'status' => false,
                     'message' => $err->getMessage()
                 ],
-                500
+                $this->statusCode->isEmpty() ? 500 : $this->statusCode
             );
         }
     }
 
-    public static function createCounselor(Request $request)
+    public function createCounselor(Request $request)
     {
         try {
+            $this->statusCode = 200;
+
             $requestedData = $request->only([
                 'email',
                 'password',
@@ -93,23 +100,13 @@ class AdminController extends Controller
 
             $validateData = Validator::make(
                 $requestedData,
-                [
-                    'email' => 'required|unique:users,email|email',
-                    'phone_number' => 'required|unique:users,phone_number',
-                    'password' => 'required',
-                    'name' => 'required',
-                    'nickname' => 'required',
-                    'gender' => 'required',
-                    'birthdate' => 'required',
-                ]
+                $this->rules
             );
 
             if ($validateData->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => $validateData->errors(),
-                ], 200);
-            };
+                $this->statusCode = 422;
+                throw new Exceptions($validateData->errors());
+            }
 
             $user = User::create([
                 'email' => $requestedData['email'],
@@ -136,19 +133,17 @@ class AdminController extends Controller
                     'status' => false,
                     'message' => $err->getMessage()
                 ],
-                500
+                $this->statusCode
             );
         }
     }
 
-    public static function getAllCounselor(Request $request)
+    public function getAllCounselor(Request $request)
     {
         try {
             if ($request->user()->role != 'Admin') {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Bukan admin',
-                ], 401);
+                $this->statusCode = 401;
+                throw new Exceptions('Bukan admin');
             }
 
             $counselors = User::where('role', 'Counselor')->get();
@@ -156,7 +151,7 @@ class AdminController extends Controller
             return response()->json(
                 [
                     'status' => true,
-                    'message' => 'Login berhasil',
+                    'message' => 'Sukses mendapatkan data',
                     'data' => $counselors,
                 ],
                 200
@@ -167,12 +162,12 @@ class AdminController extends Controller
                     'status' => false,
                     'message' => $err->getMessage()
                 ],
-                500
+                $this->statusCode
             );
         }
     }
 
-    public static function createUser(Request $request)
+    public function createUser(Request $request)
     {
         try {
             $requestedData = $request->only([
@@ -188,25 +183,13 @@ class AdminController extends Controller
 
             $validateData = Validator::make(
                 $requestedData,
-                [
-                    'email' => 'required|unique:users,email|email',
-                    'phone_number' => 'required|unique:users,phone_number',
-                    'password' => 'required',
-                    'name' => 'required',
-                    'nickname' => 'required',
-                    'gender' => 'required',
-                    'birthdate' => 'required',
-                    'role' => 'required',
-                ]
+                $this->rules
             );
 
             if ($validateData->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Terjadi kesalahan pada validasi',
-                    'error' => $validateData->errors(),
-                ], 200);
-            };
+                $this->statusCode = 422;
+                throw new Exceptions($validateData->errors());
+            }
 
             $user = User::create([
                 'email' => $requestedData['email'],
@@ -233,12 +216,12 @@ class AdminController extends Controller
                     'status' => false,
                     'message' => $err->getMessage()
                 ],
-                500
+                $this->statusCode
             );
         }
     }
 
-    public static function verifyPassword(Request $request)
+    public function verifyPassword(Request $request)
     {
         try {
             $requestedData = $request->only([
@@ -255,33 +238,26 @@ class AdminController extends Controller
             );
 
             if ($validateData->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Email dan password tidak boleh kosong',
-                    'error' => $validateData->errors(),
-                ], 200);
-            };
+                $this->statusCode = 422;
+                throw new Exceptions($validateData->errors());
+            }
 
             $user = User::where('email', $requestedData['email'])->first();
             if (!$user) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Email tidak sesuai',
-                ], 200);
+                $this->statusCode = 422;
+                throw new Exceptions('Email tidak sesuai');
             }
 
 
             if (!Hash::check($requestedData['password'], $user->password)) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Password tidak sesuai',
-                ], 401);
+                $this->statusCode = 422;
+                throw new Exceptions('Password tidak sesuai');
             }
 
             return response()->json(
                 [
                     'status' => true,
-                    'message' => 'Login berhasil',
+                    'message' => 'Verifikasi berhasil',
                     'data' => $user,
                 ],
                 200
@@ -292,12 +268,12 @@ class AdminController extends Controller
                     'status' => false,
                     'message' => $err->getMessage()
                 ],
-                500
+                $this->statusCode
             );
         }
     }
 
-    public static function createAdmin(Request $request)
+    public function createAdmin(Request $request)
     {
         try {
             $requestedData = $request->only([
@@ -312,24 +288,13 @@ class AdminController extends Controller
 
             $validateData = Validator::make(
                 $requestedData,
-                [
-                    'email' => 'required|unique:users,email|email',
-                    'phone_number' => 'required|unique:users,phone_number',
-                    'password' => 'required',
-                    'name' => 'required',
-                    'nickname' => 'required',
-                    'gender' => 'required',
-                    'birthdate' => 'required',
-                ]
+                $this->rules
             );
 
             if ($validateData->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Email dan password tidak boleh kosong',
-                    'error' => $validateData->errors(),
-                ], 200);
-            };
+                $this->statusCode = 422;
+                throw new Exceptions($validateData->errors());
+            }
 
             $user = User::create([
                 'email' => $requestedData['email'],
@@ -356,7 +321,7 @@ class AdminController extends Controller
                     'status' => false,
                     'message' => $err->getMessage()
                 ],
-                500
+                $this->statusCode
             );
         }
     }

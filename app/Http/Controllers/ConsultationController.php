@@ -24,9 +24,10 @@ class ConsultationController extends Controller
         try {
             $consultations = Consultations::with([
                 'user:id,name,birthdate',
-                'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
+                'schedule:schedule_id,status,available_date,start_time,end_time,counselor_id',
                 'schedule.user:id,name'
             ])
+                ->where('status', "!=", "Cancelled")
                 ->get()
                 ->map(function ($consultation) {
                     return [
@@ -169,7 +170,7 @@ class ConsultationController extends Controller
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
                 'schedule.user:id,name'
             ])
-                ->where('consultations.patient_id', $userId)
+
                 ->get()
                 ->map(function ($consultation) {
                     return [
@@ -205,30 +206,26 @@ class ConsultationController extends Controller
     {
         try {
             $userId = $request->user()->id;
-            $consultations = DB::table('consultations')
-                ->join('users as general_users', 'consultations.patient_id', '=', 'general_users.id')
-                ->leftJoin('schedules', 'consultations.schedule_id', '=', 'schedules.schedule_id')
-                ->leftJoin('users as counselors', 'schedules.counselor_id', '=', 'counselors.id')
-                ->select(
-                    'consultations.consultation_id',
-                    'consultations.status',
-                    'consultations.description',
-                    'consultations.problem',
-                    'consultations.summary',
-                    'consultations.patient_id',
-                    'general_users.name as general_user_name',
-                    'general_users.birthdate',
-                    'general_users.gender',
-                    'general_users.nickname',
-                    'consultations.schedule_id',
-                    'schedules.available_date as date',
-                    'schedules.start_time',
-                    'schedules.end_time',
-                    'counselors.name as counselor_name',
-                    'counselors.id as counselor_id',
-                )
-                ->where('schedules.counselor_id', $userId)
-                ->get();
+            $consultations = Consultations::with([
+                'schedule',
+                'user'
+            ])
+                ->where('status', "!=", "Cancelled")
+                ->whereHas('schedule', function ($query) use ($userId) {
+                    $query->where('counselor_id', $userId);
+                })
+
+                ->get()
+                ->map(function ($consultation) {
+                    return [
+
+                        'user_id' => $consultation->user->id ?? null,
+                        'name' => $consultation->user->name ?? null,
+                        'nickname' => $consultation->user->nickname ?? null,
+                    ];
+                });
+
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data consultloations for the logged-in user',

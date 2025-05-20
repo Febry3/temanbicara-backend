@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Expertise;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Article;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 use App\Models\Expertise;
-use Validator;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+
 
 class ExpertiseController extends Controller
 {
@@ -29,7 +28,7 @@ class ExpertiseController extends Controller
                 ],
                 200
             );
-        }  catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             return response()->json(
                 [
                     'status' => false,
@@ -39,7 +38,8 @@ class ExpertiseController extends Controller
             );
         }
     }
-    public static function doExpertise(Request $request){
+    public static function doExpertise(Request $request)
+    {
         try {
             $reqData = $request->only(
                 [
@@ -47,7 +47,7 @@ class ExpertiseController extends Controller
                 ]
             );
             $validate = Validator::make($reqData, [
-                "type"=> "required",
+                "type" => "required",
             ]);
             if ($validate->fails()) {
                 return response()->json([
@@ -57,7 +57,7 @@ class ExpertiseController extends Controller
                 ], 200);
             }
             $idUser = $request->user()->id;
-            $expertise=Expertise::create([
+            $expertise = Expertise::create([
                 'type' => $reqData['type'],
                 'user_id' => $idUser,
             ]);

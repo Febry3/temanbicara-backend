@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Schedule;
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Throwable;
 use App\Models\Schedule;
 use App\Models\User;
-use App\Models\Expertise;
 use App\Http\Controllers\Controller;
 
 class ScheduleController extends Controller
 {
-     private const NOT_FOUND_MSG = 'User not found or does not have Counselor role';
+    private const NOT_FOUND_MSG = 'User not found or does not have Counselor role';
     public static function getSchedule()
     {
         try {

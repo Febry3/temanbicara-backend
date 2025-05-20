@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Assessment\AssessmentController as AssessmentAssessmentController;
-use App\Http\Controllers\Quiz\QuizController;
+use App\Http\Controllers\QuizController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

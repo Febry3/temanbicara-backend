@@ -1,9 +1,7 @@
 <?php
 
-use App\Http\Controllers\Journal\JournalController;
-use App\Http\Requests\JournalRequest;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\JournalController;
 
 
 

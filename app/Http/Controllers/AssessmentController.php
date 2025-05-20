@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Assessment;
+namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -40,7 +40,7 @@ class AssessmentController extends Controller
                 ], 200);
             }
 
-           User::where('id', $request->user()->id)->update([
+            User::where('id', $request->user()->id)->update([
                 'name' => $requestedData['name'],
                 'nickname' => $requestedData['nickname'],
                 'gender' => $requestedData['gender'],

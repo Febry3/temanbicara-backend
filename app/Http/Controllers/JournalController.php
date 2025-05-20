@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Journal;
+namespace App\Http\Controllers;
 
 use Throwable;
 use App\Models\Journal;
@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Helper\ImageRequestHelper;
 use App\Http\Requests\JournalRequest;
 use Error;
-use App\Http\Controllers\Report\ReportController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -128,7 +128,7 @@ class JournalController extends Controller
                 'image_url' => $imageUrl ?? $journal->image_url,
             ]);
 
-            $responseData =[
+            $responseData = [
                 'status' => true,
                 'message' => 'Data berhasil diubah',
             ];
@@ -138,7 +138,7 @@ class JournalController extends Controller
                 'message' => $err->getMessage()
             ];
         }
-         return response()->json($responseData);
+        return response()->json($responseData);
     }
 
     public static function deleteJournal($id)
@@ -158,7 +158,7 @@ class JournalController extends Controller
                         'message' => 'Jurnal tidak ditemukan atau Anda tidak memiliki akses.',
                     ];
                 $statusCode = 204;
-                return response()->json($responseData,$statusCode);
+                return response()->json($responseData, $statusCode);
             }
 
             if ($journal->image_url != 'Empty') {
@@ -171,7 +171,7 @@ class JournalController extends Controller
                             'message' => 'Kesalahan pada menghapus gambar',
                         ];
                     $statusCode = 500;
-                    return response()->json($responseData,$statusCode);
+                    return response()->json($responseData, $statusCode);
                 }
             }
 
@@ -189,7 +189,7 @@ class JournalController extends Controller
                     'message' => 'Terjadi kesalahan: ' . $err->getMessage(),
                 ];
         }
-        return response()->json($responseData,$statusCode);
+        return response()->json($responseData, $statusCode);
     }
 
     public static function getJournalById($id)

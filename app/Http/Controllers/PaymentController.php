@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Payment;
+namespace App\Http\Controllers;
 
-use Exception;
 use Throwable;
 use App\Models\User;
 use App\Models\Payment;
-use App\Models\Schedule;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Consultations;

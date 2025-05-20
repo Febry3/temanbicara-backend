@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Report;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Observation;
-use App\Models\Tracking;
 use App\Models\TrackJournalResponse;
-use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Ai\AiController;
+use App\Http\Controllers\AiController;
 use Throwable;
 
 class ReportController extends Controller
@@ -32,11 +30,11 @@ class ReportController extends Controller
             $datereq = $request['date_request'];
 
             $report = Observation::with('track_journal_response.tracking') // eager load
-            ->whereHas('track_journal_response.tracking', function ($query) use ($request) {
-                $query->where('user_id', $request->user()->id);
-            })
-            ->whereDate('created_at', $datereq)
-            ->get();
+                ->whereHas('track_journal_response.tracking', function ($query) use ($request) {
+                    $query->where('user_id', $request->user()->id);
+                })
+                ->whereDate('created_at', $datereq)
+                ->get();
 
             if ($report->isEmpty()) {
                 return response()->json(
@@ -100,6 +98,5 @@ class ReportController extends Controller
                 'message' => $e->getMessage()
             ]);
         }
-
     }
 }

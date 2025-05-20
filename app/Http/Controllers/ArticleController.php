@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Article;
+namespace App\Http\Controllers;
 
 use Throwable;
 use Carbon\Carbon;

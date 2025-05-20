@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Ai;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tracking;
@@ -60,7 +60,7 @@ class AiController extends Controller
     }
     public function generate($userId)
     {
-        $responseData=[];
+        $responseData = [];
         $tracking = Tracking::where('user_id', $userId)
             ->whereDate('created_at', Carbon::today())
             ->latest()
@@ -90,14 +90,14 @@ class AiController extends Controller
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
             ])->post(config('services.gemini.url') . '?key=' . config('services.gemini.key'), [
-                        'contents' => [
-                            [
-                                'parts' => [
-                                    ['text' => $prompt]
-                                ]
-                            ]
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $prompt]
                         ]
-                    ]);
+                    ]
+                ]
+            ]);
             $reply = $response->json();
             $text = $reply['candidates'][0]['content']['parts'][0]['text'] ?? null;
             $cleanedText = trim($text);
@@ -113,7 +113,7 @@ class AiController extends Controller
                 return response()->json($responseData, 404);
             }
 
-            $responseData =[
+            $responseData = [
                 'status' => true,
                 'tracking_id' => $tracking->tracking_id,
                 'result' => $jsonResult
@@ -126,5 +126,4 @@ class AiController extends Controller
         }
         return response()->json($responseData);
     }
-
 }

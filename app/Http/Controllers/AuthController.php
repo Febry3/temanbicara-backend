@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers;
 
 
 use Throwable;
@@ -11,12 +11,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Helper\ImageRequestHelper;
-use App\Jobs\PaymentEmailJob;
 use App\Jobs\ResetPasswordEmailJob;
-use App\Mail\PasswordResetEmail;
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller

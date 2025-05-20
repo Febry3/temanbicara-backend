@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Consultation\ConsultationController;
+use App\Http\Controllers\ConsultationController;
 use Illuminate\Support\Carbon;
 
 
@@ -21,4 +20,3 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return Carbon::now();
     });
 });
-

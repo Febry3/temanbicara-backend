@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Quiz;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Answer;
-use App\Models\User;
 use App\Models\user_answer;
 use Illuminate\Http\Request;
 use App\Models\Quiz;
@@ -24,7 +23,7 @@ class QuizController extends Controller
                 ],
                 200
             );
-        }  catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             return response()->json(
                 [
                     'status' => false,
@@ -68,7 +67,7 @@ class QuizController extends Controller
                 'user_point' => 'required|integer',
             ]);
 
-           $answerUser = user_answer::create([
+            $answerUser = user_answer::create([
                 'user_id' => $validatedData['user_id'],
                 'user_point' => $validatedData['user_point'],
             ]);
@@ -81,7 +80,7 @@ class QuizController extends Controller
                 ],
                 200
             );
-        }  catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             return response()->json(
                 [
                     'status' => false,

@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Consultation;
+namespace App\Http\Controllers;
 
-use Log;
 use Throwable;
-
 use App\Models\Payment;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
@@ -12,11 +10,11 @@ use App\Models\Consultations;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\PaymentController;
 use App\Jobs\PaymentEmailJob;
 use App\Jobs\UpdateExpiredPaymentJob;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log as FacadesLog;
+
 
 class ConsultationController extends Controller
 {
@@ -317,7 +315,7 @@ class ConsultationController extends Controller
             }
 
             Schedule::where('schedule_id', Consultations::findOrFail($id)->schedule_id)->update(['status' => "Available"]);
-            Payment::where('payment_id',Consultations::findOrFail($id)->payment_id)->update(['payment_status'=>"Expired"]);
+            Payment::where('payment_id', Consultations::findOrFail($id)->payment_id)->update(['payment_status' => "Expired"]);
             DB::commit();
 
             return response()->json([

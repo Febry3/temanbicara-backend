@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Tracking;
+namespace App\Http\Controllers;
 
 use Throwable;
 use Carbon\Carbon;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\Report\ReportController;
+use App\Http\Controllers\ReportController;
 
 class TrackingController extends Controller
 {

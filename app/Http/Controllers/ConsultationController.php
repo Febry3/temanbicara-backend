@@ -213,22 +213,12 @@ class ConsultationController extends Controller
                 ->where('status', "!=", "Cancelled")
                 ->whereHas('schedule', function ($query) use ($userId) {
                     $query->where('counselor_id', $userId);
-                })
-
-                ->get()
-                ->map(function ($consultation) {
-                    return [
-
-                        'user_id' => $consultation->user->id ?? null,
-                        'name' => $consultation->user->name ?? null,
-                        'nickname' => $consultation->user->nickname ?? null,
-                    ];
-                });
+                })->get();
 
 
             return response()->json([
                 'status' => true,
-                'message' => 'Data consultloations for the logged-in user',
+                'message' => 'Data Consultations for the logged-in user',
                 'data' => $consultations,
             ]);
         } catch (\Throwable $e) {

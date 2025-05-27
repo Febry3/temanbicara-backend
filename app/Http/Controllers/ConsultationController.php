@@ -168,28 +168,30 @@ class ConsultationController extends Controller
             $consultations = Consultations::with([
                 'user:id,name,birthdate',
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
-                'schedule.user:id,name'
+                'schedule.user:id,name',
+                'payment'
             ])
                 ->where("patient_id",$userId)
-                ->get()
-                ->map(function ($consultation) {
-                    return [
-                        'consultation_id' => $consultation->consultation_id,
-                        'status' => $consultation->status,
-                        'description' => $consultation->description,
-                        'problem' => $consultation->problem,
-                        'summary' => $consultation->summary,
-                        'patient_id' => $consultation->patient_id,
-                        'general_user_name' => $consultation->user->name ?? null,
-                        'birthdate' => $consultation->user->birthdate ?? null,
-                        'schedule_id' => $consultation->schedule->schedule_id ?? null,
-                        'date' => $consultation->schedule->available_date ?? null,
-                        'start_time' => $consultation->schedule->start_time ?? null,
-                        'end_time' => $consultation->schedule->end_time ?? null,
-                        'counselor_name' => $consultation->schedule->user->name ?? null,
-                        'counselor_id' => $consultation->schedule->counselor_id ?? null,
-                    ];
-                });
+                ->get();
+                // ->map(function ($consultation) {
+                //     return [
+                //         'consultation_id' => $consultation->consultation_id,
+                //         'status' => $consultation->status,
+                //         'status_payment'=> $consultation->payment->payment_status,
+                //         'description' => $consultation->description,
+                //         'problem' => $consultation->problem,
+                //         'summary' => $consultation->summary,
+                //         'patient_id' => $consultation->patient_id,
+                //         'general_user_name' => $consultation->user->name ?? null,
+                //         'birthdate' => $consultation->user->birthdate ?? null,
+                //         'schedule_id' => $consultation->schedule->schedule_id ?? null,
+                //         'date' => $consultation->schedule->available_date ?? null,
+                //         'start_time' => $consultation->schedule->start_time ?? null,
+                //         'end_time' => $consultation->schedule->end_time ?? null,
+                //         'counselor_name' => $consultation->schedule->user->name ?? null,
+                //         'counselor_id' => $consultation->schedule->counselor_id ?? null,
+                //     ];
+                // });
             return response()->json([
                 'status' => true,
                 'message' => 'Data consultations for the logged-in user',

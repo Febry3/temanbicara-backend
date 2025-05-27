@@ -28,7 +28,7 @@ class AssessmentController extends Controller
                     'nickname' => 'required',
                     'gender' => 'required',
                     'birthdate' => 'required',
-                    'phone_number' => 'required|unique:users,phone_number',
+                    'phone_number' => 'required|numeric|unique:users,phone_number',
                 ]
             );
 

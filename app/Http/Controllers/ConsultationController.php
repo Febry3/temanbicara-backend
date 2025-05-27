@@ -170,7 +170,7 @@ class ConsultationController extends Controller
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
                 'schedule.user:id,name'
             ])
-
+                ->where("patient_id",$userId)
                 ->get()
                 ->map(function ($consultation) {
                     return [

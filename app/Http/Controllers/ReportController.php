@@ -90,11 +90,13 @@ class ReportController extends Controller
                 ]
             );
             return response()->json([
+                'status' => true,
                 'data' => $result
 
             ],201);
         } catch (\Throwable $e) {
             return response()->json([
+                'status' => false,
                 'error' => 'Failed to store data',
                 'message' => $e->getMessage()
             ],500);

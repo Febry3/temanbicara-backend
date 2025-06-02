@@ -62,7 +62,7 @@ class AiController extends Controller
     {
         $responseData = [];
         $tracking = Tracking::where('user_id', $userId)
-            ->whereDate('created_at', Carbon::today())
+            ->whereRaw("DATE(CONVERT_TZ(created_at, '+00:00', '+07:00')) = CURDATE()")
             ->latest()
             ->first();
 
@@ -90,14 +90,14 @@ class AiController extends Controller
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
             ])->post(config('services.gemini.url') . '?key=' . config('services.gemini.key'), [
-                'contents' => [
-                    [
-                        'parts' => [
-                            ['text' => $prompt]
+                        'contents' => [
+                            [
+                                'parts' => [
+                                    ['text' => $prompt]
+                                ]
+                            ]
                         ]
-                    ]
-                ]
-            ]);
+                    ]);
             $reply = $response->json();
             $text = $reply['candidates'][0]['content']['parts'][0]['text'] ?? null;
             $cleanedText = trim($text);

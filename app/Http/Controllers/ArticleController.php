@@ -26,7 +26,6 @@ class ArticleController extends Controller
         $validateData = Validator::make($requestedData, [
             'title' => 'required|string',
             'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validateData->fails()) {

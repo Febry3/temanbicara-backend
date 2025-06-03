@@ -21,7 +21,7 @@ class ImageRequestHelper
         $validateData = Validator::make(
             $requestedData,
             [
-                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
             ]
         );
 
@@ -42,8 +42,8 @@ class ImageRequestHelper
         }
 
         //cek size < 2mb
-        if ($image->getSize() > 2048 * 1024) {
-            throw new Exception("Image size should be less than 2MB");
+        if ($image->getSize() > 5120 * 1024) {
+            throw new Exception("Image size should be less than 5MB");
         }
 
 
@@ -88,7 +88,7 @@ class ImageRequestHelper
         $validateData = Validator::make(
             $requestedData,
             [
-                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
             ]
         );
 
@@ -109,8 +109,8 @@ class ImageRequestHelper
         }
 
         //cek size < 2mb
-        if ($image->getSize() > 2048 * 1024) {
-            throw new Exception("Image size should be less than 2MB");
+        if ($image->getSize() > 5120 * 1024) {
+            throw new Exception("Image size should be less than 5MB");
         }
 
         $imageContent = fopen($image->getRealPath(), 'r');

@@ -25,7 +25,7 @@ class User extends Authenticatable
         'email',
         'phone_number',
         'password',
-        'image',
+        'profile_url',
         'name',
         'nickname',
         'gender',
@@ -83,8 +83,8 @@ class User extends Authenticatable
             get: fn() => Tracking::where("user_id", $this->id)->where("created_at", ">=", Carbon::today()->subDays(6))->get()
         );
     }
-        public function getBirthdateAttribute($value)
+    public function getBirthdateAttribute($value)
     {
-        return Carbon::parse( $value)->format('Y-m-d h:i:s');
+        return Carbon::parse($value)->format('Y-m-d h:i:s');
     }
 }

@@ -65,7 +65,7 @@ class AiController extends Controller
             ->whereDate('created_at', Carbon::today())
             ->latest()
             ->first();
-
+        
         if (!$tracking) {
             $responseData = [
                 'error' => 'Silahkan mengisi tracking terlebih dahulu'

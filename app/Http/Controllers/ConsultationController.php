@@ -168,14 +168,16 @@ class ConsultationController extends Controller
             $consultations = Consultations::with([
                 'user:id,name,birthdate',
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
-                'schedule.user:id,name'
+                'schedule.user:id,name',
+                'payment'
             ])
-
+                ->where("patient_id",$userId)
                 ->get()
                 ->map(function ($consultation) {
                     return [
                         'consultation_id' => $consultation->consultation_id,
                         'status' => $consultation->status,
+                        'status_payment'=> $consultation->payment->payment_status,
                         'description' => $consultation->description,
                         'problem' => $consultation->problem,
                         'summary' => $consultation->summary,
@@ -213,22 +215,12 @@ class ConsultationController extends Controller
                 ->where('status', "!=", "Cancelled")
                 ->whereHas('schedule', function ($query) use ($userId) {
                     $query->where('counselor_id', $userId);
-                })
-
-                ->get()
-                ->map(function ($consultation) {
-                    return [
-
-                        'user_id' => $consultation->user->id ?? null,
-                        'name' => $consultation->user->name ?? null,
-                        'nickname' => $consultation->user->nickname ?? null,
-                    ];
-                });
+                })->get();
 
 
             return response()->json([
                 'status' => true,
-                'message' => 'Data consultloations for the logged-in user',
+                'message' => 'Data Consultations for the logged-in user',
                 'data' => $consultations,
             ]);
         } catch (\Throwable $e) {

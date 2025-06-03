@@ -29,7 +29,7 @@ class ReportController extends Controller
 
             $datereq = $request['date_request'];
 
-            $report = Observation::with('track_journal_response.tracking') // eager load
+            $report = Observation::with('track_journal_response.tracking')
                 ->whereHas('track_journal_response.tracking', function ($query) use ($request) {
                     $query->where('user_id', $request->user()->id);
                 })
@@ -90,13 +90,16 @@ class ReportController extends Controller
                 ]
             );
             return response()->json([
+                'status' => true,
                 'data' => $result
-            ]);
+
+            ],201);
         } catch (\Throwable $e) {
             return response()->json([
+                'status' => false,
                 'error' => 'Failed to store data',
                 'message' => $e->getMessage()
-            ]);
+            ],500);
         }
     }
 }

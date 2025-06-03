@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 
+
 class ArticleController extends Controller
 {
     private static function validateArticleRequest(Request $request)
@@ -37,7 +38,7 @@ class ArticleController extends Controller
     public static function getAllArticle()
     {
         try {
-            $articles = Article::with('user:id,name,role')->where('status', 'Published')->get();
+            $articles = Article::with('user:id,name,role')->where('status', 'Published')->orderBy('created_at', 'desc')->paginate(10);
             if ($articles->isEmpty()) {
                 return response()->json(
                     [
@@ -100,7 +101,7 @@ class ArticleController extends Controller
     {
 
         try {
-            $article = Article::where('user_id', Auth::user()->id)->get();
+            $article = Article::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->paginate(10);
 
             if ($article->isEmpty()) {
                 return response()->json(

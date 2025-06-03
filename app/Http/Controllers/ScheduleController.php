@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Throwable;
 use App\Models\Schedule;
@@ -65,7 +66,13 @@ class ScheduleController extends Controller
             $users = User::where('role', 'Counselor')->with([
                 'expertises',
                 'schedules' => function ($schedule) {
-                    $schedule->whereDate('available_date', '>=', now())->where('status', '=', 'Available')->orderBy('available_date');
+                    $schedule
+                    ->whereDate('available_date', '>=', now())
+
+                     ->whereBetween('available_date', [Carbon::tomorrow(), Carbon::tomorrow()->addDays(6)])
+                    ->where('status', '=', 'Available')
+
+                    ->orderBy('available_date');
                 }
             ])->select('id', 'name')->get();
 

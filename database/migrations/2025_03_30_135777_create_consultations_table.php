@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -16,7 +15,7 @@ return new class extends Migration
             $table->enum('status', ['Incoming', 'Done', 'Cancelled'])->default('Incoming');
             $table->longText('description');
             $table->longText('problem');
-            $table->longText('summary')->nullable()->default('Segera ...');
+            $table->longText('summary')->nullable();
             $table->bigInteger('patient_id')->unsigned();
             $table->foreign('patient_id')->references('id')->on('users')->onDelete('cascade');
             $table->bigInteger('schedule_id')->unsigned();

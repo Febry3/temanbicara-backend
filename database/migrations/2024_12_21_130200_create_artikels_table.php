@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id('article_id');
             $table->string('title');
-            $table->string('content');
+            $table->longText('content');
             $table->string('image_url')->nullable();
             $table->enum('status', ['Pending', 'Published', 'Rejected'])->default('Pending');
             $table->bigInteger('user_id')->unsigned();

@@ -31,7 +31,6 @@ class AssessmentController extends Controller
                     'phone_number' => 'required|numeric|unique:users,phone_number',
                 ]
             );
-
             if ($validateData->fails()) {
                 return response()->json([
                     'status' => false,

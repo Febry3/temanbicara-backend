@@ -189,7 +189,7 @@ class ConsultationController extends Controller
                         'start_time' => $consultation->schedule->start_time ?? null,
                         'end_time' => $consultation->schedule->end_time ?? null,
                         'counselor_name' => $consultation->schedule->user->name ?? null,
-                        'counselor_name' => $consultation->schedule->user->profile_url,
+                        'counselor_profile_url' => $consultation->schedule->user->profile_url,
                         'counselor_id' => $consultation->schedule->counselor_id ?? null,
                     ];
                 });

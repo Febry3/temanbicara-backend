@@ -166,18 +166,18 @@ class ConsultationController extends Controller
 
             $userId = $request->user()->id;
             $consultations = Consultations::with([
-                'user:id,name,birthdate',
+                'user:id,name,birthdate,profile_url',
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
                 'schedule.user:id,name',
                 'payment'
             ])
-                ->where("patient_id",$userId)
+                ->where("patient_id", $userId)
                 ->get()
                 ->map(function ($consultation) {
                     return [
                         'consultation_id' => $consultation->consultation_id,
                         'status' => $consultation->status,
-                        'status_payment'=> $consultation->payment->payment_status,
+                        'status_payment' => $consultation->payment->payment_status,
                         'description' => $consultation->description,
                         'problem' => $consultation->problem,
                         'summary' => $consultation->summary,
@@ -189,6 +189,7 @@ class ConsultationController extends Controller
                         'start_time' => $consultation->schedule->start_time ?? null,
                         'end_time' => $consultation->schedule->end_time ?? null,
                         'counselor_name' => $consultation->schedule->user->name ?? null,
+                        'counselor_name' => $consultation->schedule->user->profile_url,
                         'counselor_id' => $consultation->schedule->counselor_id ?? null,
                     ];
                 });

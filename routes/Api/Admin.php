@@ -25,3 +25,6 @@ use App\Http\Controllers\AdminController;
 // });
 
 Route::post('admin/account', [AdminController::class, 'createUser']);
+Route::get('admin/account', [AdminController::class, 'getUserData']);
+Route::get('admin/account/admin', [AdminController::class, 'getAdminData']);
+Route::get('admin/account/{id}', [AdminController::class, 'getUserById']);

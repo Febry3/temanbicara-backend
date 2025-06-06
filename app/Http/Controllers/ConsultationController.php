@@ -165,6 +165,7 @@ class ConsultationController extends Controller
         try {
 
             $userId = $request->user()->id;
+
             $consultations = Consultations::with([
                 'user:id,name,birthdate,profile_url',
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
@@ -189,7 +190,7 @@ class ConsultationController extends Controller
                         'start_time' => $consultation->schedule->start_time ?? null,
                         'end_time' => $consultation->schedule->end_time ?? null,
                         'counselor_name' => $consultation->schedule->user->name ?? null,
-                        'counselor_profile_url' => $consultation->schedule->user->profile_url,
+                        'counselor_profile_url' => $consultation->user->profile_url,
                         'counselor_id' => $consultation->schedule->counselor_id ?? null,
                     ];
                 });

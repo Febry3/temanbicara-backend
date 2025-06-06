@@ -67,19 +67,20 @@ class ScheduleController extends Controller
                 'expertises',
                 'schedules' => function ($schedule) {
                     $schedule
-                    ->whereDate('available_date', '>=', now())
+                        ->whereDate('available_date', '>=', now())
 
-                     ->whereBetween('available_date', [Carbon::tomorrow(), Carbon::tomorrow()->addDays(6)])
-                    ->where('status', '=', 'Available')
+                        ->whereBetween('available_date', [Carbon::tomorrow(), Carbon::tomorrow()->addDays(6)])
+                        ->where('status', '=', 'Available')
 
-                    ->orderBy('available_date');
+                        ->orderBy('available_date');
                 }
-            ])->select('id', 'name')->get();
+            ])->get();
 
             $availableSchedules = $users->map(function ($user) {
                 return [
                     'counselor_id' => $user->id,
                     'name' => $user ? $user->name : 'Unknown',
+                    'profile_url' => $user->profile_url,
                     'expertise' => $user->expertises->isNotEmpty()
                         ? $user->expertises->pluck('type')->toArray()
                         : ['None'],
@@ -137,15 +138,15 @@ class ScheduleController extends Controller
                     : ['None'],
                 'schedules' => $user->relationLoaded('schedules') && $user->schedules->isNotEmpty()
                     ? $user->schedules->groupBy(fn($schedule) => $schedule->available_date)
-                    ->map(fn($dateSchedules, $date) => [
-                        'date' => $date,
-                        'schedulesByDate' => $dateSchedules->map(fn($schedule) => [
-                            'schedule_id' => $schedule->schedule_id,
-                            'start_time' => $schedule->start_time,
-                            'end_time' => $schedule->end_time,
-                            'status' => $schedule->status,
-                        ])->values(),
-                    ])->values()
+                        ->map(fn($dateSchedules, $date) => [
+                            'date' => $date,
+                            'schedulesByDate' => $dateSchedules->map(fn($schedule) => [
+                                'schedule_id' => $schedule->schedule_id,
+                                'start_time' => $schedule->start_time,
+                                'end_time' => $schedule->end_time,
+                                'status' => $schedule->status,
+                            ])->values(),
+                        ])->values()
                     : [],
             ];
             return response()->json([
@@ -184,17 +185,18 @@ class ScheduleController extends Controller
                 'expertise' => $user->expertises->isNotEmpty()
                     ? $user->expertises->pluck('type')->toArray()
                     : ['None'],
+                'profile_url' => $user->profile_url,
                 'schedules' => $user->relationLoaded('schedules') && $user->schedules->isNotEmpty()
                     ? $user->schedules->groupBy(fn($schedule) => $schedule->available_date->format('Y-m-d'))
-                    ->map(fn($dateSchedules, $date) => [
-                        'date' => $date,
-                        'schedulesByDate' => $dateSchedules->map(fn($schedule) => [
-                            'schedule_id' => $schedule->schedule_id,
-                            'start_time' => $schedule->start_time,
-                            'end_time' => $schedule->end_time,
-                            'status' => $schedule->status,
-                        ])->values(),
-                    ])->values()
+                        ->map(fn($dateSchedules, $date) => [
+                            'date' => $date,
+                            'schedulesByDate' => $dateSchedules->map(fn($schedule) => [
+                                'schedule_id' => $schedule->schedule_id,
+                                'start_time' => $schedule->start_time,
+                                'end_time' => $schedule->end_time,
+                                'status' => $schedule->status,
+                            ])->values(),
+                        ])->values()
                     : [],
             ];
             return response()->json([

@@ -25,8 +25,8 @@ class ArticleController extends Controller
         ]);
 
         $validateData = Validator::make($requestedData, [
-            'title' => 'required|string',
-            'content' => 'required|string',
+            'title' => 'required',
+            'content' => 'required',
         ]);
 
         if ($validateData->fails()) {

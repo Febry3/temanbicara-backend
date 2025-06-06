@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('journal_id');
             $table->string('title');
             $table->string('image_url')->nullable();
-            $table->text('body');
+            $table->longText('body');
             $table->bigInteger('tracking_id')->unsigned()->nullable();
             $table->foreign('tracking_id')->references('tracking_id')->on('trackings')->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();

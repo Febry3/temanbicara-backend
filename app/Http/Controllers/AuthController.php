@@ -358,6 +358,7 @@ class AuthController extends Controller
     public static function editProfileImage(Request $request)
     {
         try {
+            
             $response = ImageRequestHelper::postImageToSupabase($request, 'profile');
 
             User::where('id', Auth::user()->id)->update([

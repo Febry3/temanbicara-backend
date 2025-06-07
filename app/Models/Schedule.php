@@ -31,12 +31,19 @@ class Schedule extends Model
     {
         return $this->belongsTo(User::class, 'counselor_id');
     }
+
     public function consultation()
     {
         return $this->hasOne(Consultations::class, 'schedule_id');
     }
+
+    public function counselor()
+    {
+        return $this->belongsTo(User::class, 'counselor_id');
+    }
+
     public function getAvailableDateAttribute($value)
     {
-        return Carbon::parse( $value)->format('Y-m-d h:i:s');
+        return Carbon::parse($value)->format('Y-m-d h:i:s');
     }
 }

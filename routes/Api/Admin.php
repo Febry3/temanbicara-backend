@@ -27,4 +27,10 @@ use App\Http\Controllers\AdminController;
 Route::post('admin/account', [AdminController::class, 'createUser']);
 Route::get('admin/account', [AdminController::class, 'getUserData']);
 Route::get('admin/account/admin', [AdminController::class, 'getAdminData']);
+Route::get('admin/account/counselor', [AdminController::class, 'getCounselorData']);
 Route::get('admin/account/{id}', [AdminController::class, 'getUserById']);
+Route::put('admin/account/{id}', [AdminController::class, 'updateUser']);
+Route::delete('admin/account/{id}', [AdminController::class, 'deleteUser']);
+
+
+Route::get('admin/payment', [AdminController::class, 'getAllPayment']);

@@ -337,9 +337,9 @@ class ConsultationController extends Controller
             foreach ($consultations as $consultation) {
                 $expertiseString = "";
                 foreach ($consultation->schedule->user->expertises as $expertise) {
-                    $expertiseString += $expertise + ", ";
+                    $expertiseString = $expertiseString . " " . $expertise->type;
                 };
-                $consultation->schedule->user->expertises = $expertiseString;
+                $consultation->schedule->user->expertiseString = $expertiseString;
             }
             return response()->json([
                 'status' => true,

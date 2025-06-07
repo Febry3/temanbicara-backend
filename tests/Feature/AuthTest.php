@@ -11,9 +11,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-uses(DatabaseTransactions::class);
+uses(RefreshDatabase::class);
 
 beforeEach(
     function () {
@@ -90,19 +89,19 @@ test('Logout Test', function () {
 test('Change Password Test', function () {
     Sanctum::actingAs($this->user);
 
-    $otpRequest = OTPRequest::create([
-        'user_id' => $this->user->id,
-        'otp' => 123456,
-        'expired_at' => Carbon::now(new CarbonTimeZone('Asia/Bangkok'))->addMinutes(5)->format('Y-m-d H:i:s')
-    ]);
+    // $otpRequest = OTPRequest::create([
+    //     'user_id' => $this->user->id,
+    //     'otp' => 123456,
+    //     'expired_at' => Carbon::now(new CarbonTimeZone('Asia/Bangkok'))->addMinutes(5)->format('Y-m-d H:i:s')
+    // ]);
 
     $response = $this
         ->postJson(
-            '/api/v1/profile/password',
+            '/api/v1/change-password',
             [
+                'old_password' => 'test123',
                 'new_password' => 'alpha',
                 'confirm_password' => 'alpha',
-                'otp' => $otpRequest->otp
             ]
         );
 
@@ -111,10 +110,12 @@ test('Change Password Test', function () {
         ->assertJson(
             fn(AssertableJson $json) =>
             $json->where('status', true)
-                ->where('message', 'Password changed successfully')
+                ->where('message', 'Password berhasil diperbaharui')
         );
 
-    expect(DB::select('SELECT * FROM otp_requests WHERE user_id = ?', [$this->user->id]))->toBeEmpty();
+    // expect(DB::select('SELECT * FROM otp_requests WHERE user_id = ?', [$this->user->id]))->toBeEmpty();
+    $this->user->refresh(); // Ambil data user terbaru dari DB
+    expect(Hash::check('alpha', $this->user->password))->toBeTrue();
 });
 
 test('Edit Profile Data Test', function () {
@@ -125,7 +126,7 @@ test('Edit Profile Data Test', function () {
             '/api/v1/profile',
             [
                 'name' => 'asep',
-                'email' => 'asep@gmail.com',
+                'nickname' => 'asep',
                 'birthdate' => '2025-12-12',
             ]
         );
@@ -137,11 +138,12 @@ test('Edit Profile Data Test', function () {
             fn(AssertableJson $json) =>
             $json->where('status', true)
                 ->where('message', 'Profile data updated')
+                ->has('data')
         );
 
     $this->assertDatabaseHas('users', [
         'name' => 'asep',
-        'email' => 'asep@gmail.com',
+        'nickname' => 'asep',
         'birthdate' => '2025-12-12',
     ]);
 });

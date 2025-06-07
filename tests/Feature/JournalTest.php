@@ -7,7 +7,7 @@ use App\Models\Journal;
 use App\Models\TrackJournalResponse;
 use App\Models\Observation;
 use App\Http\Controllers\AiController;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
@@ -16,7 +16,7 @@ use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
 
-uses(DatabaseTransactions::class);
+uses(RefreshDatabase::class);
 
 describe('Journal API', function () {
 

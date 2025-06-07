@@ -168,7 +168,6 @@ class ConsultationController extends Controller
 
             $consultations = Consultations::with([
                 'user:id,name,birthdate,profile_url',
-
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
                 'schedule.user.expertises',
                 'payment'
@@ -194,7 +193,7 @@ class ConsultationController extends Controller
                         'counselor_profile_url' => $consultation->user->profile_url,
                         'counselor_id' => $consultation->schedule->counselor_id ?? null,
                         'expertise' => $consultation->schedule->user->expertiseString
-                        
+
 
                     ];
                 });

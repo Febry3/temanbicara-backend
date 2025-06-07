@@ -35,6 +35,9 @@ jobs:
       - name: Generate Artisan Key for Testing
         run: php artisan key:generate --env=testing
 
+      - name: Run Migrations for Testing
+        run: php artisan migrate --env=testing
+
       - name: Run Tests
         run: php artisan test --env=testing
 

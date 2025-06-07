@@ -332,6 +332,12 @@ class ConsultationController extends Controller
                     $query->where('payment_status', $status);
                 })->where('patient_id', $userId)
                 ->get();
+
+
+            foreach ($consultations as $consultation) {
+                $expertiseString = implode(", ", $consultation->schedule->user->expertises);
+                $consultation->schedule->user->expertises = $expertiseString;
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'History Consultation',

@@ -256,7 +256,7 @@ class AdminController extends Controller
             $totalTransactions = $group->count();
 
             $summary[$timeRange] = [
-                'time_range' => $timeRange,
+                'time' => $timeRange,
                 'totalTransactions' => $totalTransactions,
             ];
 
@@ -285,7 +285,7 @@ class AdminController extends Controller
                         "transactionDate" => $data->created_at
                     ];
                 });
-            dd($this->processTransactions($payments));
+            $groupedData = $this->processTransactions($payments);
             $countSuccess = 0;
             $countPending = 0;
             $countFailed = 0;
@@ -313,6 +313,7 @@ class AdminController extends Controller
                         "countSuccess" => $countSuccess,
                         "countPending" => $countPending,
                         "countFailed" => $countFailed,
+                        "groupedData" => $groupedData
                     ]
                 ],
                 200

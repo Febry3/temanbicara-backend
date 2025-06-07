@@ -5,7 +5,41 @@ on:
       - main
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3 
+          extensions: pdo, pdo_sqlite, bcmath, ctype, fileinfo, json, mbstring, openssl, tokenizer, xml, dom
+          coverage: none
+
+      - name: Install Composer Dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Setup .env for Testing
+        run: |
+          cp .env.example .env.testing
+          echo "APP_KEY=" >> .env.testing
+          echo "APP_ENV=testing" >> .env.testing
+          echo "DB_CONNECTION=sqlite" >> .env.testing
+          echo "DB_DATABASE=:memory:" >> .env.testing
+          echo "CACHE_DRIVER=array" >> .env.testing
+          echo "SESSION_DRIVER=array" >> .env.testing
+          echo "QUEUE_CONNECTION=sync" >> .env.testing
+
+      - name: Generate Artisan Key for Testing
+        run: php artisan key:generate --env=testing
+
+      - name: Run Tests
+        run: php artisan test --env=testing
+
   deploy:
+    needs: test
     runs-on: ubuntu-latest
     environment: Development
     steps:
@@ -51,4 +85,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/html/temanbicara-backend
+            php artisan optimize:clear
             php artisan optimize

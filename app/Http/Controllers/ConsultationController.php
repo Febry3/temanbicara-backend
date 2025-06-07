@@ -168,8 +168,9 @@ class ConsultationController extends Controller
 
             $consultations = Consultations::with([
                 'user:id,name,birthdate,profile_url',
+
                 'schedule:schedule_id,available_date,start_time,end_time,counselor_id',
-                'schedule.user:id,name',
+                'schedule.user.expertises',
                 'payment'
             ])
                 ->where("patient_id", $userId)
@@ -192,6 +193,9 @@ class ConsultationController extends Controller
                         'counselor_name' => $consultation->schedule->user->name ?? null,
                         'counselor_profile_url' => $consultation->user->profile_url,
                         'counselor_id' => $consultation->schedule->counselor_id ?? null,
+                        'expertise' => $consultation->schedule->user->expertiseString
+                        
+
                     ];
                 });
             return response()->json([
@@ -327,20 +331,12 @@ class ConsultationController extends Controller
             $status = $request['payment_status'];
             $userId = $request->user()->id;
 
-            $consultations = Consultations::with(['payment', 'schedule.user.expertises'])
+            $consultations = Consultations::with(['payment',
+            'schedule.user'])
                 ->whereHas('payment', function ($query) use ($status) {
                     $query->where('payment_status', $status);
                 })->where('patient_id', $userId)
                 ->get();
-
-
-            foreach ($consultations as $consultation) {
-                $expertiseString = "";
-                foreach ($consultation->schedule->user->expertises as $expertise) {
-                    $expertiseString = $expertiseString . " " . $expertise->type;
-                };
-                $consultation->schedule->user->expertiseString = $expertiseString;
-            }
             return response()->json([
                 'status' => true,
                 'message' => 'History Consultation',

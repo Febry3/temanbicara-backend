@@ -82,10 +82,10 @@ describe('Journal API', function () {
 
         Http::fake(['*' => Http::response(null, 200)]);
 
-    
+
         $response = $this
-            ->actingAs($user) 
-            ->deleteJson('/api/v1/journal/' . $journal->journal_id); 
+            ->actingAs($user)
+            ->deleteJson('/api/v1/journal/' . $journal->journal_id);
 
         $response
             ->assertStatus(200)
@@ -98,10 +98,10 @@ describe('Journal API', function () {
         $this->assertDatabaseMissing('journals', ['journal_id' => $journal->journal_id]);
     });
 
-   
+
 
     test('Successfully get a journal by its ID', function () {
-        
+
         $user = User::create([
             "email" => "getbyid@example.com",
             "password" => bcrypt("secret123"),
@@ -112,7 +112,7 @@ describe('Journal API', function () {
             'body' => 'We need to find this specific journal.',
         ]);
 
-        
+
         $this->actingAs($user)
             ->getJson('/api/v1/journal/' . $journal->journal_id)
             ->assertStatus(200)
@@ -127,13 +127,13 @@ describe('Journal API', function () {
     });
 
     test('Fails to get journal if ID does not exist', function () {
-        
+
         $user = User::create([
             "email" => "getbyid.fail@example.com",
             "password" => bcrypt("secret123"),
         ]);
 
-        
+
         $this->actingAs($user)
             ->getJson('/api/v1/journal/non-existent-id')
             ->assertStatus(404)
@@ -161,28 +161,28 @@ describe('Journal API', function () {
     });
 
 
-    // test('Successfully get all journals for a specific date', function () {
-    //     $user = User::create(["email" => "getall@example.com", "password" => "secret"]);
-    //     $today = now()->toDateString();
-    //     $yesterday = now()->subDay()->toDateString();
+    test('Successfully get all journals for a specific date', function () {
+        $user = User::create(["email" => "getall@example.com", "password" => "secret"]);
+        $today = now()->toDateString();
+        $yesterday = now()->subDay()->toDateString();
 
-    //     Journal::create(['user_id' => $user->id, 'title' => 'Journal Today 1', 'body' => '...']);
-    //     Journal::create(['user_id' => $user->id, 'title' => 'Journal Today 2', 'body' => '...', 'created_at' => now()->addMinute()]);
+        Journal::create(['user_id' => $user->id, 'title' => 'Journal Today 1', 'body' => '...']);
+        Journal::create(['user_id' => $user->id, 'title' => 'Journal Today 2', 'body' => '...', 'created_at' => now()->addMinute()]);
 
-    //     Journal::create(['user_id' => $user->id, 'title' => 'Journal Yesterday', 'body' => '...', 'created_at' => $yesterday]);
+        Journal::create(['user_id' => $user->id, 'title' => 'Journal Yesterday', 'body' => '...', 'created_at' => now()]);
 
-    //     $this->actingAs($user)
-    //         ->postJson('/api/v1/journal/get', ['date_request' => $today])
-    //         ->assertStatus(200)
-    //         ->assertJson(
-    //             fn(AssertableJson $json) =>
-    //             $json->where('status', true)
-    //                 ->where('id', $user->id)
-    //                 ->has('data', 2)
-    //                 ->where('data.0.title', 'Journal Today 1')
-    //                 ->etc()
-    //         );
-    // });
+        $this->actingAs($user)
+            ->postJson('/api/v1/journal/get', ['date_request' => $today])
+            ->assertStatus(200)
+            ->assertJson(
+                fn(AssertableJson $json) =>
+                $json->where('status', true)
+                    ->where('id', $user->id)
+                    ->has('data', 2)
+                    ->where('data.0.title', 'Journal Today 1')
+                    ->etc()
+            );
+    });
 
     // test('Returns "not found" message if no journals on specific date', function () {
     //     $user = User::create(["email" => "getall.empty@example.com", "password" => "secret"]);
@@ -193,7 +193,7 @@ describe('Journal API', function () {
 
     //     $this->actingAs($user)
     //         ->postJson('/api/v1/journal/get', ['date_request' => $today])
-    //         ->assertStatus(200) 
+    //         ->assertStatus(200)
     //         ->assertJson(
     //             fn(AssertableJson $json) =>
     //             $json->where('status', false)

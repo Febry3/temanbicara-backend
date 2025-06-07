@@ -56,7 +56,7 @@ class User extends Authenticatable
             'birthdate' => 'date',
         ];
     }
-
+     protected $appends = ['expertiseString'];
     public function artikels()
     {
         return $this->hasMany(Article::class, 'user_id');
@@ -91,5 +91,9 @@ class User extends Authenticatable
     public function getBirthdateAttribute($value)
     {
         return Carbon::parse($value)->format('Y-m-d h:i:s');
+    }
+    public function getExpertiseStringAttribute(): string
+    {
+        return $this->expertises->pluck('type')->implode(' ');
     }
 }

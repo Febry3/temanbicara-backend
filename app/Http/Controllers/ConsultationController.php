@@ -335,7 +335,10 @@ class ConsultationController extends Controller
 
 
             foreach ($consultations as $consultation) {
-                $expertiseString = implode(", ", $consultation->schedule->user->expertises);
+                $expertiseString = "";
+                foreach ($consultation->schedule->user->expertises as $expertise) {
+                    $expertiseString += $expertise + ", ";
+                };
                 $consultation->schedule->user->expertises = $expertiseString;
             }
             return response()->json([

@@ -80,7 +80,7 @@ class ConsultationController extends Controller
                 'status' => $validatedData['status'],
             ]);
 
-            if ($validatedData['status'] === "Success") {
+            if ($validatedData['status'] === "Done") {
                 $consultation->endConsultation();
             }
 

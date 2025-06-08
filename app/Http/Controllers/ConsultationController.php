@@ -105,7 +105,9 @@ class ConsultationController extends Controller
 
             DB::beginTransaction();
 
-            $schedule = Schedule::find($request->schedule_id);
+            $schedule = Schedule::where('schedule_id', $request->schedule_id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
             if ($schedule->status === 'Booked') {
                 return response()->json([

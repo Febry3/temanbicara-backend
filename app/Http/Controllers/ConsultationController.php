@@ -72,6 +72,7 @@ class ConsultationController extends Controller
 
             $consultation = Consultations::findOrFail($id);
 
+            DB::beginTransaction();
             $consultation->update([
                 'description' => $validatedData['description'],
                 'problem' => $validatedData['problem'],
@@ -79,12 +80,19 @@ class ConsultationController extends Controller
                 'status' => $validatedData['status'],
             ]);
 
+            if ($validatedData['status'] === "Success") {
+                $consultation->endConsultation();
+            }
+
+            DB::commit();
+
             return response()->json([
                 'status' => true,
                 'message' => 'Consultation updated successfully',
                 'data' => $consultation,
             ]);
         } catch (\Throwable $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -106,8 +114,8 @@ class ConsultationController extends Controller
             DB::beginTransaction();
 
             $schedule = Schedule::where('schedule_id', $request->schedule_id)
-                    ->lockForUpdate()
-                    ->firstOrFail();
+                ->lockForUpdate()
+                ->firstOrFail();
 
             if ($schedule->status === 'Booked') {
                 return response()->json([
@@ -332,8 +340,10 @@ class ConsultationController extends Controller
             $status = $request['payment_status'];
             $userId = $request->user()->id;
 
-            $consultations = Consultations::with(['payment',
-            'schedule.user'])
+            $consultations = Consultations::with([
+                'payment',
+                'schedule.user'
+            ])
                 ->whereHas('payment', function ($query) use ($status) {
                     $query->where('payment_status', $status);
                 })->where('patient_id', $userId)

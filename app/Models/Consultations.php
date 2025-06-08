@@ -31,4 +31,11 @@ class Consultations extends Model
     {
         return $this->belongsTo(Payment::class, 'payment_id', 'payment_id');
     }
+
+    public function endConsultation()
+    {
+        $this->status = "Done";
+        $this->save();
+        Schedule::where("schedule_id", $this->schedule_id)->update(["status" => "Done"]);
+    }
 }

@@ -3,9 +3,9 @@
 namespace App\Jobs;
 
 use App\Mail\PaymentSuccessEmail;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class PaymentSuccessEmailJob implements ShouldQueue
 {

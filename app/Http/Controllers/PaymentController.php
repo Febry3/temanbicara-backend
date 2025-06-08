@@ -90,6 +90,7 @@ class PaymentController extends Controller
             $payment = Payment::where('transaction_id', $request->transaction_id)->first();
             $payment->completePayment();
             $consultation = Consultations::where("payment_id", $payment->payment_id)->first();
+            $consultation->endConsultation();
             $customer = User::findOrFail($consultation->patient_id);
 
             PaymentSuccessEmailJob::dispatch($customer->name, $payment->transaction_id, $payment->amount, $customer->email);

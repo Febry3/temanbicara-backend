@@ -23,7 +23,7 @@ class UpdateExpiredPaymentJob implements ShouldQueue
 
     public function __construct(String $paymentId)
     {
-        $this->payment =  Payment::find($paymentId);
+        $this->payment = Payment::find($paymentId);
     }
 
     /**
@@ -32,20 +32,21 @@ class UpdateExpiredPaymentJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info('Works');
-        $this->payment->update(['payment_status' => 'Expired']);
+        if ($this->payment->payment_status !== 'Success') {
+            $this->payment->update(['payment_status' => 'Expired']);
 
-        $consultation = Consultations::where('payment_id', $this->payment->payment_id)->first();
+            $consultation = Consultations::where('payment_id', $this->payment->payment_id)->first();
 
-        if (!$consultation) {
-            return;
+            if (!$consultation) {
+                return;
+            }
+            $consultation->update(['status' => 'Cancelled']);
+
+            $schedule = Schedule::find($consultation->schedule_id);
+            if (!$schedule) {
+                return;
+            }
+            $schedule->update(['status' => 'Available']);
         }
-        $consultation->update(['status' => 'Cancelled']);
-
-        $schedule = Schedule::find($consultation->schedule_id);
-        if (!$schedule) {
-            return;
-        }
-        $schedule->update(['status' => 'Available']);
     }
 }

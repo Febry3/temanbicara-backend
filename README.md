@@ -2,19 +2,15 @@
 
 Teman Bicara Backend adalah API backend yang dibangun menggunakan [Laravel](https://laravel.com/), dirancang untuk mendukung aplikasi Teman Bicara. Proyek ini menyediakan endpoint RESTful untuk berbagai fitur aplikasi.
 
-## 🚀 Fitur Utama
+## 🚀 Arsitektur Aplikasi
+![{1459F249-04A3-4205-A1F8-40F3E6995594}](https://github.com/user-attachments/assets/1445d41c-a1b7-4d23-948f-ca1b7812ed42)
 
-- Autentikasi dan otorisasi pengguna
-- Manajemen sesi dan token
-- Integrasi dengan layanan pihak ketiga
-- CRUD untuk entitas utama aplikasi
-- Validasi dan sanitasi input
-- Dokumentasi API dengan Swagger/OpenAPI
+
 
 ## 🧱 Teknologi yang Digunakan
 
-- **Framework**: Laravel
-- **Bahasa Pemrograman**: PHP
+- **Framework**: Laravel 11
+- **Bahasa Pemrograman**: PHP 8.3
 - **Database**: MySQL
 - **Manajemen Paket**: Composer
 - **Testing**: PHPUnit
@@ -47,10 +43,9 @@ Teman Bicara Backend adalah API backend yang dibangun menggunakan [Laravel](http
    cd temanbicara-backend
    ```
 
-2. **Install dependensi PHP dan JavaScript**
+2. **Install dependensi PHP**
    ```bash
    composer install
-   npm install && npm run dev
    ```
 
 3. **Salin file `.env` dan konfigurasi**
@@ -59,16 +54,34 @@ Teman Bicara Backend adalah API backend yang dibangun menggunakan [Laravel](http
    php artisan key:generate
    ```
 
-4. **Migrasi dan seeding database**
+4. **Migrasi database**
+   *Pastikan MySQL sudah berjalan pada device anda
    ```bash
    php artisan migrate:fresh
    ```
 
-5. **Jalankan server lokal**
+6. **Jalankan server lokal**
    ```bash
    php artisan serve
+   php artisan queue:work
    ```
 
+6. **Opsional**
+   via docker 🐋
+   ```bash
+   docker compose up --build
+   ```
+   Kemudian
+   ```bash
+   docker exec -it <app-1> bash
+   ```
+   ```bash
+   composer install
+   php artisan key:generate
+   php artisan migrate:fresh
+   php artisan serve
+   php artisan queue:work
+   ```
 ## 🧪 Testing
 
 Untuk menjalankan tes unit dan fitur:

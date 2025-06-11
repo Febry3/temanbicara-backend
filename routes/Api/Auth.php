@@ -3,14 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('change-password', [AuthController::class, 'changePassword']);
     Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('verify-token', [AuthController::class, 'verifySanctumToken']);
+    Route::get('verify-token', [AuthController::class, 'verifySanctumToken']);
     Route::post('profile', [AuthController::class, 'editProfileData']);
     Route::post('profile/image', [AuthController::class, 'editProfileImage']);
     Route::get('profile', [AuthController::class, 'getUser']);

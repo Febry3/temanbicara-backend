@@ -5,16 +5,101 @@ namespace App\Http\Controllers;
 use Throwable;
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Article;
 use App\Models\Payment;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Helper\ImageRequestHelper;
 use App\Http\Requests\CreateUserRequest;
+use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
+    public function loginAsAdmin(Request $request)
+    {
+        try {
+            $requestedData = $request->only([
+                'email',
+                'password'
+            ]);
+
+            $validateData = Validator::make(
+                $requestedData,
+                [
+                    'email' => 'required',
+                    'password' => 'required',
+                ]
+            );
+
+            if ($validateData->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email dan password tidak boleh kosong',
+                    'error' => $validateData->errors(),
+                ], 200);
+            };
+
+            $user = User::where('email', $requestedData['email'])->first();
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email tidak sesuai',
+                ], 200);
+            }
+
+            if ($user->role !== "Admin") {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Role tidak sesuai',
+                ], 200);
+            }
+
+            if (!Auth::attempt(["email" => $requestedData['email'], "password" => $requestedData['password']])) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Password tidak sesuai',
+                ], 401);
+            }
+
+            $request->session()->regenerate();
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Login berhasil',
+                    'token' => $user->createToken('RevanGay', [$user->role])->plainTextToken,
+                    'data' => $user,
+                ],
+                200
+            );
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
+
+    public function logoutAsAdmin(Request $request)
+    {
+        $request->user()->tokens()->delete();
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return response()->json(
+            [
+                'status' => true,
+                'message' => 'Logged Out',
+            ],
+            200
+        );
+    }
+
     public function createUser(CreateUserRequest $request)
     {
         try {
@@ -71,16 +156,15 @@ class AdminController extends Controller
         }
     }
 
-    public function getAdminData()
+    public function getAdminData(Request $request)
     {
         try {
-            $admins = User::where('role', 'Admin')->get();
-
+            $admin = $request->user();
             return response()->json(
                 [
                     'status' => true,
                     'message' => 'Data berhasil didapat',
-                    'data' => $admins
+                    'data' => $admin
                 ],
                 200
             );
@@ -98,34 +182,38 @@ class AdminController extends Controller
     public function getCounselorData()
     {
         try {
-            $admins = User::whereHas('schedules', function ($scheduleQuery) {
+            $admins = User::with(['schedules' => function ($scheduleQuery) {
                 $scheduleQuery->where('status', 'Done')
                     ->whereHas('consultation', function ($consultationQuery) {
                         $consultationQuery->whereHas('payment', function ($paymentQuery) {
                             $paymentQuery->where('payment_status', 'Success');
                         });
-                    });
-            })
-                ->with('schedules.consultation.payment')
+                    })
+                    ->with('consultation.payment');
+            }])
                 ->get()
-                ->map(function ($data) {
-                    $totalConsultations = count($data->schedules);
+                ->map(function ($user) {
+                    $totalConsultations = count($user->schedules);
                     $revenue = 0;
-                    foreach ($data->schedules as $temp) {
-                        $revenue += $temp->consultation->payment->amount;
+
+                    foreach ($user->schedules as $schedule) {
+                        if ($schedule->consultation && $schedule->consultation->payment) {
+                            $revenue += $schedule->consultation->payment->amount;
+                        }
                     }
+
                     return [
-                        "id" => $data->id,
-                        "email" => $data->email,
-                        "phone_number" => $data->phone_number,
-                        "name" => $data->name,
-                        "nickname" => $data->nickname,
-                        "gender" => $data->gender,
-                        "birthdate" => $data->birthdate,
-                        "role" => $data->role,
+                        "id" => $user->id,
+                        "email" => $user->email,
+                        "phone_number" => $user->phone_number,
+                        "name" => $user->name,
+                        "nickname" => $user->nickname,
+                        "gender" => $user->gender,
+                        "birthdate" => $user->birthdate,
+                        "role" => $user->role,
                         "totalConsultations" => $totalConsultations,
                         "revenue" => $revenue,
-                        "created_at" => $data->created_at
+                        "created_at" => $user->created_at,
                     ];
                 });
 
@@ -315,6 +403,56 @@ class AdminController extends Controller
                         "countFailed" => $countFailed,
                         "groupedData" => $groupedData
                     ]
+                ],
+                200
+            );
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
+
+    //article
+    public function getAllArticle()
+    {
+        try {
+            $articles = Article::all();
+
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Data berhasil diambil',
+                    'data' => $articles
+                ],
+                200
+            );
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
+
+    public function updateArticleStatus(Request $request, string $id)
+    {
+        try {
+            Article::where("article_id", $id)->update([
+                "status" => $request->status
+            ]);
+
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Status berhasil diubah',
                 ],
                 200
             );

@@ -44,7 +44,6 @@ class AuthController extends Controller
 
             $user = User::create([
                 'email' => $requestedData['email'],
-                // 'phone_number' => $requestedData['phone_number'],
                 'password' => $requestedData['password'],
 
             ]);
@@ -100,7 +99,6 @@ class AuthController extends Controller
                     'message' => 'Email tidak sesuai',
                 ], 200);
             }
-
 
             if (!Hash::check($requestedData['password'], $user->password)) {
                 return response()->json([
@@ -267,6 +265,14 @@ class AuthController extends Controller
     {
         try {
             $user = $request->user();
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Token benar',
+                    'user' => $user,
+                ],
+                200
+            );
 
             if (!$user) {
                 return response()->json(
@@ -287,15 +293,6 @@ class AuthController extends Controller
                     401
                 );
             }
-
-            return response()->json(
-                [
-                    'status' => true,
-                    'message' => 'Token benar',
-                    'user' => $user,
-                ],
-                200
-            );
         } catch (Throwable $err) {
             return response()->json(
                 [
@@ -358,7 +355,7 @@ class AuthController extends Controller
     public static function editProfileImage(Request $request)
     {
         try {
-            
+
             $response = ImageRequestHelper::postImageToSupabase($request, 'profile');
 
             User::where('id', Auth::user()->id)->update([

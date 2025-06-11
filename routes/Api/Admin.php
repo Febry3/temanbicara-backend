@@ -24,6 +24,15 @@ use App\Http\Controllers\AdminController;
 //     });
 // });
 
+//auth
+Route::post('admin/login', [AdminController::class, 'loginAsAdmin']);
+Route::post('admin/logout', [AdminController::class, 'logoutAsAdmin']);
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('admin', [AdminController::class, 'getAdminData']);
+});
+//admin
 Route::post('admin/account', [AdminController::class, 'createUser']);
 Route::get('admin/account', [AdminController::class, 'getUserData']);
 Route::get('admin/account/admin', [AdminController::class, 'getAdminData']);
@@ -32,5 +41,9 @@ Route::get('admin/account/{id}', [AdminController::class, 'getUserById']);
 Route::put('admin/account/{id}', [AdminController::class, 'updateUser']);
 Route::delete('admin/account/{id}', [AdminController::class, 'deleteUser']);
 
+//article
+Route::get('admin/article', [AdminController::class, 'getAllArticle']);
+Route::patch('admin/article/{id}', [AdminController::class, 'updateArticleStatus']);
 
+//payment
 Route::get('admin/payment', [AdminController::class, 'getAllPayment']);

@@ -7,10 +7,9 @@ use App\Http\Controllers\AdminController;
 Route::post('admin/login', [AdminController::class, 'loginAsAdmin']);
 
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('admin', [AdminController::class, 'getAdminData']);
-    Route::post('admin/logout', [AdminController::class, 'logoutAsAdmin']);
-});
+Route::middleware('auth:sanctum')->group(function () {});
+Route::get('admin', [AdminController::class, 'getAdminData']);
+Route::post('admin/logout', [AdminController::class, 'logoutAsAdmin']);
 
 //admin
 Route::get('admin/account', [AdminController::class, 'getUserData']);

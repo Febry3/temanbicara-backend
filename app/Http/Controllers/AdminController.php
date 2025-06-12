@@ -555,7 +555,7 @@ class AdminController extends Controller
                 $date = Carbon::now()->subDays(29 - $i)->toDateString();
                 $revenueData->push([
                     'date' => $date,
-                    'total' => $rawData->get($date)->total ?? 0,
+                    'revenue' => $rawData->get($date)->total ?? 0,
                 ]);
             }
 
@@ -575,7 +575,7 @@ class AdminController extends Controller
                 $date = Carbon::now()->subDays(29 - $i)->toDateString();
                 $consultionData->push([
                     'date' => $date,
-                    'total' => $rawData->get($date)->total ?? 0,
+                    'sumConsultations' => $rawData->get($date)->total ?? 0,
                 ]);
             }
 

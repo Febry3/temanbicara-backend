@@ -185,7 +185,7 @@ class AdminController extends Controller
     public function getCounselorData()
     {
         try {
-            $admins = User::with(['schedules' => function ($scheduleQuery) {
+            $admins = User::where('role', 'Counselor')->with(['schedules' => function ($scheduleQuery) {
                 $scheduleQuery->where('status', 'Done')
                     ->whereHas('consultation', function ($consultationQuery) {
                         $consultationQuery->whereHas('payment', function ($paymentQuery) {

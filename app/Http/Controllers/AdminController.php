@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Helper\ImageRequestHelper;
 use App\Http\Requests\CreateUserRequest;
+use App\Models\Consultations;
 use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
@@ -90,14 +91,16 @@ class AdminController extends Controller
         $request->user()->tokens()->delete();
         Auth::guard('web')->logout();
         $request->session()->invalidate();
-        $request->session()->regenerateToken();
+
         return response()->json(
             [
                 'status' => true,
                 'message' => 'Logged Out',
             ],
             200
-        );
+        )->withCookie(
+            cookie()->forget('laravel_session')
+        );;
     }
 
     public function createUser(CreateUserRequest $request)
@@ -453,6 +456,144 @@ class AdminController extends Controller
                 [
                     'status' => true,
                     'message' => 'Status berhasil diubah',
+                ],
+                200
+            );
+        } catch (Throwable $err) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $err->getMessage()
+                ],
+                500
+            );
+        }
+    }
+
+    public function getDashboardData()
+    {
+        try {
+            $users = User::all();
+            $counselorCount = 0;
+            $userCount = count($users);
+            $male = 0;
+            $female = 0;
+
+            foreach ($users as $user) {
+                if ($user->role === "Counselor") {
+                    $counselorCount++;
+                }
+
+                if ($user->gender === "male") {
+                    $male++;
+                }
+
+                if ($user->gender === "female") {
+                    $female++;
+                }
+            }
+
+            $consultations = Consultations::all();
+            $consultationCount = count($consultations);
+
+            $payments = Payment::where("payment_status", "Success")->get();
+            $totalAllRevenue = 0;
+
+            foreach ($payments as $payment) {
+                $totalAllRevenue += $payment->amount;
+            }
+
+            $startDate = Carbon::now()->subMonths(11)->startOfMonth();
+
+            $rawData = User::selectRaw("
+                    DATE_FORMAT(created_at, '%M') as month,
+                    MONTH(created_at) as month_num,
+                    gender,
+                    COUNT(*) as count
+                ")
+                ->where('created_at', '>=', $startDate)
+                ->groupByRaw("MONTH(created_at), DATE_FORMAT(created_at, '%M'), gender")
+                ->orderBy('month_num')
+                ->get();
+
+            $months = collect();
+            for ($i = 0; $i < 12; $i++) {
+                $date = Carbon::now()->subMonths(11 - $i);
+                $monthName = $date->format('F');
+                $months->put($monthName, ['male' => 0, 'female' => 0]);
+            }
+
+            $final = $months->map(function ($counts, $monthName) use ($rawData) {
+                $group = $rawData->where('month', $monthName);
+                return [
+                    'male' => $group->where('gender', 'male')->sum('count'),
+                    'female' => $group->where('gender', 'female')->sum('count'),
+                ];
+            })->map(function ($counts, $month) {
+                return [
+                    'month' => $month,
+                    'male' => $counts['male'],
+                    'female' => $counts['female'],
+                ];
+            })->values();
+
+            $startDate = Carbon::now()->subDays(29)->startOfDay();
+
+            $rawData = Payment::selectRaw("
+                    DATE(created_at) as date,
+                    SUM(amount) as total
+                ")
+                ->where('payment_status', 'Success')
+                ->where('created_at', '>=', $startDate)
+                ->groupByRaw('DATE(created_at)')
+                ->orderBy('date')
+                ->get()
+                ->keyBy('date');
+
+            $revenueData = collect();
+            for ($i = 0; $i < 30; $i++) {
+                $date = Carbon::now()->subDays(29 - $i)->toDateString();
+                $revenueData->push([
+                    'date' => $date,
+                    'total' => $rawData->get($date)->total ?? 0,
+                ]);
+            }
+
+
+            $rawData = Consultations::selectRaw("
+                DATE(created_at) as date,
+                COUNT(*) as total
+            ")
+                ->where('created_at', '>=', $startDate)
+                ->groupByRaw('DATE(created_at)')
+                ->orderBy('date')
+                ->get()
+                ->keyBy('date');
+
+            $consultionData = collect();
+            for ($i = 0; $i < 30; $i++) {
+                $date = Carbon::now()->subDays(29 - $i)->toDateString();
+                $consultionData->push([
+                    'date' => $date,
+                    'total' => $rawData->get($date)->total ?? 0,
+                ]);
+            }
+
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Status berhasil diubah',
+                    'data' => [
+                        'counselorCount' => $counselorCount,
+                        'userCount' => $userCount,
+                        'consultationCount' => $consultationCount,
+                        'totalRevenue' => $totalAllRevenue,
+                        'maleUser' => $male,
+                        'femaleUser' => $female,
+                        'userChart' => $final,
+                        'revenueChart' => $revenueData,
+                        'consultationChart' => $consultionData
+                    ]
                 ],
                 200
             );

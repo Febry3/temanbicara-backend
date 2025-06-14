@@ -14,7 +14,13 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN groupadd -g 1000 nonroot \
     && useradd -u 1000 -ms /bin/bash -g nonroot nonroot
 
+COPY composer.json composer.lock ./
+
+RUN composer install --no-dev --no-autoloader --no-scripts --no-interaction
+
 COPY . .
+
+RUN composer dump-autoload --optimize --no-dev
 
 RUN chown -R nonroot:nonroot /var/www \
     && chmod -R 755 /var/www/storage

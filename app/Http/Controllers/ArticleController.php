@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-
-
 class ArticleController extends Controller
 {
     private static function validateArticleRequest(Request $request)

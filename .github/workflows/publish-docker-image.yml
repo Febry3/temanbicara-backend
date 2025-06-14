@@ -11,7 +11,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
       - name: build docker image
-        run: docker build -t febryhehe/be-temanbicara:latest
+        run: docker build . -t febryhehe/be-temanbicara:latest
       - name: push to docker hub
         run: |
           docker login -u febryhehe -p ${{ secrets.DOCKER_HUB_TOKEN }}

@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -46,17 +45,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: Development
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.3
-
-      - name: Install Composer Dependencies
-        run: composer install --optimize-autoloader --no-dev --no-progress --no-interaction --prefer-dist
-
       - name: Synchronize Files To Server
         uses: appleboy/ssh-action@v1
         with:

@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  initial-setup:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code

@@ -18,11 +18,6 @@ jobs:
           coverage: none
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --no-progress
-
-  run-test:
-    needs: initial-setup
-    runs-on: ubuntu-latest
-    steps:
       - name: Setup .env for Testing
         run: |
           cp .env.example .env.testing
@@ -37,6 +32,11 @@ jobs:
         run: php artisan key:generate --env=testing
       - name: Run Migrations for Testing
         run: php artisan migrate --env=testing
+
+  run-test:
+    needs: initial-setup
+    runs-on: ubuntu-latest
+    steps:
       - name: Run Tests
         run: php artisan test --env=testing
 

@@ -4,14 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Journal;
-use App\Models\TrackJournalResponse;
-use App\Models\Observation;
 use App\Http\Controllers\AiController;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
@@ -159,46 +155,4 @@ describe('Journal API', function () {
             ->assertStatus(404)
             ->assertJsonPath('status', false);
     });
-
-
-    // test('Successfully get all journals for a specific date', function () {
-    //     $user = User::create(["email" => "getall@example.com", "password" => "secret"]);
-    //     $today = now()->toDateString();
-    //     $yesterday = now()->subDay()->toDateString();
-
-    //     Journal::create(['user_id' => $user->id, 'title' => 'Journal Today 1', 'body' => '...']);
-    //     Journal::create(['user_id' => $user->id, 'title' => 'Journal Today 2', 'body' => '...', 'created_at' => now()->addMinute()]);
-
-    //     Journal::create(['user_id' => $user->id, 'title' => 'Journal Yesterday', 'body' => '...', 'created_at' => now()]);
-
-    //     $this->actingAs($user)
-    //         ->postJson('/api/v1/journal/get', ['date_request' => $today])
-    //         ->assertStatus(200)
-    //         ->assertJson(
-    //             fn(AssertableJson $json) =>
-    //             $json->where('status', true)
-    //                 ->where('id', $user->id)
-    //                 ->has('data', 2)
-    //                 ->where('data.0.title', 'Journal Today 1')
-    //                 ->etc()
-    //         );
-    // });
-
-    // test('Returns "not found" message if no journals on specific date', function () {
-    //     $user = User::create(["email" => "getall.empty@example.com", "password" => "secret"]);
-    //     $today = now()->toDateString();
-    //     $yesterday = now()->subDay()->toDateString();
-
-    //     Journal::create(['user_id' => $user->id, 'title' => 'Journal Yesterday', 'body' => '...', 'created_at' => $yesterday]);
-
-    //     $this->actingAs($user)
-    //         ->postJson('/api/v1/journal/get', ['date_request' => $today])
-    //         ->assertStatus(200)
-    //         ->assertJson(
-    //             fn(AssertableJson $json) =>
-    //             $json->where('status', false)
-    //                 ->where('message', 'Jurnal tidak ditemukan')
-    //         );
-    // });
-
 });

@@ -89,12 +89,6 @@ test('Logout Test', function () {
 test('Change Password Test', function () {
     Sanctum::actingAs($this->user);
 
-    // $otpRequest = OTPRequest::create([
-    //     'user_id' => $this->user->id,
-    //     'otp' => 123456,
-    //     'expired_at' => Carbon::now(new CarbonTimeZone('Asia/Bangkok'))->addMinutes(5)->format('Y-m-d H:i:s')
-    // ]);
-
     $response = $this
         ->postJson(
             '/api/v1/change-password',
@@ -113,8 +107,7 @@ test('Change Password Test', function () {
                 ->where('message', 'Password berhasil diperbaharui')
         );
 
-    // expect(DB::select('SELECT * FROM otp_requests WHERE user_id = ?', [$this->user->id]))->toBeEmpty();
-    $this->user->refresh(); // Ambil data user terbaru dari DB
+    $this->user->refresh();
     expect(Hash::check('alpha', $this->user->password))->toBeTrue();
 });
 

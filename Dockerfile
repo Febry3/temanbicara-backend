@@ -25,6 +25,8 @@ RUN composer dump-autoload --optimize --no-dev
 RUN chown -R nonroot:nonroot /var/www \
     && chmod -R 755 /var/www/storage
 
+RUN cp .env.example .env
+
 USER nonroot
 
 EXPOSE 9000
